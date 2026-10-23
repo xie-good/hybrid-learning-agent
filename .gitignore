@@ -1,0 +1,14 @@
+# 本地环境、缓存和密钥不进入版本管理。
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.idea/
+.jbeval/
+tmp/
+
+# 教材和索引由本地构建；保留目录说明，不提交大文件。
+data/raw/*
+data/processed/*
+data/indexes/*
+!data/**/README.md
