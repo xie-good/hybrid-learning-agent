@@ -13,12 +13,14 @@ from pipeline.chunk_txt import chunk_text, split_spans
 from pipeline.run_preprocess import preprocess, OUTPUT_NAMES
 
 
-def make_pdf(path: Path, *, bookmarks=True, blank=False):
+def make_pdf(path: Path, *, bookmarks=True, blank=False, with_graduation=False):
     """嵌入ASCII文字和中文书签，确保用真实PDF解析链路测试，不伪造解析结果。"""
     writer = PdfWriter()
     texts = ['Cover', '1.1 Intro\n' + 'Agent knowledge. ' * 160,
              'Tail from old section\n1.2 Next\n    print("code")\nCaption Figure 1.1',
              '2.1 Other\nSecond chapter text.']
+    if with_graduation:
+        texts.append('3.1 Graduation\nSubmit your project and Pull Request.')
     for text in texts:
         page = writer.add_blank_page(width=612, height=792)
         if blank:
@@ -41,6 +43,9 @@ def make_pdf(path: Path, *, bookmarks=True, blank=False):
         writer.add_outline_item('1.2 Next', 2, parent=first)
         second = writer.add_outline_item('第二章 进阶', 3)
         writer.add_outline_item('2.1 Other', 3, parent=second)
+        if with_graduation:
+            graduation = writer.add_outline_item('第三章 毕业设计', 4)
+            writer.add_outline_item('3.1 Graduation', 4, parent=graduation)
     with path.open('wb') as stream:
         writer.write(stream)
 
@@ -98,6 +103,32 @@ class PreprocessTests(unittest.TestCase):
         self.assertEqual([s['section_id'] for s in segments], ['old', 'new'])
         self.assertEqual(segments[0]['char_end'], text.index('1.2'))
         self.assertEqual(current['section_id'], 'new')
+
+    def test_graduation_chapter_excluded_by_default(self):
+        make_pdf(self.source, with_graduation=True)
+        report = preprocess(self.source, self.output)
+        self.assertEqual((report['start_page'], report['end_page'], report['included_pages']), (2, 4, 3))
+        self.assertEqual(report['requested_end_page'], 5)
+        self.assertEqual(report['chapter_count'], 2)
+        self.assertEqual(report['excluded_chapters'][0]['chapter_id'], 'ch03')
+        self.assertEqual(report['excluded_chapters'][0]['page_start'], 5)
+        self.assertNotIn('Submit your project', (self.output / 'cleaned.txt').read_text('utf-8'))
+        for name in ('pages.jsonl', 'chunks.jsonl'):
+            self.assertNotIn('ch03', {row['chapter_id'] for row in load_lines(self.output / name)})
+        chapters = json.loads((self.output / 'chapters.json').read_text('utf-8'))
+        self.assertEqual([c['chapter_id'] for c in chapters], ['ch01', 'ch02'])
+
+    def test_explicit_end_cannot_reinclude_graduation(self):
+        make_pdf(self.source, with_graduation=True)
+        report = preprocess(self.source, self.output, end_page=5)
+        self.assertEqual(report['end_page'], 4)
+        self.assertEqual(report['included_pages'], 3)
+
+    def test_graduation_only_range_not_published(self):
+        make_pdf(self.source, with_graduation=True)
+        with self.assertRaisesRegex(ValueError, '非课程章节'):
+            preprocess(self.source, self.output, start_page=5, end_page=5)
+        self.assertFalse(self.output.exists())
 
     def test_chunk_repeatability_and_parameter_versioning(self):
         preprocess(self.source, self.output, max_chars=300, overlap=30)

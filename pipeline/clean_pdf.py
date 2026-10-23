@@ -9,7 +9,9 @@ from pathlib import Path
 import pypdf
 from pypdf import PdfReader
 
-CLEANING_VERSION = 'hello-agents-clean-v1'
+CLEANING_VERSION = 'hello-agents-clean-v2-course-only'
+# 按章标题排除作业/提交流程，不能按正文关键词删除，否则会误删课程讲解。
+EXCLUDED_CHAPTER_KEYWORDS = ('毕业设计',)
 CHAPTER_RE = re.compile(r'^第[一二三四五六七八九十百零\d]+章\s*\S+')
 # 康熙部首可NFKC还原，部分补充部首需显式映射。仅处理已知字形，
 # 不对全文做NFKC，避免改变代码字符串中的全角标点等原有字符。
@@ -92,7 +94,7 @@ def write_json(path: Path, value) -> None:
 
 def clean_pdf(source: Path, output_dir: Path, *, start_page: int | None = None,
               end_page: int | None = None) -> dict:
-    """提取含端点的物理页范围。默认从首章书签开始；无书签时需指定起点。"""
+    """从指定物理页范围提取课程知识；无论是否指定终点，均排除毕业设计章。"""
     source, output_dir = Path(source).resolve(), Path(output_dir).resolve()
     if not source.is_file():
         raise FileNotFoundError(source)
@@ -119,19 +121,38 @@ def clean_pdf(source: Path, output_dir: Path, *, start_page: int | None = None,
                            'page_start': start_page,
                            'page_end': selected[0]['page_start'] - 1 if selected else end_page,
                            'sections': []})
+    requested_start, requested_end = start_page, end_page
+    excluded_chapters = [
+        {'chapter_id': c['chapter_id'], 'title': c['title'],
+         'page_start': max(start_page, c['page_start']),
+         'page_end': min(end_page, c['page_end']),
+         'reason': 'non_course_graduation_design'}
+        for c in selected if any(word in c['title'] for word in EXCLUDED_CHAPTER_KEYWORDS)
+    ]
+    selected = [c for c in selected
+                if not any(word in c['title'] for word in EXCLUDED_CHAPTER_KEYWORDS)]
+    if not selected:
+        raise ValueError('指定范围只有已排除的非课程章节，没有可处理的课程知识。')
     for c in selected:
         c['included_page_start'] = max(start_page, c['page_start'])
         c['included_page_end'] = min(end_page, c['page_end'])
+    # 支持排除范围中间的章节，不用简单截断或重新编号，始终保留原始物理页码。
+    included_page_numbers = [n for c in selected
+                             for n in range(c['included_page_start'], c['included_page_end'] + 1)]
+    start_page, end_page = included_page_numbers[0], included_page_numbers[-1]
     with source.open('rb') as source_stream:
         source_sha = hashlib.file_digest(source_stream, 'sha256').hexdigest()
     report = {
         'source_file': source.name, 'source_path': str(source), 'source_sha256': source_sha,
         'cleaning_version': CLEANING_VERSION, 'parser': f'pypdf {pypdf.__version__}',
         'total_pdf_pages': len(reader.pages), 'start_page': start_page, 'end_page': end_page,
-        'included_pages': end_page - start_page + 1,
-        'excluded_pages': len(reader.pages) - (end_page - start_page + 1),
+        'requested_start_page': requested_start, 'requested_end_page': requested_end,
+        'included_pages': len(included_page_numbers),
+        'excluded_pages': len(reader.pages) - len(included_page_numbers),
+        'excluded_chapters': excluded_chapters,
         'chapter_count': len(selected), 'text_chars': 0, 'review_pages': [],
-        'notes': ['物理页码从1开始。正文保留原有换行、代码缩进、图注及参考文献。',
+        'notes': ['仅收录课程知识，按章标题排除毕业设计；排除记录仅用于审计，不进入文本块。',
+                  '物理页码从1开始。正文保留原有换行、代码缩进、图注及参考文献。',
                   '不做OCR或图表内容识别；图片、表格、低文本量及异常字形页列入复核。',
                   'PDF文本提取不保证代码可直接执行；本流程从不运行教材代码。'],
     }
@@ -140,7 +161,7 @@ def clean_pdf(source: Path, output_dir: Path, *, start_page: int | None = None,
     matched_sections = set()
     with (output_dir / 'pages.jsonl').open('w', encoding='utf-8', newline='\n') as pages, \
             (output_dir / 'cleaned.txt').open('w', encoding='utf-8', newline='\n') as readable:
-        for number in range(start_page, end_page + 1):
+        for number in included_page_numbers:
             chapter = next(c for c in selected if c['page_start'] <= number <= c['page_end'])
             if chapter['chapter_id'] != previous_chapter:
                 earlier = [s for s in chapter['sections'] if s['page_start'] < number]
