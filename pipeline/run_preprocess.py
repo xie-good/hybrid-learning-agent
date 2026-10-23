@@ -41,7 +41,7 @@ def preprocess(source: Path, output_dir: Path, *, start_page: int | None = None,
             f"- 数据版本：`{report['dataset_version']}`\n"
             f"- 正文：PDF物理页{report['start_page']}—{report['end_page']}，"
             f"{report['chapter_count']}章，{report['chunk_count']}块。\n"
-            '- 收录范围：课程理论、代码示例与实战知识；毕业设计整章排除。\n'
+            '- 收录范围：仅第1—12章；第13—16章的综合案例进阶、毕业设计全部排除。\n'
             '- `cleaned.txt`：人工抽查正文；保留代码换行和缩进，不保证代码可运行。\n'
             '- `pages.jsonl`：原始提取文本、清洗文本、页码、章节与节内字符范围。\n'
             '- `chapters.json`：书签章节目录和原始/本次包含的页码范围。\n'
@@ -63,7 +63,7 @@ def main() -> None:
     parser.add_argument('--source', type=Path, required=True, help='原PDF路径，不会改写')
     parser.add_argument('--output', type=Path, default=ROOT / 'data/processed/hello-agents')
     parser.add_argument('--start-page', type=int, help='1起算物理页；默认首章书签页')
-    parser.add_argument('--end-page', type=int, help='扫描范围终点，默认PDF末页；毕业设计章始终排除')
+    parser.add_argument('--end-page', type=int, help='扫描范围终点，默认PDF末页；仅收录第1—12章')
     parser.add_argument('--max-chars', type=int, default=1200)
     parser.add_argument('--overlap', type=int, default=150)
     parser.add_argument('--force', action='store_true', help='重建并替换六个已知产物')

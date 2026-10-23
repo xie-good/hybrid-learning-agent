@@ -9,7 +9,9 @@ from pathlib import Path
 import pypdf
 from pypdf import PdfReader
 
-CLEANING_VERSION = 'hello-agents-clean-v2-course-only'
+CLEANING_VERSION = 'hello-agents-clean-v3-ch01-ch12'
+# 第一版课程范围固定到第12章。即使显式指定更晚的终页，也不收录案例进阶等后续章节。
+MAX_COURSE_CHAPTER = 12
 # 按章标题排除作业/提交流程，不能按正文关键词删除，否则会误删课程讲解。
 EXCLUDED_CHAPTER_KEYWORDS = ('毕业设计',)
 CHAPTER_RE = re.compile(r'^第[一二三四五六七八九十百零\d]+章\s*\S+')
@@ -33,6 +35,16 @@ def normalize_text(text: str) -> str:
 def compact(text: str) -> str:
     """仅用于标题匹配，不用于改写正文。"""
     return re.sub(r'\s+', '', normalize_text(text))
+
+
+def chapter_exclusion_reason(chapter: dict) -> str | None:
+    """只在章节层面筛选，保留前12章内正常提及案例名称的知识性讲解。"""
+    if any(word in chapter['title'] for word in EXCLUDED_CHAPTER_KEYWORDS):
+        return 'non_course_graduation_design'
+    match = re.fullmatch(r'ch(\d+)', chapter['chapter_id'])
+    if match and int(match.group(1)) > MAX_COURSE_CHAPTER:
+        return 'outside_course_chapter_range'
+    return None
 
 
 def read_chapters(reader: PdfReader) -> list[dict]:
@@ -94,7 +106,7 @@ def write_json(path: Path, value) -> None:
 
 def clean_pdf(source: Path, output_dir: Path, *, start_page: int | None = None,
               end_page: int | None = None) -> dict:
-    """从指定物理页范围提取课程知识；无论是否指定终点，均排除毕业设计章。"""
+    """从指定物理页范围提取前12章课程知识，排除第13章及之后的全部章节。"""
     source, output_dir = Path(source).resolve(), Path(output_dir).resolve()
     if not source.is_file():
         raise FileNotFoundError(source)
@@ -126,11 +138,10 @@ def clean_pdf(source: Path, output_dir: Path, *, start_page: int | None = None,
         {'chapter_id': c['chapter_id'], 'title': c['title'],
          'page_start': max(start_page, c['page_start']),
          'page_end': min(end_page, c['page_end']),
-         'reason': 'non_course_graduation_design'}
-        for c in selected if any(word in c['title'] for word in EXCLUDED_CHAPTER_KEYWORDS)
+         'reason': chapter_exclusion_reason(c)}
+        for c in selected if chapter_exclusion_reason(c)
     ]
-    selected = [c for c in selected
-                if not any(word in c['title'] for word in EXCLUDED_CHAPTER_KEYWORDS)]
+    selected = [c for c in selected if not chapter_exclusion_reason(c)]
     if not selected:
         raise ValueError('指定范围只有已排除的非课程章节，没有可处理的课程知识。')
     for c in selected:
@@ -150,8 +161,9 @@ def clean_pdf(source: Path, output_dir: Path, *, start_page: int | None = None,
         'included_pages': len(included_page_numbers),
         'excluded_pages': len(reader.pages) - len(included_page_numbers),
         'excluded_chapters': excluded_chapters,
+        'course_chapter_limit': MAX_COURSE_CHAPTER,
         'chapter_count': len(selected), 'text_chars': 0, 'review_pages': [],
-        'notes': ['仅收录课程知识，按章标题排除毕业设计；排除记录仅用于审计，不进入文本块。',
+        'notes': ['课程范围仅第1—12章，第13—16章整章排除；排除记录仅用于审计，不进入文本块。',
                   '物理页码从1开始。正文保留原有换行、代码缩进、图注及参考文献。',
                   '不做OCR或图表内容识别；图片、表格、低文本量及异常字形页列入复核。',
                   'PDF文本提取不保证代码可直接执行；本流程从不运行教材代码。'],

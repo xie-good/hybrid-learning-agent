@@ -54,6 +54,25 @@ def load_lines(path):
     return [json.loads(line) for line in path.read_text('utf-8').splitlines() if line.strip()]
 
 
+def make_full_course_pdf(path: Path):
+    """生成16章的小型真实PDF，专门验证第12/13章边界，不依赖原教材。"""
+    writer = PdfWriter()
+    titles = {13: '智能旅行助手', 14: '自动化深度研究智能体', 15: '构建赛博小镇', 16: '毕业设计'}
+    for number in range(1, 17):
+        page = writer.add_blank_page(width=612, height=792)
+        font = DictionaryObject({NameObject('/Type'): NameObject('/Font'),
+                                 NameObject('/Subtype'): NameObject('/Type1'),
+                                 NameObject('/BaseFont'): NameObject('/Helvetica')})
+        page[NameObject('/Resources')] = DictionaryObject({NameObject('/Font'): DictionaryObject({
+            NameObject('/F1'): writer._add_object(font)})})
+        stream = DecodedStreamObject()
+        stream.set_data(f'BT /F1 12 Tf 50 740 Td (CHAPTER_{number:02d}_CONTENT) Tj ET'.encode())
+        page[NameObject('/Contents')] = writer._add_object(stream)
+        writer.add_outline_item(f'第{number}章 {titles.get(number, "课程知识")}', number - 1)
+    with path.open('wb') as stream:
+        writer.write(stream)
+
+
 class PreprocessTests(unittest.TestCase):
     def setUp(self):
         self.temp = TemporaryDirectory()
@@ -128,6 +147,34 @@ class PreprocessTests(unittest.TestCase):
         make_pdf(self.source, with_graduation=True)
         with self.assertRaisesRegex(ValueError, '非课程章节'):
             preprocess(self.source, self.output, start_page=5, end_page=5)
+        self.assertFalse(self.output.exists())
+
+    def test_only_first_twelve_chapters_kept(self):
+        make_full_course_pdf(self.source)
+        report = preprocess(self.source, self.output)
+        self.assertEqual((report['chapter_count'], report['included_pages'], report['end_page']), (12, 12, 12))
+        self.assertEqual(report['course_chapter_limit'], 12)
+        self.assertEqual([c['chapter_id'] for c in report['excluded_chapters']],
+                         ['ch13', 'ch14', 'ch15', 'ch16'])
+        chapters = json.loads((self.output / 'chapters.json').read_text('utf-8'))
+        self.assertEqual([c['chapter_id'] for c in chapters], [f'ch{i:02d}' for i in range(1, 13)])
+        for name in ('pages.jsonl', 'chunks.jsonl'):
+            rows = load_lines(self.output / name)
+            self.assertEqual({r['chapter_id'] for r in rows}, {f'ch{i:02d}' for i in range(1, 13)})
+        text = (self.output / 'cleaned.txt').read_text('utf-8')
+        self.assertIn('CHAPTER_12_CONTENT', text)
+        for number in range(13, 17):
+            self.assertNotIn(f'CHAPTER_{number:02d}_CONTENT', text)
+
+    def test_explicit_end_cannot_reinclude_case_chapters(self):
+        make_full_course_pdf(self.source)
+        report = preprocess(self.source, self.output, start_page=12, end_page=16)
+        self.assertEqual((report['start_page'], report['end_page'], report['chapter_count']), (12, 12, 1))
+
+    def test_case_only_range_not_published(self):
+        make_full_course_pdf(self.source)
+        with self.assertRaisesRegex(ValueError, '非课程章节'):
+            preprocess(self.source, self.output, start_page=13, end_page=16)
         self.assertFalse(self.output.exists())
 
     def test_chunk_repeatability_and_parameter_versioning(self):
