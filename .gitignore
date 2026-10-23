@@ -6,6 +6,9 @@ __pycache__/
 .idea/
 .jbeval/
 tmp/
+git/
+docs/.scaffold-evidence/
+docs/.preprocess-evidence/
 
 # 教材和索引由本地构建；保留目录说明，不提交大文件。
 data/raw/*

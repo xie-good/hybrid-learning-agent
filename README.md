@@ -1,11 +1,11 @@
 # 课程学习助手：项目骨架
 
-基于混合检索增强生成的课程学习Web应用。技术方案为 **Python + FastAPI + Streamlit**，当前只建立代码组织、启动入口和带中文注释的接口占位。
+基于混合检索增强生成的课程学习Web应用。技术方案为 **Python + FastAPI + Streamlit**，当前已有带中文注释的应用骨架及第一版离线PDF预处理。
 
 ## 当前做到哪里
 
-- 已有：FastAPI入口、健康检查、请求结构、501业务占位、四个Streamlit占位页、骨架测试。
-- 尚未实现：PDF清洗、章节目录、BM25、Embedding、向量库、RRF、重排序、模型调用、数据库、历史记录及最终UI样式。
+- 已有：FastAPI入口、健康检查、请求结构、501业务占位、四个Streamlit占位页；PDF正文提取、字形清洗、书签章节目录、带页码分块及自动化测试。
+- 尚未实现：图表OCR、跨页代码块重建、BM25、Embedding、向量库、RRF、重排序、模型调用、数据库、历史记录及最终UI样式。
 - 不建设：上传、自建课程、注册登录和管理员后台。
 - 当前启动无需模型密钥，不下载模型，不执行教材代码，不改写原PDF。
 
@@ -23,11 +23,11 @@ backend/
   schemas/                 请求及证据数据结构
   services/                检索、生成、学习辅助接口
   storage/                 数据访问层预留
-pipeline/                  离线清洗、切块和建索引的占位入口
+pipeline/                  离线清洗与分块；建索引仍为占位
 data/raw/                  原PDF副本，当前为空
-data/processed/            清洗数据，当前为空
+data/processed/hello-agents/  清洗正文、页码、章节目录、文本块和质量报告
 data/indexes/              检索索引，当前为空
-tests/                     只验证骨架，不声称验证了检索效果
+tests/                     骨架与预处理测试，不声称验证了检索效果
 docs/                      需求分析与UI设计图
 ```
 
@@ -44,7 +44,7 @@ Set-Location 'F:\桌面\毕设'
 # Copy-Item .env.example .env
 ```
 
-此阶段不安装PDF解析、BM25、向量模型等业务依赖；在实现对应模块时再添加。环境中的具体已安装版本可用`python -m pip freeze`查看，当前依赖清单不是跨平台锁文件。
+此阶段使用pypdf读取原生PDF文字及书签，不安装BM25、向量模型。环境中的具体已安装版本可用`python -m pip freeze`查看，当前依赖清单不是跨平台锁文件。
 
 ## 启动后端
 
@@ -73,11 +73,29 @@ Set-Location 'F:\桌面\毕设'
 & '.\.venv\Scripts\python.exe' -m unittest discover -s tests -v
 ```
 
-测试覆盖健康响应、占位状态、输入校验、服务与离线流程显式占位、四个前端页加载；不会调用外部API。
+测试覆盖健康响应、业务占位、输入校验、四个前端页加载，以及真实合成PDF的清洗/分块、覆盖保护、引用偏移、重复运行和异常处理；不会调用外部API。
+
+## 离线数据预处理（cod分支）
+
+```powershell
+& '.\.venv\Scripts\python.exe' -m pipeline.run_preprocess --source 'F:/下载/Hello-Agents-V1.0.3-20260717.pdf'
+# 已有产物时默认拒绝覆盖；确认重建后，在上面的命令末尾添加 --force。
+```
+
+默认输出到`data/processed/hello-agents`。从首章书签（这份PDF的物理第10页）开始，排除前置介绍、导航和前言；保留正文中的习题、参考文献、图注及代码换行/缩进。中文部首字形如`⼈⼯`会还原为`人工`，原始提取文本同时保存在`pages.jsonl`以供比对。
+
+- `cleaned.txt`：便于人工抽查的正文。
+- `pages.jsonl`、`chapters.json`：物理页码、章/节目录、原始和清洗文本、节内字符范围。
+- `chunks.jsonl`：后续检索输入，含稳定块ID、数据版本、章/节、物理页及精确字符偏移。
+- `report.json`：来源SHA256、规则、分块参数、计数及待人工复核页。
+
+第一版按物理页与书签节边界分块，默认最多1200字符、重叠150字符。优先在换行/句末切分，不跨页合并，保留短块；长代码可能分到多个块，硬切位置有标记。这样便于核对引用，但跨页段落/代码的语义完整性需要后续优化。图片及图片表格不做OCR，只保留可读取文字/图注并列入报告，不能当作已识别的内容。
+
+预处理不调用模型、不执行教材示例、不构建检索索引；后端的`knowledge_base_ready`仍为`false`。
 
 ## 后续逐步实现
 
-建议先实现PDF清洗，再实现切块、BM25、向量检索、融合重排，最后接入生成与前端联调。每次仅完成一个模块，不把占位代码当作已完成业务。
+下一步先人工抽查正文与块，再实现BM25、向量检索、融合重排，最后接入生成与前端联调。每次仅完成一个模块，不把占位代码当作已完成业务。
 
 服务模块的复用提示词结构约定：
 
@@ -93,3 +111,4 @@ Set-Location 'F:\桌面\毕设'
 - [FastAPI入口](https://fastapi.tiangolo.com/tutorial/first-steps/)
 - [FastAPI测试](https://fastapi.tiangolo.com/tutorial/testing/)
 - [Streamlit页面导航](https://docs.streamlit.io/develop/api-reference/navigation/st.navigation)
+- [pypdf文本提取及局限](https://pypdf.readthedocs.io/en/stable/user/extract-text.html)

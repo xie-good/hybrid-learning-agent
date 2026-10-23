@@ -68,11 +68,13 @@ class ScaffoldTests(unittest.TestCase):
     def test_pipeline_has_no_writes(self):
         with TemporaryDirectory() as temp:
             base = Path(temp)
-            for stage in (clean_pdf, chunk_text, build_indexes):
+            for stage in (clean_pdf, chunk_text):
                 with self.subTest(stage=stage.__name__):
-                    with self.assertRaises(NotImplementedError):
+                    with self.assertRaises(FileNotFoundError):
                         stage(base / 'missing-input', base / 'output')
                     self.assertEqual(list(base.iterdir()), [])
+            with self.assertRaises(NotImplementedError):
+                build_indexes(base / 'missing-input', base / 'output')
 
     def test_frontend_pages(self):
         # AppTest实际执行页面脚本，不要求先启动前端服务器。
