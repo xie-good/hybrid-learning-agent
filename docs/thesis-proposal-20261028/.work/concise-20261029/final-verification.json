@@ -1,0 +1,39 @@
+{
+  "source": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_混合检索增强课程学习助手.docx",
+  "output": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_精简版.docx",
+  "source_sha256": "394011D5C1585D752929A05B3AD4AFCB084A57636940718A47552E81A5BFA9EB",
+  "output_sha256": "B85AFA5871F784055DBD17A7CFC87396DBB6B203B39153B901D792B3A31079BA",
+  "source_unchanged": true,
+  "review_unchanged": true,
+  "before": {
+    "nonspace_characters": 5391,
+    "chinese_characters": 4460
+  },
+  "after": {
+    "nonspace_characters": 1771,
+    "chinese_characters": 1398
+  },
+  "body_reduction_percent": 67.1,
+  "references_before": 15,
+  "references_after": 10,
+  "changed_parts": [
+    "word/document.xml"
+  ],
+  "preserved": [
+    "封面及个人信息栏",
+    "全部审批行",
+    "两节页边距与页码设置",
+    "样式及校徽",
+    "完整文献综述"
+  ],
+  "pages_before": 9,
+  "pages_after": 5,
+  "final_pdf": "proposal-final.pdf",
+  "unchanged_render_pages": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "visual_review": "5页全部检查；最终版仅第4页文字变动，其他页图像哈希一致"
+}

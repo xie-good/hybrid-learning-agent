@@ -1,0 +1,358 @@
+/* 公共学习组件：状态提示、范围表单、学习布局、结果、教材引用及总结覆盖信息。 */
+/* 学习页面共享按钮与提示样式；禁用、错误、成功和证据不足各有明确视觉反馈。 */
+.primary {
+  background: #226557;
+  color: #fff;
+}
+.primary:hover:not(:disabled) {
+  background: #174d42;
+}
+.secondary {
+  border: 1px solid #dbe5de;
+  background: #fff;
+  color: #587763;
+}
+.secondary:hover:not(:disabled) {
+  background: #f1f6f0;
+}
+.message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 13px 16px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.message > span {
+  flex: 1;
+}
+.error {
+  background: #fff3f0;
+  border-color: #efdad5;
+  color: #a45346;
+}
+.success {
+  background: #edf6ee;
+  border-color: #d6e8d7;
+  color: #547951;
+}
+.warning {
+  background: #fcf7e9;
+  border-color: #ede2bf;
+  color: #967d40;
+}
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  color: inherit;
+}
+.mobile-menu {
+  display: none;
+}
+.drawer-overlay {
+  display: none;
+}
+/* 问答、总结和练习复用“主体 + 学习提示”布局；较窄屏幕隐藏提示栏而非压缩表单。 */
+.learning-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 26px;
+  align-items: start;
+}
+.learning-main {
+  min-width: 0;
+}
+.panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 24px;
+  margin-bottom: 19px;
+}
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.panel-title svg {
+  color: #6b927b;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.form-grid > label {
+  color: #6a7f72;
+  font-size: 11px;
+}
+.form-grid select,
+.form-grid input {
+  font-size: 12px;
+}
+.question-panel textarea {
+  background: #f9fbf8;
+  border-color: #edf0e9;
+  font-size: 13px;
+}
+.question-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 13px;
+  color: #a1ada3;
+  font-size: 10px;
+}
+.retrieval-settings {
+  margin-top: 20px;
+  border-top: 1px solid #eaf0e8;
+  padding-top: 14px;
+}
+.retrieval-settings > summary {
+  color: #7f9384;
+  font-size: 11px;
+}
+.retrieval-settings > summary:after,
+.coverage > summary:after {
+  content: "+";
+  float: right;
+}
+.retrieval-settings[open] > summary:after,
+.coverage[open] > summary:after {
+  content: "−";
+}
+.retrieval-settings .form-grid {
+  margin-top: 17px;
+}
+.tip-panel {
+  background: #f1f4eb;
+  border-color: #e5ebdd;
+  padding: 25px;
+}
+.tip-panel h3 {
+  font-size: 20px;
+  font-weight: 550;
+  margin: 13px 0;
+  letter-spacing: 1px;
+}
+.tip-panel p {
+  font-size: 11px;
+  line-height: 2;
+  color: #8b9c84;
+}
+.tip-divider {
+  height: 1px;
+  background: #dfe7d7;
+  margin: 23px 0;
+}
+.tip-panel > svg {
+  color: #8da181;
+  margin-bottom: 12px;
+}
+.tip-panel > strong {
+  font-size: 12px;
+  display: block;
+  font-weight: 550;
+  margin-bottom: 9px;
+}
+.mode-note {
+  font-size: 10px;
+  color: #97a48f;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 0 6px;
+}
+.mode-note .online-dot {
+  width: 5px;
+  height: 5px;
+}
+.action-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+.action-panel h3 {
+  font-size: 14px;
+  font-weight: 550;
+}
+.action-panel p {
+  font-size: 11px;
+  color: #9caaa0;
+  margin-top: 5px;
+}
+.learning-placeholder,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 55px 20px;
+  color: #a4b19f;
+  gap: 12px;
+}
+.learning-placeholder h3,
+.empty-state h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: #82917d;
+}
+.learning-placeholder p,
+.empty-state p {
+  font-size: 11px;
+  color: #9aa796;
+}
+.placeholder-symbol {
+  height: 65px;
+  width: 65px;
+  display: grid;
+  place-items: center;
+  color: #96b092;
+  background: #edf2e8;
+  border: 1px solid #e4ebdd;
+  border-radius: 18px;
+  margin-bottom: 6px;
+}
+/* 结果文本保留换行，并允许长单词/代码折行；这些规则不负责解析 Markdown。 */
+.result-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #66866c;
+  font-size: 11px;
+  margin-bottom: 20px;
+}
+.result-kicker .pill {
+  margin-left: auto;
+}
+.result-panel h2 {
+  font-size: 18px;
+  font-weight: 550;
+  margin-bottom: 22px;
+}
+.result-panel h3 {
+  font-size: 14px;
+  font-weight: 550;
+  margin: 20px 0 12px;
+}
+.prose {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 2.1;
+  font-size: 13px;
+  color: #52675a;
+}
+.result-meta {
+  font-size: 9px;
+  color: #a7b2a5;
+  margin-top: 20px;
+  overflow-wrap: anywhere;
+}
+/* 教材引用通过 details 展开；展开后的箭头方向只做状态提示，不承担交互逻辑。 */
+.sources {
+  margin: 25px 0 10px;
+  border-top: 1px solid #e8ede4;
+  padding-top: 8px;
+}
+.sources h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 550;
+  margin: 15px 0;
+}
+.source-item {
+  border: 1px solid #e4ebe0;
+  border-radius: 7px;
+  margin: 9px 0;
+  overflow: hidden;
+}
+.source-item > summary {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 13px;
+  font-size: 11px;
+  background: #fafbf8;
+}
+.citation-number {
+  color: #719166;
+  background: #edf3e7;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+}
+.source-item > summary small {
+  display: block;
+  font-size: 9px;
+  color: #a1ad9a;
+  margin-top: 3px;
+}
+.source-item > summary > svg {
+  margin-left: auto;
+}
+.source-item[open] > summary > svg,
+.history-item[open] > summary > svg {
+  transform: rotate(90deg);
+}
+.source-body {
+  padding: 16px;
+  border-top: 1px solid #e4ebe0;
+}
+.source-body p {
+  font-size: 12px;
+}
+.source-body a {
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #63905c;
+  margin-top: 16px;
+}
+.key-points {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 2;
+  color: #73856a;
+}
+.key-points li {
+  padding-left: 5px;
+  margin-bottom: 10px;
+}
+.key-points li::marker {
+  color: #92b080;
+}
+.coverage {
+  margin: 20px 0;
+  color: #899b80;
+  font-size: 11px;
+  background: #f8faf5;
+  padding: 13px;
+  border-radius: 7px;
+}
+.coverage pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+}
+.result-panel > .button {
+  margin-top: 12px;
+}
+.field-note {
+  font-size: 10px;
+  color: #99a690;
+  line-height: 1.9;
+  margin: 16px 0;
+}

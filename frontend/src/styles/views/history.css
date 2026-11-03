@@ -1,0 +1,93 @@
+/* 历史页面：工具栏、展开记录、分页和清空确认。 */
+/* 历史页：可展开记录、底部分页及清空确认区；记录内容可能较长，需要允许折行。 */
+.history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.history-toolbar h3 {
+  font-size: 14px;
+  font-weight: 550;
+}
+.history-toolbar p {
+  font-size: 11px;
+  color: #99a78e;
+  margin-top: 6px;
+}
+.history-toolbar .pill {
+  margin-left: 9px;
+}
+.history-item {
+  padding: 0;
+}
+.history-item > summary {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 21px 23px;
+}
+.history-item-icon {
+  width: 37px;
+  height: 37px;
+  border-radius: 10px;
+  background: #f0f5eb;
+  color: #8da17e;
+  display: grid;
+  place-items: center;
+}
+.history-item-title {
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.history-item-title small {
+  display: block;
+  color: #a4ae9b;
+  font-size: 10px;
+  margin-top: 6px;
+}
+.history-item > summary > svg {
+  color: #9daa94;
+}
+.history-answer {
+  padding: 8px 25px 23px;
+}
+.history-answer > .danger {
+  margin-top: 15px;
+}
+.danger {
+  color: #b08272;
+}
+.history-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 25px 0;
+}
+.pagination {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 11px;
+  color: #8b9d80;
+}
+.pagination .button {
+  font-size: 10px;
+  padding: 8px 13px;
+  min-height: 34px;
+}
+.clear-history {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.clear-history label {
+  flex-direction: row;
+  align-items: center;
+  font-size: 10px;
+  color: #9ea993;
+}

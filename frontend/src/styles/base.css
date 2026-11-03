@@ -1,0 +1,153 @@
+/* 全局基础：主题变量、标签默认值、公共按钮与键盘焦点。 */
+/* 样式阅读顺序：全局基础 → 导航/顶栏 → 工作台 → 学习表单/结果 → 历史 → 响应式。
+   下方 --green、--dark 等变量统一控制主题色；改配色优先改这里，避免到处替换色值。 */
+:root {
+  font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #273b38;
+  background: #f5f7f6;
+  font-synthesis: none;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 400;
+  --green: #21675b;
+  --dark: #173d39;
+  --muted: #89928f;
+  --border: #e7ece9;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+button {
+  color: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+/* 只在键盘等需要定位焦点时显示轮廓，让鼠标操作不显拥挤，也保留键盘可访问性。 */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #69ad9e;
+  outline-offset: 3px;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+button {
+  border: 0;
+  background: none;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #dfe7e2;
+  border-radius: 8px;
+  padding: 11px 13px;
+  color: #304740;
+  transition: border-color 0.15s;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #69ad9e;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #9aa5a0;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+  padding: 0;
+  flex-shrink: 0;
+}
+input[type="range"] {
+  padding: 10px 0;
+  accent-color: var(--green);
+}
+textarea {
+  resize: vertical;
+  line-height: 1.9;
+}
+select {
+  cursor: pointer;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 500;
+}
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+summary {
+  cursor: pointer;
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+/* 这些内容对辅助阅读工具可读，但视觉上隐藏；跳转链接在获得焦点时重新显示。 */
+.sr-only,
+.skip-link:not(:focus) {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  position: fixed;
+  z-index: 100;
+  top: 8px;
+  left: 8px;
+  background: white;
+  padding: 12px;
+}

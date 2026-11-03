@@ -1,0 +1,187 @@
+{
+  "input": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\.work\\原始模板.docx",
+  "summary": {
+    "paragraph_count": 21,
+    "nonempty_style_counts": {
+      "Normal": 9
+    },
+    "section_count": 2,
+    "style_count": 8,
+    "numbering_count": 0
+  },
+  "styles": {
+    "1": {
+      "style_id": "1",
+      "name": "Normal",
+      "based_on": null,
+      "first_line": null,
+      "first_line_chars": null,
+      "left": null,
+      "right": null,
+      "space_before": null,
+      "space_after": null,
+      "line": null,
+      "line_rule": null,
+      "font_ascii": "Times New Roman",
+      "font_east_asia": "宋体",
+      "size_pt": 10.5
+    },
+    "2": {
+      "style_id": "2",
+      "name": "heading 1",
+      "based_on": "1",
+      "first_line": null,
+      "first_line_chars": null,
+      "left": null,
+      "right": null,
+      "space_before": null,
+      "space_after": null,
+      "line": null,
+      "line_rule": null,
+      "font_ascii": "宋体",
+      "font_east_asia": null,
+      "size_pt": 24.0
+    },
+    "3": {
+      "style_id": "3",
+      "name": "annotation text",
+      "based_on": "1",
+      "first_line": null,
+      "first_line_chars": null,
+      "left": null,
+      "right": null,
+      "space_before": null,
+      "space_after": null,
+      "line": null,
+      "line_rule": null,
+      "font_ascii": null,
+      "font_east_asia": null,
+      "size_pt": null
+    },
+    "4": {
+      "style_id": "4",
+      "name": "Body Text",
+      "based_on": "1",
+      "first_line": null,
+      "first_line_chars": null,
+      "left": null,
+      "right": null,
+      "space_before": null,
+      "space_after": null,
+      "line": null,
+      "line_rule": null,
+      "font_ascii": null,
+      "font_east_asia": null,
+      "size_pt": 12.0
+    }
+  },
+  "numbering": {},
+  "sections": [
+    {
+      "index": 0,
+      "title_pg": false,
+      "page_width_cm": 20.998,
+      "page_height_cm": 29.697,
+      "top_margin_cm": 2.0,
+      "bottom_margin_cm": 2.0,
+      "left_margin_cm": 2.0,
+      "right_margin_cm": 2.0,
+      "pg_num_type": null,
+      "header_refs": [],
+      "footer_refs": [
+        {
+          "type": "even",
+          "target": "footer1.xml"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title_pg": false,
+      "page_width_cm": 20.998,
+      "page_height_cm": 29.697,
+      "top_margin_cm": 2.0,
+      "bottom_margin_cm": 2.0,
+      "left_margin_cm": 2.0,
+      "right_margin_cm": 2.0,
+      "pg_num_type": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}start": "1"
+      },
+      "header_refs": [],
+      "footer_refs": [
+        {
+          "type": "default",
+          "target": "footer2.xml"
+        }
+      ]
+    }
+  ],
+  "flags": {
+    "heading_indent_overrides": [],
+    "paragraphs_with_firstLineChars": [
+      {
+        "index": 7,
+        "style_name": "Normal",
+        "text": "题    目：",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 8,
+        "style_name": "Normal",
+        "text": "",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 9,
+        "style_name": "Normal",
+        "text": "学    院：",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 10,
+        "style_name": "Normal",
+        "text": "专    业：",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 11,
+        "style_name": "Normal",
+        "text": "学生姓名：",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 12,
+        "style_name": "Normal",
+        "text": "学    号：",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 13,
+        "style_name": "Normal",
+        "text": "指导教师：",
+        "firstLineChars": "500"
+      },
+      {
+        "index": 15,
+        "style_name": "Normal",
+        "text": "",
+        "firstLineChars": "100"
+      },
+      {
+        "index": 16,
+        "style_name": "Normal",
+        "text": "",
+        "firstLineChars": "100"
+      },
+      {
+        "index": 18,
+        "style_name": "Normal",
+        "text": "年    月    日",
+        "firstLineChars": "1100"
+      }
+    ],
+    "suspicious_ref_fields": [],
+    "title_pg_sections": []
+  },
+  "paragraph_samples": []
+}

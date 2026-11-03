@@ -1,0 +1,67 @@
+Generation mode: built-in image_gen
+Asset: course-assistant-ui-v1.png
+Design: first-version desktop course QA interface; visual mockup only.
+
+Use case: ui-mockup.
+Create ONE polished high-fidelity Chinese desktop web application UI screenshot for the actual graduation project “基于混合检索增强生成的课程学习助手”. This is a visual design concept, not a running application. Wide landscape 16:10 composition, high resolution, perfectly front-facing flat digital UI, fill the image with the app; no laptop, no device mockup, no perspective, no external annotations, no collage. Make it genuinely beautiful, restrained, and practical to implement.
+
+Design direction: calm academic reading workspace, warm off-white canvas #F6F7F5, white content panels, dark ink #172B32, deep teal primary #0F766E and very pale mint selection, hairline neutral dividers, subtle shadows, restrained 12px corners, ample whitespace, coherent 8px spacing, professional Chinese sans-serif typography like Noto Sans SC with excellent legibility. Line icons, no emojis, no decorative robots, no stock illustrations, no bright gradients, no giant floating cards. Strong hierarchy with readable Chinese body copy and crisp short labels.
+
+Application constraints: ONE preloaded course “智能体系统设计与实现”, fixed PDF “Hello-Agents · V1.0.3”. The six included functions are chapter navigation, course question answering, original source citations, chapter summaries, exercise generation, current-session history. Do NOT show upload buttons, attachment/paperclip icons, login, avatars/profile settings, registration, create-course, course-switching controls, admin dashboard, learning-progress percentages, scores, unsupported analytics, multi-agent graphs or multi-hop reasoning. Do not show irrelevant technical tuning or retrieval scores.
+
+Composition:
+Full-width compact header about 72px: a minimal teal open-book line mark and exact app name “课程学习助手” on the left. To the right of a subtle divider show “智能体系统设计与实现”. Far right a small neutral pill “预置课程” and quiet text button with book icon “查看教材”.
+Below header use three purposeful columns: left sidebar about 250px, center conversation workspace about 850px, right source inspector about 340px. The center is dominant, the source column is visibly secondary but comfortably readable. No browser chrome.
+
+Left sidebar:
+Compact course card with label “当前课程”, title “智能体系统设计与实现”, subline “Hello-Agents · V1.0.3”.
+Four simple stacked navigation links with line icons: “智能问答” selected in pale mint with dark teal text; “章节总结”; “练习自测”; “会话历史”.
+Divider; section header “课程目录” with small caption “16 章”.
+Clearly nested chapter list:
+“01  初识智能体” expanded and highlighted subtly
+   “1.1 什么是智能体”
+   “1.2 智能体的运行机制”
+“02  智能体发展史”
+“03  大语言模型基础”
+“04  智能体经典范式构建”
+“05  基于低代码平台搭建”
+“06  框架开发实践”
+“07  构建你的 Agent 框架”
+“08  记忆与检索”
+A quiet “展开全部章节” link.
+Bottom minimal small caption “资料预置 · 依据教材回答”, not a usage meter.
+
+Center conversation:
+Header “智能问答” in large but not huge bold type. Subline “围绕课程提问，让每个答案都有依据。”
+On the same header row a compact labeled selector “范围：第一章” and a quiet outlined “新会话” button.
+Show ONE complete meaningful conversation, not an empty welcome screen.
+User message in a restrained pale teal rounded bubble aligned right with tiny label “我的问题”, exact text:
+“什么是智能体？它如何与环境交互？”
+Assistant message is a clean editorial white reading area, not a giant colored speech bubble. Small teal book/spark line icon and label “课程助手”, plus a subtle badge “依据教材”.
+Assistant title “理解智能体的基本工作方式”
+Main explanation text, readable and sensibly wrapped:
+“智能体（Agent）能够感知环境，并通过行动与环境交互，以实现特定目标。[1]”
+Subheading “它如何工作？”
+Three ordered compact explanation rows with understated teal circular 01 02 03:
+“感知环境” — “接收来自传感器、用户输入或工具的信息。”
+“决策与规划” — “结合当前信息和任务目标，选择下一步行动。”
+“执行与反馈” — “通过工具或执行器采取行动，再观察环境变化。[2]”
+Add a light tinted horizontal explanation strip with small label “一句话理解” and sentence “感知 → 决策 → 行动 → 新的反馈”.
+After answer, a thin divider, small inline reference chips “[1] 第一章 · 第10页” and “[2] 第一章 · 第17页”. Actions as quiet icons and short labels “复制”, “查看引用”. No thumbs-up leaderboard or invented accuracy badge.
+Below, two understated secondary outline actions “生成本章总结” and “练习一下”.
+Bottom anchored comfortable composer, dark teal focus border or very subtle soft shadow, visible label “向课程资料提问”, placeholder “例如：智能体与普通程序有什么区别？”. Bottom-right filled teal send button with arrow and exact label “发送”. Bottom-left small “Enter 发送 · Shift + Enter 换行”. Do NOT place upload or microphone icons.
+Under composer very small but legible note “回答以当前教材为依据，请结合原文核对。”
+
+Right source inspector:
+Header “资料来源” with small pill “2 条引用”, subline “答案中的依据，可回到原文核对”.
+Two vertically stacked subtle white document cards on slightly tinted background, left teal accent hairline.
+First card: tiny PDF document icon, title “Hello-Agents”, chip “[1]”, secondary text “第一章 初识智能体”, label “1.1 什么是智能体 · PDF 第10页”. Quoted short excerpt:
+“智能体通过传感器感知环境，并通过执行器采取行动。”
+Highlight only the phrases “感知环境” and “采取行动” with a pale mint background. Quiet link button “查看原文 ↗”.
+Second card: title “Hello-Agents”, chip “[2]”, secondary text “第一章 初识智能体”, label “1.2 智能体的运行机制 · PDF 第17页”. Short excerpt:
+“智能体持续与环境交互，行动产生的新观察会成为下一轮的输入。”
+Quiet link “查看原文 ↗”.
+Bottom small source note “资料版本 V1.0.3 · 页码为 PDF 物理页码”.
+
+At extreme bottom-right a discreet caption “UI 设计稿 · 示例内容” to signal this is a mockup.
+Ensure every Chinese label is rendered accurately and cleanly, balanced font hierarchy, excellent text contrast, no overlapping text, no clipped content. Make the answer and its citations the central visual story. Produce a credible shippable software interface, not a promotional poster.

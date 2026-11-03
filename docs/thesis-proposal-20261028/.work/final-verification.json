@@ -1,0 +1,34 @@
+{
+  "checked_on": "2026-10-28",
+  "source_sha256_unchanged": "C413F2D50CB849D6C646FD75036A73735550B1347D8942B499AA373D82559A7B",
+  "documents": [
+    {
+      "path": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_混合检索增强课程学习助手.docx",
+      "sha256": "394011D5C1585D752929A05B3AD4AFCB084A57636940718A47552E81A5BFA9EB",
+      "pages": 9,
+      "size_bytes": 87168,
+      "rendered_pdf": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\.work\\proposal-v3.pdf"
+    },
+    {
+      "path": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\中文文献综述_混合检索增强课程学习助手.docx",
+      "sha256": "2082AA4DA84D97A8FD5C71BF6B470EA20DC2E7F401587DB24E48A483C0AF3006",
+      "pages": 9,
+      "size_bytes": 47755,
+      "rendered_pdf": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\.work\\review-v5.pdf"
+    }
+  ],
+  "references": 15,
+  "chinese_papers": 4,
+  "english_papers": 11,
+  "personal_fields": "保留空白",
+  "approval_text_and_signatures": "沿用模板，未代填",
+  "visual_checks": "报告9页已逐页检查；综述9页已检查，前4页与已检查版本图像哈希一致",
+  "checks": [
+    "DOCX压缩包完整",
+    "15条参考文献编号连续",
+    "审批文本与模板一致",
+    "分节和页边距与模板一致",
+    "JSON和CSV均为15条去重文献",
+    "无示例占位文字或None字段"
+  ]
+}

@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+from pipeline.clean_pdf import page_segments, section_exclusion_reason
+
 CHUNKING_VERSION = 'page-section-char-v1'
 
 
@@ -40,8 +42,7 @@ def chunk_text(cleaned_file: Path, output_file: Path, *, max_chars: int = 1200,
         raise ValueError('max_chars至少100，overlap须在0至max_chars一半之间（不含）。')
     if cleaned_file.resolve() == output_file.resolve():
         raise ValueError('输入与输出文件必须不同。')
-    records = [json.loads(line) for line in cleaned_file.read_text('utf-8').splitlines()
-               if line.strip()]
+    records = [json.loads(line) for line in cleaned_file.read_text('utf-8').splitlines() if line.strip()]
     if not records:
         raise ValueError('输入没有页面记录。')
     # 先验证全部输入，再创建输出，避免混合不同教材或错误偏移污染检索数据。
@@ -54,8 +55,16 @@ def chunk_text(cleaned_file: Path, output_file: Path, *, max_chars: int = 1200,
         previous_page = record['page']
         offset = 0
         for segment in record['segments']:
+            if (section_exclusion_reason(segment.get('section_title'))
+                    or segment.get('content_kind', 'knowledge') != 'knowledge'):
+                raise ValueError('分块输入包含习题、参考文献或其他非知识小节，请先重新清洗。')
             if not offset == segment['char_start'] < segment['char_end'] <= len(record['text']):
                 raise ValueError('节内字符范围无效。')
+            body = record['text'][segment['char_start']:segment['char_end']]
+            inspected, _ = page_segments(body, {'chapter_id': record['chapter_id'], 'sections': []},
+                                         record['page'], None)
+            if any(s['content_kind'] != 'knowledge' for s in inspected):
+                raise ValueError('知识段内仍含独立非知识标题，请先重新清洗。')
             offset = segment['char_end']
         if offset != len(record['text']):
             raise ValueError('节内字符范围未完整覆盖页面。')

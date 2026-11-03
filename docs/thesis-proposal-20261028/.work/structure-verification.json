@@ -1,0 +1,11 @@
+{
+  "source_sha256": "C413F2D50CB849D6C646FD75036A73735550B1347D8942B499AA373D82559A7B",
+  "preserved_parts": 21,
+  "changed_parts": [
+    "word/document.xml",
+    "word/settings.xml"
+  ],
+  "references": 15,
+  "proposal": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_混合检索增强课程学习助手.docx",
+  "review": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\中文文献综述_混合检索增强课程学习助手.docx"
+}

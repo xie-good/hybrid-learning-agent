@@ -1,0 +1,15 @@
+[10/28/26 14:34:08] WARNING  No CORE API key provided. Searches may  core.py:40
+                             be rate-limited or return limited                 
+                             results.                                          
+                    WARNING  No DOAJ API key provided. Searches will doaj.py:48
+                             use public access with rate limits (100           
+                             requests/hour). Get a free API key at:            
+                             https://doaj.org/apply-for-api-key/               
+                    WARNING  PAPER_SEARCH_MCP_UNPAYWALL_EMAIL/U unpaywall.py:29
+                             NPAYWALL_EMAIL not configured.                    
+                             Unpaywall fallback will be                        
+                             skipped. You can request free                     
+                             access at                                         
+                             https://unpaywall.org/products/api                
+[10/28/26 14:34:13] WARNING  DOI not found in CrossRef:         crossref.py:306
+                             10.11959/j.issn.2096-0271.2025062                 

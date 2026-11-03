@@ -1,0 +1,17 @@
+{
+  "command": [
+    "paper-search",
+    "search",
+    "all:\"retrieval augmented generation\" AND (all:tutor OR all:course OR all:education)",
+    "-n",
+    "12",
+    "-s",
+    "arxiv",
+    "--source-timeout",
+    "35"
+  ],
+  "exit_status": 0,
+  "seconds": 36.39,
+  "stdout": "{\n  \"query\": \"all:\\\"retrieval augmented generation\\\" AND (all:tutor OR all:course OR all:education)\",\n  \"sources_used\": [\n    \"arxiv\"\n  ],\n  \"source_results\": {\n    \"arxiv\": 0\n  },\n  \"errors\": {\n    \"arxiv\": \"search for source 'arxiv' timed out after 35 seconds\"\n  },\n  \"total\": 0,\n  \"papers\": []\n}\n",
+  "stderr": ""
+}

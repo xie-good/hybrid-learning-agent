@@ -1,0 +1,619 @@
+/* 响应式：保留原有大桌面、笔记本、平板、手机断点和减少动态效果的规则顺序。 */
+/* 大桌面：增加内边距和内容尺寸，避免宽屏时所有元素挤在页面左上角。 */
+@media (min-width: 1550px) {
+  .main-content {
+    padding: 40px 55px 0;
+  }
+  .hero {
+    min-height: 322px;
+  }
+  .hero-content {
+    padding: 34px 42px;
+  }
+  .hero h2 {
+    font-size: 37px;
+  }
+  .hero p {
+    font-size: 12px;
+  }
+  .hero-art {
+    margin-right: 25px;
+  }
+  .book-object {
+    top: 52px;
+    transform: translateX(-50%) rotate(-12deg) scale(1.1);
+  }
+  .workbench-grid {
+    grid-template-columns: minmax(0, 1fr) 302px;
+  }
+  .chapter-card {
+    padding: 21px 21px 0;
+  }
+  .chapter-card h3 {
+    font-size: 14px;
+  }
+  .chapter-card > p {
+    font-size: 11px;
+    height: 39px;
+  }
+  .chapter-card-bottom {
+    font-size: 9px;
+  }
+  .path-card {
+    padding: 25px 25px 0;
+  }
+  .learning-steps button {
+    padding: 15px 0;
+  }
+  .learning-steps strong {
+    font-size: 12px;
+  }
+  .learning-steps small {
+    font-size: 10px;
+  }
+  .stats-grid {
+    margin: 23px 0 32px;
+  }
+  .stat-card {
+    min-height: 117px;
+  }
+  .hero-actions {
+    margin-top: 24px;
+  }
+  .page-heading {
+    margin-bottom: 30px;
+  }
+}
+/* 普通笔记本：缩小侧栏与间距，仍保持左右分栏。 */
+@media (max-width: 1190px) {
+  .sidebar {
+    width: 210px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .app-shell {
+    margin-left: 210px;
+  }
+  .main-content {
+    padding: 28px 25px 0;
+  }
+  .topbar {
+    padding: 0 25px;
+  }
+  .hero-content {
+    padding: 27px;
+  }
+  .hero h2 {
+    font-size: 28px;
+  }
+  .hero-art {
+    min-width: 240px;
+  }
+  .stat-card {
+    padding: 17px 15px;
+    gap: 11px;
+  }
+  .stat-icon {
+    width: 39px;
+    height: 39px;
+  }
+  .stat-note {
+    display: none;
+  }
+  .stat-link {
+    font-size: 8px;
+  }
+  .workbench-grid {
+    grid-template-columns: minmax(0, 1fr) 235px;
+    gap: 20px;
+  }
+  .path-card {
+    padding: 19px 16px 0;
+  }
+  .chapter-card {
+    padding: 14px 13px 0;
+  }
+  .chapter-card-bottom {
+    font-size: 7px;
+  }
+  .chapter-card-bottom button {
+    width: 25px;
+    height: 25px;
+  }
+  .learning-layout {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 20px;
+  }
+  .tip-panel {
+    padding: 20px;
+  }
+  .hero-secondary {
+    gap: 6px;
+  }
+  .hero-actions {
+    gap: 15px;
+  }
+  .label-knowledge {
+    right: 3%;
+  }
+  .label-evidence {
+    left: 0;
+  }
+}
+/* 中等屏幕：目录独占一行，工作台的右栏卡片移到下方；学习页提示栏隐藏。 */
+@media (max-width: 1000px) {
+  .workbench-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .right-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .hero-art {
+    min-width: 210px;
+    width: 37%;
+  }
+  .hero h2 {
+    font-size: 26px;
+  }
+  .hero-content {
+    padding: 25px;
+  }
+  .hero-secondary {
+    font-size: 9px;
+  }
+  .hero-actions {
+    gap: 12px;
+  }
+  .hero-art .label-knowledge {
+    top: 42px;
+  }
+  .stat-card {
+    gap: 9px;
+    padding: 16px 13px;
+  }
+  .stat-link {
+    display: none;
+  }
+  .stat-card strong {
+    font-size: 24px;
+  }
+  .learning-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .learning-aside {
+    display: none;
+  }
+  .heading-badge {
+    display: none;
+  }
+  .recent-empty {
+    padding: 30px 0;
+  }
+  .chapter-card-bottom {
+    font-size: 9px;
+  }
+}
+/* 平板/手机：侧栏改为抽屉，由 App.vue 的 drawer 状态控制 .open 类。 */
+@media (max-width: 760px) {
+  .sidebar {
+    width: 234px;
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: #132f2866;
+    z-index: 25;
+  }
+  .app-shell {
+    margin-left: 0;
+  }
+  .mobile-menu {
+    display: inline-flex;
+  }
+  .topbar {
+    height: 61px;
+    padding: 0 22px;
+  }
+  .breadcrumb {
+    gap: 11px;
+  }
+  .topbar-right {
+    gap: 14px;
+  }
+  .main-content {
+    padding: 27px 22px 0;
+  }
+  .page-heading {
+    margin-bottom: 23px;
+  }
+  h1 {
+    font-size: 26px;
+  }
+  .page-heading p {
+    font-size: 11px;
+  }
+  .eyebrow {
+    font-size: 8px;
+  }
+  .hero {
+    min-height: 270px;
+  }
+  .hero-content {
+    padding: 25px;
+  }
+  .hero-art {
+    min-width: 225px;
+  }
+  .hero h2 {
+    font-size: 29px;
+  }
+  .hero p {
+    font-size: 10px;
+  }
+  .hero-tag {
+    font-size: 8px;
+  }
+  .hero-primary {
+    font-size: 10px;
+  }
+  .stat-card {
+    gap: 12px;
+    padding: 17px;
+  }
+  .stat-card strong {
+    font-size: 26px;
+  }
+  .stat-card > div > span {
+    font-size: 10px;
+  }
+  .chapter-card {
+    padding: 18px 18px 0;
+  }
+  .chapter-card > p {
+    font-size: 10px;
+    height: 36px;
+  }
+  .chapter-card h3 {
+    font-size: 14px;
+  }
+  .workbench-grid {
+    gap: 24px;
+  }
+  .chapter-grid {
+    gap: 15px;
+  }
+  .hero-secondary {
+    display: none;
+  }
+  .message {
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  .sidebar-course {
+    margin-top: 23px;
+  }
+  .study-note {
+    padding-top: 25px;
+  }
+  .page-footer {
+    font-size: 7px;
+  }
+  .form-grid {
+    gap: 12px;
+  }
+}
+/* 窄手机：表单改为单列，按钮与记录工具栏纵向排布，减少横向溢出。 */
+@media (max-width: 520px) {
+  .main-content {
+    padding: 23px 16px 0;
+  }
+  .topbar {
+    padding: 0 13px;
+  }
+  .topbar-right {
+    gap: 10px;
+  }
+  .topbar-divider {
+    display: none;
+  }
+  .breadcrumb {
+    gap: 8px;
+  }
+  .service-status {
+    font-size: 9px;
+  }
+  .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1.5px;
+  }
+  .page-heading p {
+    font-size: 10px;
+  }
+  h1 {
+    font-size: 25px;
+  }
+  .hero {
+    min-height: 293px;
+  }
+  .hero-content {
+    padding: 24px 21px;
+    max-width: 100%;
+  }
+  .hero h2 {
+    font-size: 28px;
+    letter-spacing: 1px;
+    margin-top: 16px;
+  }
+  .hero p {
+    font-size: 10px;
+    max-width: 220px;
+    line-height: 1.9;
+    margin-top: 13px;
+  }
+  .hero-actions {
+    margin-top: 23px;
+  }
+  .hero-tag {
+    font-size: 7px;
+    letter-spacing: 0.4px;
+  }
+  .hero-art {
+    position: absolute;
+    right: -45px;
+    bottom: -14px;
+    min-width: 0;
+    width: 180px;
+    height: 190px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .book-object {
+    transform: translateX(-50%) rotate(-14deg) scale(0.65);
+    top: 10px;
+  }
+  .orbit-one {
+    width: 210px;
+    margin-left: -105px;
+    height: 120px;
+    top: 50px;
+  }
+  .orbit-two {
+    width: 160px;
+    height: 160px;
+    margin-left: -80px;
+    top: 0;
+  }
+  .hero-art .floating-label,
+  .art-caption,
+  .art-dot {
+    display: none;
+  }
+  .stats-grid {
+    gap: 8px;
+    margin: 13px 0 27px;
+  }
+  .stat-card {
+    padding: 13px 11px;
+    gap: 9px;
+    min-height: 105px;
+    align-items: flex-start;
+    flex-direction: column;
+    border-radius: 9px;
+  }
+  .stat-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+  .stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .stat-card > div > span {
+    font-size: 9px;
+  }
+  .stat-card strong {
+    font-size: 23px;
+    line-height: 1.3;
+    margin-top: 3px;
+  }
+  .stat-card strong small {
+    font-size: 9px;
+    margin-left: 5px;
+  }
+  .section-heading h2 {
+    font-size: 15px;
+  }
+  .section-heading p {
+    font-size: 10px;
+  }
+  .text-button {
+    font-size: 9px;
+  }
+  .chapter-grid {
+    gap: 10px;
+  }
+  .chapter-card {
+    padding: 13px 12px 0;
+  }
+  .chapter-card h3 {
+    font-size: 12px;
+    line-height: 1.7;
+    min-height: 40px;
+    margin-top: 9px;
+  }
+  .chapter-card > p {
+    font-size: 9px;
+    line-height: 1.7;
+    height: 31px;
+    margin-top: 5px;
+    margin-bottom: 12px;
+  }
+  .chapter-card-bottom {
+    font-size: 7px;
+    position: relative;
+    padding: 11px 0 13px;
+  }
+  .chapter-card-bottom button {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .muted-dot {
+    padding: 0 1px;
+  }
+  .chapter-number {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+  .chapter-pages {
+    font-size: 7px;
+  }
+  .catalog-footer {
+    font-size: 8px;
+  }
+  .right-column {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .path-card {
+    padding: 22px 22px 0;
+  }
+  .learning-steps button {
+    padding: 12px 0;
+  }
+  .learning-steps strong {
+    font-size: 12px;
+  }
+  .learning-steps small {
+    font-size: 10px;
+  }
+  .recent-empty {
+    padding: 17px 0 5px;
+  }
+  .page-footer {
+    margin-top: 25px;
+    gap: 8px;
+  }
+  .page-footer > span:last-child {
+    font-size: 6px;
+    letter-spacing: 0.3px;
+  }
+  .footer-mark {
+    margin-right: 4px;
+    font-size: 9px;
+  }
+  .panel {
+    padding: 18px;
+    border-radius: 9px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .action-panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .action-panel .button {
+    width: 100%;
+    margin-top: 6px;
+  }
+  .result-kicker {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .result-kicker .pill {
+    font-size: 8px;
+  }
+  .prose {
+    font-size: 12px;
+  }
+  .quiz-options label {
+    font-size: 11px;
+  }
+  .history-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .history-toolbar h3 {
+    font-size: 13px;
+  }
+  .history-toolbar p {
+    font-size: 10px;
+  }
+  .history-item > summary {
+    padding: 17px 15px;
+    gap: 10px;
+  }
+  .history-item-title {
+    font-size: 12px;
+  }
+  .history-item-title small {
+    font-size: 9px;
+  }
+  .history-answer {
+    padding: 8px 17px 20px;
+  }
+  .history-item-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+  .history-bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pagination {
+    justify-content: space-between;
+  }
+  .clear-history {
+    justify-content: flex-end;
+  }
+  .question-types {
+    gap: 20px;
+  }
+  .source-item > summary {
+    font-size: 10px;
+  }
+  .message > .text-button {
+    margin-left: auto;
+  }
+  .source-body {
+    padding: 12px;
+  }
+  .coverage pre {
+    font-size: 9px;
+  }
+  .learning-placeholder {
+    padding: 40px 15px;
+  }
+  .button-group .button {
+    width: 100%;
+  }
+  .question-footer .button {
+    font-size: 11px;
+  }
+  .quiz-question .tiny-label {
+    font-size: 9px;
+  }
+}
+/* 用户选择减少动态效果时，停用过渡并缩短动画；业务状态仍由文字提示。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation-duration: 0.01ms !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

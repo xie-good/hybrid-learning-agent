@@ -1,0 +1,41 @@
+DOCX / OOXML Thesis Audit Report
+input: F:\桌面\毕设\docs\thesis-proposal-20261028\.work\原始模板.docx
+
+Summary
+- paragraphs: 21
+- sections: 2
+- paragraph styles: 8
+- numbering definitions: 0
+
+Style Counts
+- Normal: 9
+
+Risk Flags
+- heading_indent_overrides: 0
+- paragraphs_with_firstLineChars: 10
+- suspicious_ref_fields: 0
+- title_pg_sections: 0
+
+Paragraphs With firstLineChars
+- para 7 | Normal | firstLineChars=500 | 题    目：
+- para 8 | Normal | firstLineChars=500 | 
+- para 9 | Normal | firstLineChars=500 | 学    院：
+- para 10 | Normal | firstLineChars=500 | 专    业：
+- para 11 | Normal | firstLineChars=500 | 学生姓名：
+- para 12 | Normal | firstLineChars=500 | 学    号：
+- para 13 | Normal | firstLineChars=500 | 指导教师：
+- para 15 | Normal | firstLineChars=100 | 
+- para 16 | Normal | firstLineChars=100 | 
+- para 18 | Normal | firstLineChars=1100 | 年    月    日
+
+Tracked Styles
+- styleId 1 | Normal | basedOn=None | firstLine=None | firstLineChars=None | left=None | right=None
+- styleId 2 | heading 1 | basedOn=1 | firstLine=None | firstLineChars=None | left=None | right=None
+- styleId 3 | annotation text | basedOn=1 | firstLine=None | firstLineChars=None | left=None | right=None
+- styleId 4 | Body Text | basedOn=1 | firstLine=None | firstLineChars=None | left=None | right=None
+
+Section Summary
+- section 0 | titlePg=False | margins(cm)=2.0,2.0,2.0,2.0 | pageNum=None
+- section 1 | titlePg=False | margins(cm)=2.0,2.0,2.0,2.0 | pageNum={'{http://schemas.openxmlformats.org/wordprocessingml/2006/main}start': '1'}
+
+Paragraph Samples

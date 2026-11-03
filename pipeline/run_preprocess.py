@@ -42,15 +42,16 @@ def preprocess(source: Path, output_dir: Path, *, start_page: int | None = None,
             f"- 正文：PDF物理页{report['start_page']}—{report['end_page']}，"
             f"{report['chapter_count']}章，{report['chunk_count']}块。\n"
             '- 收录范围：仅第1—12章；第13—16章的综合案例进阶、毕业设计全部排除。\n'
+            '- 内容范围：只收录知识讲解、教学示例代码与知识图注；习题、独立参考文献、社区交流整节排除。\n'
             '- `cleaned.txt`：人工抽查正文；保留代码换行和缩进，不保证代码可运行。\n'
-            '- `pages.jsonl`：原始提取文本、清洗文本、页码、章节与节内字符范围。\n'
+            '- `pages.jsonl`：知识文本、连续节内偏移，以及源页文本/保留映射/排除范围审计；纯非知识页保留空页记录。\n'
             '- `chapters.json`：书签章节目录和原始/本次包含的页码范围。\n'
             '- `chunks.jsonl`：后续检索输入，包含块ID、数据版本、章/节、页码与字符偏移。\n'
-            '- `report.json`：来源哈希、参数、计数与待复核页。\n\n'
+            '- `report.json`：来源哈希、参数、知识计数、排除小节/页/字符数与待复核页。\n\n'
             '第一版按页/节切块，默认最多1200字符、重叠150字符；不跨页拼接。'
             '具体参数以report.json为准。图表只提取可读取的文字/图注，不做OCR。'
             'image_resource是保守资源提示，不代表图片已识别；hard_split表示无合适边界时硬切。'
-            '未构建BM25或向量索引，知识库状态仍为未就绪。\n', 'utf-8')
+            '本步骤不构建BM25或向量索引；已有索引须按新数据版本重建。\n', 'utf-8')
         output_dir.mkdir(parents=True, exist_ok=True)
         # 每个文件同盘replace；六文件不是整体事务，发布后按report版本核验。
         for name in OUTPUT_NAMES:

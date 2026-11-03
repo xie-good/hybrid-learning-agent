@@ -1,0 +1,8 @@
+{"case_id":"sample-definition","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"什么是智能体？","answerable":true,"expected_section_ids":["ch01-s001"]}
+{"case_id":"sample-peas","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"PEAS模型是什么？","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"sample-weather","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"get_weather","answerable":true,"expected_section_ids":["ch01-s003"]}
+{"case_id":"sample-attraction","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"get_attraction","answerable":true,"expected_section_ids":["ch01-s003"]}
+{"case_id":"sample-scope","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"PEAS","chapter_id":"ch01","section_id":"ch01-s002","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"sample-outside-quantum","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"如何训练量子隐形传态模型？","answerable":false,"expected_section_ids":[]}
+{"case_id":"sample-outside-tax","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"今年个人所得税怎么申报？","answerable":false,"expected_section_ids":[]}
+{"case_id":"sample-outside-bm25","dataset_version":"ba0e75f4bc5dcdf1","split":"validation","question":"BM25如何计算逆文档频率？","answerable":false,"expected_section_ids":[]}

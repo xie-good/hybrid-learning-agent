@@ -1,0 +1,88 @@
+{
+  "source": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_精简版.docx",
+  "output": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_精简版_中文文献版.docx",
+  "source_sha256": "B85AFA5871F784055DBD17A7CFC87396DBB6B203B39153B901D792B3A31079BA",
+  "output_sha256": "3D868A03C5F81D57D2C1712C987AD8E240E23BE780265F0136FE17087465902F",
+  "source_unchanged": true,
+  "backup_verified": true,
+  "before": {
+    "total": 10,
+    "chinese": 3,
+    "english": 7,
+    "chinese_percent": 30
+  },
+  "after": {
+    "total": 10,
+    "chinese": 7,
+    "english": 3,
+    "chinese_percent": 70
+  },
+  "changed_paragraph_count": 13,
+  "changed_parts": [
+    "word/document.xml"
+  ],
+  "all_nontext_xml_unchanged": true,
+  "all_references_cited_in_order": true,
+  "zip_validation": "OK",
+  "changes": [
+    {
+      "before": "本课题面向固定课程教材，设计集问答、章节总结、练习和引用核查于一体的学习助手，帮助学习者查找知识、回顾章节并核对答案来源。教育检索增强生成研究为这类应用提供了方法参照[1]。",
+      "after": "本课题面向固定课程教材，设计集问答、章节总结、练习和引用核查于一体的学习助手，帮助学习者查找知识、回顾章节并核对答案来源。已有课程知识问答与智能导学研究为这类应用提供了实践参照[1][2]。"
+    },
+    {
+      "before": "国外研究已形成检索与生成结合的RAG框架[2]。BM25适合关键词匹配[3]，DPR等稠密检索方法支持语义匹配[4]，RRF通过合并排名融合多路结果[5]。这些方法为课程问答提供了技术基础，但实际效果仍需在指定教材上验证。",
+      "after": "国内研究从信息检索流程[3]、检索增强策略[4]、教育问答证据筛选[5]和检索粒度[6]等角度提出改进思路。多模态文档问答研究也关注证据可追溯性与评测问题[7]，本课题仅借鉴相关思路，研究范围仍以教材文本为主。"
+    },
+    {
+      "before": "国内研究关注RAG流程优化[6]、教育问答中的证据筛选[7]和检索粒度[8]。评价研究进一步区分引用是否存在与引用是否支持结论[9]，并提出自动化辅助评价方法[10]。因此，本课题将数据处理、检索效果和引用可靠性分别验证，避免仅凭回答流畅程度判断效果。",
+      "after": "国外研究提出将检索结果与语言模型结合的RAG框架[8]。BM25为关键词匹配提供基础[9]，RRF通过融合多路排名组织候选结果[10]。这些方法构成本课题的技术参照，实际检索效果和引用可靠性仍需在指定教材上验证。"
+    },
+    {
+      "before": "[1] LI Z, WANG Z, WANG W, et al. Retrieval-augmented generation for educational application: A systematic survey[J]. Computers and Education: Artificial Intelligence, 2025, 8: 100417. DOI: 10.1016/j.caeai.2025.100417.",
+      "after": "[1] 梅忆寒, 王琳琳, 王鹏飞, 等. 基于多模态与检索增强生成的数据库知识问答系统[J]. 计算机教育, 2024(12): 232-237. DOI:10.16512/j.cnki.jsjjy.2024.12.023."
+    },
+    {
+      "before": "[2] LEWIS P, PEREZ E, PIKTUS A, et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks[C]//Advances in Neural Information Processing Systems. 2020, 33: 9459-9474. https://proceedings.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html",
+      "after": "[2] 杜修平, 王崟羽. 检索增强生成赋能智能导学系统构建研究——基于本地大模型与私有知识库[J]. 中国电化教育, 2025(5): 117-127."
+    },
+    {
+      "before": "[3] ROBERTSON S, ZARAGOZA H. The Probabilistic Relevance Framework: BM25 and Beyond[J]. Foundations and Trends in Information Retrieval, 2009, 3(4): 333-389. DOI: 10.1561/1500000019.",
+      "after": "[3] 庞亮, 邓竞成, 顾佳, 等. 大语言模型时代的信息检索综述[C]//第二十三届中国计算语言学大会论文集（卷2：前沿综述）. 太原: 中国中文信息学会, 2024: 98-119. https://aclanthology.org/2024.ccl-2.6/"
+    },
+    {
+      "before": "[4] KARPUKHIN V, OGUZ B, MIN S, et al. Dense Passage Retrieval for Open-Domain Question Answering[C]//Proceedings of EMNLP 2020. 2020: 6769-6781. DOI: 10.18653/v1/2020.emnlp-main.550.",
+      "after": "[4] 冯掌印, 朱坤, 马伟涛, 等. 浅谈大模型时代下的检索增强：发展趋势、挑战与展望[C]//第二十三届中国计算语言学大会论文集（卷2：前沿综述）. 太原: 中国中文信息学会, 2024: 151-168. https://aclanthology.org/2024.ccl-2.9/"
+    },
+    {
+      "before": "[5] CORMACK G V, CLARKE C L A, BÜTTCHER S. Reciprocal rank fusion outperforms condorcet and individual rank learning methods[C]//Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval. 2009: 758-759. DOI: 10.1145/1571941.1572114.",
+      "after": "[5] 孙浩然, 王志豪, 吴一帆, 等. 基于重排序和后检索反思的教育大模型问答增强方法[J]. 大数据, 2025, 11(5): 4-17. DOI:10.11959/j.issn.2096-0271.2025062."
+    },
+    {
+      "before": "[6] 冯掌印, 朱坤, 马伟涛, 等. 浅谈大模型时代下的检索增强：发展趋势、挑战与展望[C]//第二十三届中国计算语言学大会论文集（卷2：前沿综述）. 太原: 中国中文信息学会, 2024: 151-168. https://aclanthology.org/2024.ccl-2.9/",
+      "after": "[6] 宋宇昕, 柳林, 王海龙, 等. 面向检索粒度的检索增强生成技术研究综述[J]. 数据分析与知识发现, 2026, 10(2): 23-40. DOI:10.11925/infotech.2096-3467.2025.0349."
+    },
+    {
+      "before": "[7] 孙浩然, 王志豪, 吴一帆, 等. 基于重排序和后检索反思的教育大模型问答增强方法[J]. 大数据, 2025, 11(5): 4-17. DOI:10.11959/j.issn.2096-0271.2025062.",
+      "after": "[7] 李泽鸣, 王树良, 尚子贺, 盛明. 多模态检索增强生成驱动的文档问答综述(特邀)[J]. 计算机工程, 2026, 52(4): 1-21. DOI:10.19678/j.issn.1000-3428.0260043."
+    },
+    {
+      "before": "[8] 宋宇昕, 柳林, 王海龙, 等. 面向检索粒度的检索增强生成技术研究综述[J]. 数据分析与知识发现, 2026, 10(2): 23-40. DOI:10.11925/infotech.2096-3467.2025.0349.",
+      "after": "[8] LEWIS P, PEREZ E, PIKTUS A, et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks[C]//Advances in Neural Information Processing Systems. 2020, 33: 9459-9474. https://proceedings.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html"
+    },
+    {
+      "before": "[9] GAO T, YEN H, YU J, et al. Enabling Large Language Models to Generate Text with Citations[C]//Proceedings of EMNLP 2023. 2023: 6465-6488. DOI: 10.18653/v1/2023.emnlp-main.398.",
+      "after": "[9] ROBERTSON S, ZARAGOZA H. The Probabilistic Relevance Framework: BM25 and Beyond[J]. Foundations and Trends in Information Retrieval, 2009, 3(4): 333-389. DOI: 10.1561/1500000019."
+    },
+    {
+      "before": "[10] ES S, JAMES J, ESPINOSA ANKE L, et al. RAGAs: Automated Evaluation of Retrieval Augmented Generation[C]//Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics: System Demonstrations. 2024: 150-158. DOI: 10.18653/v1/2024.eacl-demo.16.",
+      "after": "[10] CORMACK G V, CLARKE C L A, BÜTTCHER S. Reciprocal rank fusion outperforms condorcet and individual rank learning methods[C]//Proceedings of the 32nd International ACM SIGIR Conference on Research and Development in Information Retrieval. 2009: 758-759. DOI: 10.1145/1571941.1572114."
+    }
+  ],
+  "word_open_and_pdf_export": "PASS",
+  "word_export_exit_status": 0,
+  "pdf_preview": "F:\\桌面\\毕设\\docs\\thesis-proposal-20261028\\开题报告_精简版_中文文献版.pdf",
+  "pdf_pages": 5,
+  "visual_review_all_pages": "PASS",
+  "visual_review_notes": "5页均已查看，封面、参考文献跨页、正文、审批页无文字裁切和重叠。",
+  "output_unchanged_after_word_export": true
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "paper-search",
+    "search",
+    "CHSR-RRF curriculum-gated hybrid retrieval reciprocal rank fusion",
+    "-n",
+    "3",
+    "-s",
+    "openalex",
+    "--source-timeout",
+    "25"
+  ],
+  "exit_status": 0,
+  "stdout": "{\n  \"query\": \"CHSR-RRF curriculum-gated hybrid retrieval reciprocal rank fusion\",\n  \"sources_used\": [\n    \"openalex\"\n  ],\n  \"source_results\": {\n    \"openalex\": 1\n  },\n  \"errors\": {},\n  \"total\": 1,\n  \"papers\": [\n    {\n      \"paper_id\": \"W7208739582\",\n      \"title\": \"CHSR-RRF: A curriculum-gated hybrid retrieval framework with reciprocal rank fusion and leakage-aware benchmarking for educational RAG\",\n      \"authors\": \"Terence Ateya; Zavier Ndum Ndum; Jicheng Fu; Kelly Tendongkeng\",\n      \"abstract\": \"Retrieval-augmented generation (RAG) is increasingly used in educational question answering, but standard retrievers optimize topical relevance without enforcing curriculum validity. In school settings, a passage can be relevant yet inappropriate if it comes from the wrong subject, level, or examination context; we call this failure mode curriculum leakage. We present CHSR-RRF, a curriculum-gated hybrid retrieval framework that applies metadata constraints before retrieval, then combines sparse and dense search with reciprocal rank fusion and deterministic reranking. We also introduce CERB, a 126-case benchmark for curriculum-constrained retrieval with hierarchy-aware relevance labels and explicit leakage annotations. On a 61-case pilot, pre-retrieval gating reduces leakage by 4.6x ($p<0.001$) while preserving ranked recall, whereas applying the same constraints after retrieval collapses recall and exact-scope success to zero ($p=0.039$). A full-benchmark lower-bound analysis further shows that many remaining failures arise from corpus and metadata gaps rather than retrieval design alone. These results show that retrieval in structured educational domains should be treated as constrained selection, with validity enforced when the candidate pool is formed rather than after ranking.\",\n      \"doi\": \"10.48550/arxiv.2609.02913\",\n      \"published_date\": \"2026-07-14T00:00:00\",\n      \"pdf_url\": \"https://arxiv.org/pdf/2609.02913\",\n      \"url\": \"https://arxiv.org/abs/2609.02913\",\n      \"source\": \"openalex\",\n      \"updated_date\": \"\",\n      \"categories\": \"Computer science; Reciprocal; Relevance (law); Benchmark (surveying); Benchmarking\",\n      \"keywords\": \"\",\n      \"citations\": 0,\n      \"references\": \"\",\n      \"extra\": \"{'is_oa': True, 'pdf_is_direct': True}\"\n    }\n  ]\n}\n",
+  "stderr": ""
+}

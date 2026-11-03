@@ -6,7 +6,6 @@ __pycache__/
 .idea/
 .jbeval/
 tmp/
-git/
 docs/.scaffold-evidence/
 docs/.preprocess-evidence/
 
@@ -15,3 +14,13 @@ data/raw/*
 data/processed/*
 data/indexes/*
 !data/**/README.md
+
+data/runtime/
+docs/.api-evidence-20261025/
+
+# Vue 前端构建、依赖与浏览器验证产物。
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+.playwright-cli/
+output/playwright/

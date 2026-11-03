@@ -1,0 +1,17 @@
+/* 公共动画：请求等待图标及旋转关键帧；减少动态效果的覆盖在响应式模块末尾。 */
+/* 通用请求进度动画；页面底部会尊重用户系统的“减少动态效果”设置。 */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,20 @@
+{"case_id":"cal-ch01-components","dataset_version":"caeb372d8f756b87","split":"calibration","question":"智能体的核心构成与运行过程是什么？","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"cal-ch03-attention","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Transformer 架构中的自注意力机制如何工作？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"cal-ch04-react","dataset_version":"caeb372d8f756b87","split":"calibration","question":"ReAct 如何结合推理与行动？","answerable":true,"expected_section_ids":["ch04-s002"]}
+{"case_id":"cal-ch08-rag","dataset_version":"caeb372d8f756b87","split":"calibration","question":"RAG 系统如何实现知识检索增强？","answerable":true,"expected_section_ids":["ch08-s003"]}
+{"case_id":"cal-ch10-mcp","dataset_version":"caeb372d8f756b87","split":"calibration","question":"MCP 协议如何让智能体调用外部工具？","answerable":true,"expected_section_ids":["ch10-s002"]}
+{"case_id":"cal-ch12-bfcl","dataset_version":"caeb372d8f756b87","split":"calibration","question":"BFCL 如何评估模型的工具调用能力？","answerable":true,"expected_section_ids":["ch12-s002"]}
+{"case_id":"cal-outside-major","dataset_version":"caeb372d8f756b87","split":"calibration","question":"怎样选择合适的大学专业？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-outside-quantum","dataset_version":"caeb372d8f756b87","split":"calibration","question":"量子纠缠是否允许超光速通信？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-outside-bread","dataset_version":"caeb372d8f756b87","split":"calibration","question":"如何制作法式可颂面包？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch02-symbolic","dataset_version":"caeb372d8f756b87","split":"regression","question":"基于符号与逻辑的早期智能体有什么特点？","answerable":true,"expected_section_ids":["ch02-s001"]}
+{"case_id":"reg-ch05-dify","dataset_version":"caeb372d8f756b87","split":"regression","question":"Dify 平台提供了哪些智能体搭建能力？","answerable":true,"expected_section_ids":["ch05-s003"]}
+{"case_id":"reg-ch06-langgraph","dataset_version":"caeb372d8f756b87","split":"regression","question":"LangGraph 如何组织有状态的智能体工作流？","answerable":true,"expected_section_ids":["ch06-s005"]}
+{"case_id":"reg-ch07-tools","dataset_version":"caeb372d8f756b87","split":"regression","question":"HelloAgents 框架的工具系统如何组织和执行工具？","answerable":true,"expected_section_ids":["ch07-s005"]}
+{"case_id":"reg-ch09-contextbuilder","dataset_version":"caeb372d8f756b87","split":"regression","question":"ContextBuilder 在上下文工程中承担什么职责？","answerable":true,"expected_section_ids":["ch09-s003"]}
+{"case_id":"reg-ch11-grpo","dataset_version":"caeb372d8f756b87","split":"regression","question":"GRPO 训练的核心思想是什么？","answerable":true,"expected_section_ids":["ch11-s004"]}
+{"case_id":"reg-ch04-compare","dataset_version":"caeb372d8f756b87","split":"regression","question":"ReAct 与 Plan-and-Solve 的方法有什么区别？","answerable":true,"expected_section_ids":["ch04-s002","ch04-s003"]}
+{"case_id":"reg-ch10-protocols","dataset_version":"caeb372d8f756b87","split":"regression","question":"A2A 协议与 ANP 协议分别解决什么问题？","answerable":true,"expected_section_ids":["ch10-s003","ch10-s004"]}
+{"case_id":"reg-outside-medical","dataset_version":"caeb372d8f756b87","split":"regression","question":"高血压患者应该怎样调整降压药剂量？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-outside-travel","dataset_version":"caeb372d8f756b87","split":"regression","question":"旅行助手如何规划酒店和交通路线？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-outside-rust","dataset_version":"caeb372d8f756b87","split":"regression","question":"Rust 所有权模型怎样避免悬垂指针？","answerable":false,"expected_section_ids":[]}

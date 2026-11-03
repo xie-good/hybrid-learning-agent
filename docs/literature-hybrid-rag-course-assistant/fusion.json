@@ -1,0 +1,16 @@
+{
+  "command": [
+    "paper-search",
+    "search",
+    "Reciprocal rank fusion outperforms condorcet individual rank learning methods",
+    "-n",
+    "3",
+    "-s",
+    "crossref",
+    "--source-timeout",
+    "30"
+  ],
+  "exit_status": 0,
+  "stdout": "{\n  \"query\": \"Reciprocal rank fusion outperforms condorcet individual rank learning methods\",\n  \"sources_used\": [\n    \"crossref\"\n  ],\n  \"source_results\": {\n    \"crossref\": 3\n  },\n  \"errors\": {},\n  \"total\": 3,\n  \"papers\": [\n    {\n      \"paper_id\": \"10.1145/1571941.1572114\",\n      \"title\": \"Reciprocal rank fusion outperforms condorcet and individual rank learning methods\",\n      \"authors\": \"Gordon V. Cormack; Charles L A Clarke; Stefan Buettcher\",\n      \"abstract\": \"\",\n      \"doi\": \"10.1145/1571941.1572114\",\n      \"published_date\": \"2009-07-19T00:00:00\",\n      \"pdf_url\": \"\",\n      \"url\": \"https://doi.org/10.1145/1571941.1572114\",\n      \"source\": \"crossref\",\n      \"updated_date\": \"\",\n      \"categories\": \"proceedings-article\",\n      \"keywords\": \"\",\n      \"citations\": 688,\n      \"references\": \"\",\n      \"extra\": \"{'publisher': 'ACM', 'container_title': 'Proceedings of the 32nd international ACM SIGIR conference on Research and development in information retrieval', 'volume': '', 'issue': '', 'page': '758-759', 'issn': [], 'isbn': [], 'crossref_type': 'proceedings-article', 'member': '320', 'prefix': '10.1145'}\"\n    },\n    {\n      \"paper_id\": \"10.1109/iranianmvip.2013.6780012\",\n      \"title\": \"Integration of short term learning methods for image retrieval by reciprocal rank fusion\",\n      \"authors\": \"Bahareh Bagheri; Maryam Pourmahyabadi; Hossein Nezamabadi-pour\",\n      \"abstract\": \"\",\n      \"doi\": \"10.1109/iranianmvip.2013.6780012\",\n      \"published_date\": \"2013-09-01T00:00:00\",\n      \"pdf_url\": \"\",\n      \"url\": \"https://doi.org/10.1109/iranianmvip.2013.6780012\",\n      \"source\": \"crossref\",\n      \"updated_date\": \"\",\n      \"categories\": \"proceedings-article\",\n      \"keywords\": \"\",\n      \"citations\": 0,\n      \"references\": \"\",\n      \"extra\": \"{'publisher': 'IEEE', 'container_title': '2013 8th Iranian Conference on Machine Vision and Image Processing (MVIP)', 'volume': '', 'issue': '', 'page': '366-369', 'issn': [], 'isbn': [], 'crossref_type': 'proceedings-article', 'member': '263', 'prefix': '10.1109'}\"\n    },\n    {\n      \"paper_id\": \"10.1007/springerreference_63599\",\n      \"title\": \"Mean Reciprocal Rank\",\n      \"authors\": \"\",\n      \"abstract\": \"\",\n      \"doi\": \"10.1007/springerreference_63599\",\n      \"published_date\": \"1970-01-01T00:00:00\",\n      \"pdf_url\": \"\",\n      \"url\": \"https://doi.org/10.1007/springerreference_63599\",\n      \"source\": \"crossref\",\n      \"updated_date\": \"\",\n      \"categories\": \"reference-entry\",\n      \"keywords\": \"\",\n      \"citations\": 3,\n      \"references\": \"\",\n      \"extra\": \"{'publisher': 'Springer-Verlag', 'container_title': 'SpringerReference', 'volume': '', 'issue': '', 'page': '', 'issn': [], 'isbn': [], 'crossref_type': 'reference-entry', 'member': '297', 'prefix': '10.1007'}\"\n    }\n  ]\n}\n",
+  "stderr": ""
+}

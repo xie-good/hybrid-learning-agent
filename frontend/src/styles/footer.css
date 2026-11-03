@@ -1,0 +1,20 @@
+/* 公共页脚：所有页面共用的标识、说明与底部间距。 */
+.page-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #e6ebe4;
+  margin-top: 33px;
+  padding: 19px 0 23px;
+  color: #a8b0a4;
+  font-size: 8px;
+  letter-spacing: 0.4px;
+}
+.footer-mark {
+  font-size: 11px;
+  font-weight: 650;
+  color: #8b9d88;
+  margin-right: 12px;
+}
+.page-footer > span:last-child {
+  letter-spacing: 1.5px;
+}

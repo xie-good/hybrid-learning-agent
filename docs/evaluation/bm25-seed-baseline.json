@@ -1,0 +1,909 @@
+{
+  "dataset_version": "caeb372d8f756b87",
+  "retrieval_mode": "bm25",
+  "generated_at": "2026-11-02T15:01:36.798075+00:00",
+  "top_ks": [
+    5,
+    10
+  ],
+  "case_count": 20,
+  "metrics": {
+    "case_count": 20,
+    "answerable_count": 14,
+    "unanswerable_count": 6,
+    "abstained_count": 6,
+    "citation_case_count": 14,
+    "citation_valid_count": 14,
+    "recall_at_5": 0.928571,
+    "recall_at_10": 1.0,
+    "mrr_at_10": 0.910714,
+    "abstention_accuracy": 1.0,
+    "citation_validity": 1.0,
+    "latency_p50_ms": 9.996,
+    "latency_p95_ms": 185.101
+  },
+  "splits": {
+    "calibration": {
+      "case_count": 9,
+      "answerable_count": 6,
+      "unanswerable_count": 3,
+      "abstained_count": 3,
+      "citation_case_count": 6,
+      "citation_valid_count": 6,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "mrr_at_10": 0.916667,
+      "abstention_accuracy": 1.0,
+      "citation_validity": 1.0,
+      "latency_p50_ms": 10.251,
+      "latency_p95_ms": 185.101
+    },
+    "regression": {
+      "case_count": 11,
+      "answerable_count": 8,
+      "unanswerable_count": 3,
+      "abstained_count": 3,
+      "citation_case_count": 8,
+      "citation_valid_count": 8,
+      "recall_at_5": 0.875,
+      "recall_at_10": 1.0,
+      "mrr_at_10": 0.90625,
+      "abstention_accuracy": 1.0,
+      "citation_validity": 1.0,
+      "latency_p50_ms": 9.827,
+      "latency_p95_ms": 10.997
+    }
+  },
+  "cases": [
+    {
+      "case_id": "cal-ch01-components",
+      "split": "calibration",
+      "question": "智能体的核心构成与运行过程是什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0015-00010",
+        "caeb372d8f756b87-p0089-00119",
+        "caeb372d8f756b87-p0178-00228",
+        "caeb372d8f756b87-p0195-00253",
+        "caeb372d8f756b87-p0010-00001",
+        "caeb372d8f756b87-p0103-00142",
+        "caeb372d8f756b87-p0011-00003",
+        "caeb372d8f756b87-p0016-00011",
+        "caeb372d8f756b87-p0309-00430",
+        "caeb372d8f756b87-p0046-00057"
+      ],
+      "retrieved_section_ids": [
+        "ch01-s002",
+        "ch04-s002",
+        "ch06-s002",
+        "ch06-s005",
+        null,
+        "ch04-s004",
+        "ch01-s001",
+        "ch01-s002",
+        "ch09-s001",
+        "ch02-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 185.101,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 12,
+        "supported_token_count": 11,
+        "coverage": 0.916667,
+        "best_chunk_coverage": 0.583333,
+        "normalized_score": 0.894531,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch03-attention",
+      "split": "calibration",
+      "question": "Transformer 架构中的自注意力机制如何工作？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0060-00076",
+        "caeb372d8f756b87-p0066-00086",
+        "caeb372d8f756b87-p0060-00075",
+        "caeb372d8f756b87-p0064-00082",
+        "caeb372d8f756b87-p0079-00107",
+        "caeb372d8f756b87-p0059-00074",
+        "caeb372d8f756b87-p0061-00077",
+        "caeb372d8f756b87-p0309-00431",
+        "caeb372d8f756b87-p0058-00073",
+        "caeb372d8f756b87-p0062-00078"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s004",
+        "ch03-s001",
+        "ch03-s001",
+        "ch09-s002",
+        "ch03-s001",
+        "ch03-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 36.141,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 11,
+        "supported_token_count": 11,
+        "coverage": 1.0,
+        "best_chunk_coverage": 0.545455,
+        "normalized_score": 0.899776,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch04-react",
+      "split": "calibration",
+      "question": "ReAct 如何结合推理与行动？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0229-00307",
+        "caeb372d8f756b87-p0085-00114",
+        "caeb372d8f756b87-p0095-00130",
+        "caeb372d8f756b87-p0254-00345",
+        "caeb372d8f756b87-p0090-00121",
+        "caeb372d8f756b87-p0091-00122",
+        "caeb372d8f756b87-p0096-00133",
+        "caeb372d8f756b87-p0230-00308",
+        "caeb372d8f756b87-p0112-00154",
+        "caeb372d8f756b87-p0103-00142"
+      ],
+      "retrieved_section_ids": [
+        "ch07-s004",
+        "ch04-s002",
+        "ch04-s002",
+        "ch07-s006",
+        "ch04-s002",
+        "ch04-s002",
+        "ch04-s003",
+        "ch07-s004",
+        "ch04-s005",
+        "ch04-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 0.5,
+      "latency_ms": 9.707,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 9,
+        "supported_token_count": 8,
+        "coverage": 0.888889,
+        "best_chunk_coverage": 0.888889,
+        "normalized_score": 1.175359,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch08-rag",
+      "split": "calibration",
+      "question": "RAG 系统如何实现知识检索增强？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch08-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0282-00391",
+        "caeb372d8f756b87-p0257-00347",
+        "caeb372d8f756b87-p0283-00392",
+        "caeb372d8f756b87-p0285-00394",
+        "caeb372d8f756b87-p0078-00105",
+        "caeb372d8f756b87-p0144-00189",
+        "caeb372d8f756b87-p0286-00395",
+        "caeb372d8f756b87-p0260-00351",
+        "caeb372d8f756b87-p0297-00417",
+        "caeb372d8f756b87-p0298-00418"
+      ],
+      "retrieved_section_ids": [
+        "ch08-s003",
+        null,
+        "ch08-s003",
+        "ch08-s003",
+        "ch03-s003",
+        "ch05-s004",
+        "ch08-s003",
+        "ch08-s001",
+        "ch08-s004",
+        "ch08-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.251,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 9,
+        "supported_token_count": 9,
+        "coverage": 1.0,
+        "best_chunk_coverage": 0.888889,
+        "normalized_score": 1.20201,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch10-mcp",
+      "split": "calibration",
+      "question": "MCP 协议如何让智能体调用外部工具？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch10-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0379-00524",
+        "caeb372d8f756b87-p0437-00598",
+        "caeb372d8f756b87-p0372-00515",
+        "caeb372d8f756b87-p0374-00518",
+        "caeb372d8f756b87-p0147-00192",
+        "caeb372d8f756b87-p0375-00519",
+        "caeb372d8f756b87-p0078-00105",
+        "caeb372d8f756b87-p0086-00115",
+        "caeb372d8f756b87-p0373-00517",
+        "caeb372d8f756b87-p0377-00521"
+      ],
+      "retrieved_section_ids": [
+        "ch10-s002",
+        "ch11-s001",
+        null,
+        "ch10-s001",
+        "ch05-s004",
+        "ch10-s001",
+        "ch03-s003",
+        "ch04-s002",
+        "ch10-s001",
+        "ch10-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.331,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 11,
+        "supported_token_count": 11,
+        "coverage": 1.0,
+        "best_chunk_coverage": 0.727273,
+        "normalized_score": 1.058686,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch12-bfcl",
+      "split": "calibration",
+      "question": "BFCL 如何评估模型的工具调用能力？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch12-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0517-00702",
+        "caeb372d8f756b87-p0500-00680",
+        "caeb372d8f756b87-p0516-00700",
+        "caeb372d8f756b87-p0498-00675",
+        "caeb372d8f756b87-p0500-00678",
+        "caeb372d8f756b87-p0501-00681",
+        "caeb372d8f756b87-p0557-00757",
+        "caeb372d8f756b87-p0499-00677",
+        "caeb372d8f756b87-p0528-00716",
+        "caeb372d8f756b87-p0509-00689"
+      ],
+      "retrieved_section_ids": [
+        "ch12-s002",
+        "ch12-s002",
+        "ch12-s002",
+        "ch12-s001",
+        "ch12-s001",
+        "ch12-s002",
+        "ch12-s005",
+        "ch12-s001",
+        "ch12-s003",
+        "ch12-s002"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.526,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 11,
+        "supported_token_count": 11,
+        "coverage": 1.0,
+        "best_chunk_coverage": 0.909091,
+        "normalized_score": 1.218947,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-outside-major",
+      "split": "calibration",
+      "question": "怎样选择合适的大学专业？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 7.6,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 8,
+        "supported_token_count": 6,
+        "coverage": 0.75,
+        "best_chunk_coverage": 0.375,
+        "normalized_score": 0.527933,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-outside-quantum",
+      "split": "calibration",
+      "question": "量子纠缠是否允许超光速通信？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 7.174,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 9,
+        "supported_token_count": 2,
+        "coverage": 0.222222,
+        "best_chunk_coverage": 0.222222,
+        "normalized_score": 1.459228,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-outside-bread",
+      "split": "calibration",
+      "question": "如何制作法式可颂面包？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 6.826,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 7,
+        "supported_token_count": 3,
+        "coverage": 0.428571,
+        "best_chunk_coverage": 0.142857,
+        "normalized_score": 0.41846,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch02-symbolic",
+      "split": "regression",
+      "question": "基于符号与逻辑的早期智能体有什么特点？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0030-00034",
+        "caeb372d8f756b87-p0048-00061",
+        "caeb372d8f756b87-p0015-00009",
+        "caeb372d8f756b87-p0039-00049",
+        "caeb372d8f756b87-p0078-00106",
+        "caeb372d8f756b87-p0034-00038",
+        "caeb372d8f756b87-p0046-00057",
+        "caeb372d8f756b87-p0035-00040",
+        "caeb372d8f756b87-p0042-00053",
+        "caeb372d8f756b87-p0046-00058"
+      ],
+      "retrieved_section_ids": [
+        "ch02-s001",
+        "ch02-s005",
+        "ch01-s001",
+        "ch02-s003",
+        "ch03-s004",
+        "ch02-s001",
+        "ch02-s004",
+        "ch02-s002",
+        "ch02-s004",
+        "ch02-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.77,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 16,
+        "supported_token_count": 14,
+        "coverage": 0.875,
+        "best_chunk_coverage": 0.75,
+        "normalized_score": 0.833126,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch05-dify",
+      "split": "regression",
+      "question": "Dify 平台提供了哪些智能体搭建能力？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0129-00173",
+        "caeb372d8f756b87-p0116-00158",
+        "caeb372d8f756b87-p0117-00159",
+        "caeb372d8f756b87-p0115-00155",
+        "caeb372d8f756b87-p0144-00188",
+        "caeb372d8f756b87-p0127-00170",
+        "caeb372d8f756b87-p0115-00156",
+        "caeb372d8f756b87-p0127-00171",
+        "caeb372d8f756b87-p0156-00201",
+        "caeb372d8f756b87-p0167-00215"
+      ],
+      "retrieved_section_ids": [
+        "ch05-s003",
+        "ch05-s001",
+        "ch05-s002",
+        null,
+        "ch05-s003",
+        "ch05-s002",
+        "ch05-s001",
+        "ch05-s003",
+        "ch05-s004",
+        "ch05-s006"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 9.996,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 11,
+        "supported_token_count": 10,
+        "coverage": 0.909091,
+        "best_chunk_coverage": 0.727273,
+        "normalized_score": 0.71904,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch06-langgraph",
+      "split": "regression",
+      "question": "LangGraph 如何组织有状态的智能体工作流？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s005"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0195-00253",
+        "caeb372d8f756b87-p0172-00220",
+        "caeb372d8f756b87-p0203-00265",
+        "caeb372d8f756b87-p0172-00219",
+        "caeb372d8f756b87-p0198-00257",
+        "caeb372d8f756b87-p0025-00029",
+        "caeb372d8f756b87-p0196-00254",
+        "caeb372d8f756b87-p0202-00264",
+        "caeb372d8f756b87-p0203-00266",
+        "caeb372d8f756b87-p0197-00256"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s005",
+        "ch06-s001",
+        "ch06-s005",
+        "ch06-s001",
+        "ch06-s005",
+        "ch01-s004",
+        "ch06-s005",
+        "ch06-s005",
+        "ch06-s006",
+        "ch06-s005"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.427,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 14,
+        "supported_token_count": 12,
+        "coverage": 0.857143,
+        "best_chunk_coverage": 0.642857,
+        "normalized_score": 1.157339,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch07-tools",
+      "split": "regression",
+      "question": "HelloAgents 框架的工具系统如何组织和执行工具？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch07-s005"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0497-00673",
+        "caeb372d8f756b87-p0208-00271",
+        "caeb372d8f756b87-p0257-00347",
+        "caeb372d8f756b87-p0237-00318",
+        "caeb372d8f756b87-p0254-00345",
+        "caeb372d8f756b87-p0207-00269",
+        "caeb372d8f756b87-p0250-00337",
+        "caeb372d8f756b87-p0254-00344",
+        "caeb372d8f756b87-p0208-00272",
+        "caeb372d8f756b87-p0230-00308"
+      ],
+      "retrieved_section_ids": [
+        null,
+        "ch07-s001",
+        null,
+        "ch07-s005",
+        "ch07-s006",
+        "ch07-s001",
+        "ch07-s005",
+        "ch07-s005",
+        "ch07-s001",
+        "ch07-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 0.25,
+      "latency_ms": 10.997,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 14,
+        "supported_token_count": 13,
+        "coverage": 0.928571,
+        "best_chunk_coverage": 0.642857,
+        "normalized_score": 0.781137,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch09-contextbuilder",
+      "split": "regression",
+      "question": "ContextBuilder 在上下文工程中承担什么职责？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch09-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0312-00435",
+        "caeb372d8f756b87-p0308-00428",
+        "caeb372d8f756b87-p0369-00514",
+        "caeb372d8f756b87-p0308-00429",
+        "caeb372d8f756b87-p0326-00457",
+        "caeb372d8f756b87-p0325-00455",
+        "caeb372d8f756b87-p0309-00430",
+        "caeb372d8f756b87-p0325-00454",
+        "caeb372d8f756b87-p0338-00472",
+        "caeb372d8f756b87-p0354-00491"
+      ],
+      "retrieved_section_ids": [
+        "ch09-s003",
+        null,
+        "ch09-s007",
+        "ch09-s001",
+        "ch09-s003",
+        "ch09-s003",
+        "ch09-s001",
+        "ch09-s003",
+        "ch09-s004",
+        "ch09-s006"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.162,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 14,
+        "supported_token_count": 8,
+        "coverage": 0.571429,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.905749,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch11-grpo",
+      "split": "regression",
+      "question": "GRPO 训练的核心思想是什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch11-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0461-00630",
+        "caeb372d8f756b87-p0462-00631",
+        "caeb372d8f756b87-p0456-00622",
+        "caeb372d8f756b87-p0049-00062",
+        "caeb372d8f756b87-p0052-00064",
+        "caeb372d8f756b87-p0064-00082",
+        "caeb372d8f756b87-p0071-00093",
+        "caeb372d8f756b87-p0433-00592",
+        "caeb372d8f756b87-p0245-00328",
+        "caeb372d8f756b87-p0468-00638"
+      ],
+      "retrieved_section_ids": [
+        "ch11-s004",
+        "ch11-s004",
+        "ch11-s003",
+        "ch02-s005",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s002",
+        "ch11-s001",
+        "ch07-s005",
+        "ch11-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 9.762,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 7,
+        "supported_token_count": 7,
+        "coverage": 1.0,
+        "best_chunk_coverage": 0.857143,
+        "normalized_score": 1.297659,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch04-compare",
+      "split": "regression",
+      "question": "ReAct 与 Plan-and-Solve 的方法有什么区别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002",
+        "ch04-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0096-00133",
+        "caeb372d8f756b87-p0112-00154",
+        "caeb372d8f756b87-p0115-00155",
+        "caeb372d8f756b87-p0111-00153",
+        "caeb372d8f756b87-p0171-00217",
+        "caeb372d8f756b87-p0103-00142",
+        "caeb372d8f756b87-p0232-00311",
+        "caeb372d8f756b87-p0220-00292",
+        "caeb372d8f756b87-p0085-00114",
+        "caeb372d8f756b87-p0097-00134"
+      ],
+      "retrieved_section_ids": [
+        "ch04-s003",
+        "ch04-s005",
+        null,
+        "ch04-s004",
+        null,
+        "ch04-s004",
+        "ch07-s004",
+        "ch07-s004",
+        "ch04-s002",
+        "ch04-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 9.534,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 13,
+        "supported_token_count": 9,
+        "coverage": 0.692308,
+        "best_chunk_coverage": 0.615385,
+        "normalized_score": 0.779631,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch10-protocols",
+      "split": "regression",
+      "question": "A2A 协议与 ANP 协议分别解决什么问题？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch10-s003",
+        "ch10-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0413-00567",
+        "caeb372d8f756b87-p0378-00522",
+        "caeb372d8f756b87-p0375-00519",
+        "caeb372d8f756b87-p0430-00589",
+        "caeb372d8f756b87-p0377-00521",
+        "caeb372d8f756b87-p0400-00548",
+        "caeb372d8f756b87-p0372-00515",
+        "caeb372d8f756b87-p0376-00520",
+        "caeb372d8f756b87-p0429-00588",
+        "caeb372d8f756b87-p0374-00518"
+      ],
+      "retrieved_section_ids": [
+        "ch10-s004",
+        "ch10-s001",
+        "ch10-s001",
+        "ch10-s006",
+        "ch10-s001",
+        "ch10-s003",
+        null,
+        "ch10-s001",
+        "ch10-s006",
+        "ch10-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 9.827,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 12,
+        "supported_token_count": 7,
+        "coverage": 0.583333,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 1.459731,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-outside-medical",
+      "split": "regression",
+      "question": "高血压患者应该怎样调整降压药剂量？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 7.545,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 12,
+        "supported_token_count": 2,
+        "coverage": 0.166667,
+        "best_chunk_coverage": 0.166667,
+        "normalized_score": 0.966115,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-outside-travel",
+      "split": "regression",
+      "question": "旅行助手如何规划酒店和交通路线？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 8.033,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 11,
+        "supported_token_count": 6,
+        "coverage": 0.545455,
+        "best_chunk_coverage": 0.545455,
+        "normalized_score": 0.451519,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-outside-rust",
+      "split": "regression",
+      "question": "Rust 所有权模型怎样避免悬垂指针？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 8.092,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 10,
+        "supported_token_count": 4,
+        "coverage": 0.4,
+        "best_chunk_coverage": 0.3,
+        "normalized_score": 0.560962,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    }
+  ],
+  "interpretation": "这是冻结小样本的项目基线，不代表总体失败率或泛化性能。",
+  "reproducibility": {
+    "evaluator_version": "retrieval-evaluator-v1",
+    "evaluator_sha256": "2eb28d17978cfd527716eefef9f10f5e0a08ebf7de9991f08769e6e1bf16da0f",
+    "retrieval_source_sha256": "86a65ebda85b4b94ac2256b20d394252ce051a628aeb92abaac559e063b1ea9b",
+    "cases_sha256": "e746deb529f88fa36a133a3f07ca319703db97300f264552d8b1c8e7cbf51b70",
+    "processed_report_sha256": "d17acff58d580dc5f4df8df4cee3555000a121e001c890d919a28a6ee17532e9",
+    "index_manifest_sha256": "a895482bbcbeb46c56d4c599b8067b7585f2253e121ce869489097c4c91ba63b",
+    "evidence_gate_version": "rank-bm25-cohesive-evidence-v2",
+    "evidence_min_chunk_coverage": 0.5,
+    "evidence_min_normalized_score": 0.7
+  }
+}

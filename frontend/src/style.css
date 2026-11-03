@@ -1,0 +1,13 @@
+/* 样式统一入口：这里只声明加载顺序，具体规则按职责放在 styles 目录。
+   沿用原有全局作用域，不改为 scoped 或按页懒加载，以保留跨组件复用。
+   下列顺序保持拆分前的级联关系；响应式在基础规则之后，最终可读性覆盖最后加载。 */
+@import "./styles/base.css";
+@import "./styles/layout.css";
+@import "./styles/views/overview.css";
+@import "./styles/footer.css";
+@import "./styles/components/learning.css";
+@import "./styles/views/quiz.css";
+@import "./styles/views/history.css";
+@import "./styles/motion.css";
+@import "./styles/responsive.css";
+@import "./styles/accessibility.css";
