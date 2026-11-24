@@ -97,7 +97,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base-url', default='http://127.0.0.1:8000')
     parser.add_argument('--start-local', action='store_true', help='临时端口启动 Uvicorn，退出时关闭')
-    parser.add_argument('--with-frontend', action='store_true', help='同时启动 Streamlit 并检查 HTTP 就绪；需 --start-local')
+    parser.add_argument('--with-frontend', action='store_true', help='已废弃：Streamlit 前端已移除，请勿使用')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     if args.with_frontend and not args.start_local:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -13,7 +14,8 @@ from typing import Iterable
 from backend.config import Settings
 from backend.services.corpus import CorpusRepository
 from backend.services.retrieval import (EVIDENCE_GATE_VERSION, EVIDENCE_MIN_CHUNK_COVERAGE,
-                                        EVIDENCE_MIN_NORMALIZED_SCORE, RetrievalService)
+                                        EVIDENCE_MIN_NORMALIZED_SCORE, RANKED_EVIDENCE_GATE_VERSION,
+                                        RetrievalService)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -155,17 +157,16 @@ def evaluate_cases(service: RetrievalService, repo: CorpusRepository, cases: Ite
 
 
 def main() -> int:
+    config = Settings.from_env()
     parser = argparse.ArgumentParser(description='评测课程检索效果并输出可复核 JSON。')
     parser.add_argument('--cases', type=Path, required=True)
-    parser.add_argument('--processed-dir', type=Path,
-                        default=PROJECT_ROOT / 'data/processed/hello-agents')
-    parser.add_argument('--index-dir', type=Path,
-                        default=PROJECT_ROOT / 'data/indexes/hello-agents')
+    parser.add_argument('--processed-dir', type=Path, default=config.processed_dir)
+    parser.add_argument('--index-dir', type=Path, default=config.index_dir)
     parser.add_argument('--mode', choices=('bm25', 'vector', 'hybrid'), default='bm25')
     parser.add_argument('--top-k', type=int, nargs='+', default=[5, 10])
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-    settings = Settings(processed_dir=args.processed_dir, index_dir=args.index_dir)
+    settings = replace(config, processed_dir=args.processed_dir, index_dir=args.index_dir)
     repo = CorpusRepository(settings)
     repo.require_ready()
     service = RetrievalService(repo, settings)
@@ -180,11 +181,10 @@ def main() -> int:
         'cases_sha256': _sha256(args.cases),
         'processed_report_sha256': _sha256(args.processed_dir / 'report.json'),
         'index_manifest_sha256': _sha256(args.index_dir / 'manifest.json'),
-        'evidence_gate_version': EVIDENCE_GATE_VERSION if args.mode == 'bm25' else None,
-        'evidence_min_chunk_coverage': (EVIDENCE_MIN_CHUNK_COVERAGE
-                                        if args.mode == 'bm25' else None),
-        'evidence_min_normalized_score': (EVIDENCE_MIN_NORMALIZED_SCORE
-                                          if args.mode == 'bm25' else None),
+        'evidence_gate_version': (EVIDENCE_GATE_VERSION if args.mode == 'bm25'
+                                  else RANKED_EVIDENCE_GATE_VERSION),
+        'evidence_min_chunk_coverage': EVIDENCE_MIN_CHUNK_COVERAGE,
+        'evidence_min_normalized_score': EVIDENCE_MIN_NORMALIZED_SCORE,
     }
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

@@ -50,7 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=APP_NAME, version='1.0.0', lifespan=lifespan,
-        description='预置课程学习 API：目录、来源、问答、总结、练习和会话历史。默认真实 BM25 + 原文摘录；可配置外部模型。',
+        description='预置课程学习 API：目录、来源、问答、总结、练习和会话历史。默认混合检索 + 原文摘录；可配置外部模型。',
         openapi_tags=[{'name': name} for name in ('状态', '课程与来源', '问答', '学习辅助', '会话历史')],
     )
     app.state.settings = config

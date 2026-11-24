@@ -3,7 +3,12 @@
 import AppIcon from "../AppIcon.vue";
 import { useWorkspace } from "../../composables/useWorkspace.js";
 
-const { drawer, activePage, health, loading } = useWorkspace();
+const {
+  isSidebarOpen,
+  activePageConfig,
+  serviceHealth,
+  isInitializing,
+} = useWorkspace();
 </script>
 
 <template>
@@ -11,22 +16,22 @@ const { drawer, activePage, health, loading } = useWorkspace();
     <div class="breadcrumb">
       <button
         class="mobile-menu icon-button"
-        aria-label="打开导航"
-        :aria-expanded="drawer"
-        @click="drawer = !drawer"
+        :aria-label="isSidebarOpen ? '关闭导航' : '打开导航'"
+        :aria-expanded="isSidebarOpen"
+        @click="isSidebarOpen = !isSidebarOpen"
       >
         <AppIcon name="menu" /></button
       ><span>学习空间</span><AppIcon name="chevron" :size="13" /><strong>{{
-        activePage.title
+        activePageConfig.title
       }}</strong>
     </div>
     <div class="topbar-right">
-      <span class="service-status" :class="{ offline: health?.status !== 'ok' }"
+      <span class="service-status" :class="{ offline: serviceHealth?.status !== 'ok' }"
         ><i></i
         >{{
-          loading
-            ? "正在连接"
-            : health?.status === "ok"
+          isInitializing
+            ? "正在连接…"
+            : serviceHealth?.status === "ok"
               ? "服务已连接"
               : "服务待就绪"
         }}</span

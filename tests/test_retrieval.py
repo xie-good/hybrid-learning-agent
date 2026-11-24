@@ -312,6 +312,60 @@ class RetrievalTests(CorpusFixtureTest):
         weight = sum(service._bm25.idf.get(term, 0.0) for term in set(tokenize('get_weather')))
         self.assertAlmostEqual(result['debug']['evidence_gate']['normalized_score'], best / weight, places=6)
 
+    def test_fused_gate_requires_evidence_inside_the_returned_window(self):
+        service = RetrievalService(self.repo, self.settings)
+        chunks = [{'chunk_id': 'supported', 'text': 'alpha beta gamma delta'},
+                  {'chunk_id': 'weak', 'text': 'alpha alpha alpha'}]
+        chunks.extend({'chunk_id': f'other-{i:02d}', 'text': f'unrelated{i}'} for i in range(30))
+        service._bm25 = BM25Index(chunks)
+        question = 'alpha beta gamma delta'
+        sparse = service._bm25.rank(tokenize(question), set(service._bm25.ids))
+        dense = [('weak', 0.99)] + [(f'other-{i:02d}', 0.9) for i in range(30)]
+        dense.append(('supported', 0.8))
+        fused = service._fuse_rankings(sparse, dense, top_k=1)
+        self.assertEqual([chunk_id for chunk_id, _ in fused[:2]], ['weak', 'supported'])
+        self.assertTrue(service._evidence_gate(question, sparse, 'bm25', 1)['passed'])
+        narrow = service._evidence_gate(question, fused, 'hybrid', 1)
+        self.assertFalse(narrow['passed'], 'BM25-side evidence outside top_k must not release citations')
+        self.assertEqual(narrow['best_chunk_coverage'], 0.25)
+        self.assertIsNone(narrow['evidence_chunk_id'])
+        wide = service._evidence_gate(question, fused, 'hybrid', 2)
+        self.assertTrue(wide['passed'])
+        self.assertEqual(wide['evidence_chunk_id'], 'supported')
+        self.assertEqual(wide['best_chunk_coverage'], 1.0)
+
+    def test_dense_gate_rejects_keywords_scattered_across_chunks(self):
+        service = RetrievalService(self.repo, self.settings)
+        chunks = [{'chunk_id': str(i), 'text': text} for i, text in enumerate(
+            ('alpha', 'beta', 'gamma', 'delta', 'unrelated', 'different'))]
+        service._bm25 = BM25Index(chunks)
+        ranked = [(chunk['chunk_id'], 0.99) for chunk in chunks]
+        for mode in ('hybrid', 'vector'):
+            with self.subTest(mode=mode):
+                gate = service._evidence_gate('alpha beta gamma delta', ranked, mode, 5)
+                self.assertFalse(gate['passed'])
+                self.assertEqual(gate['coverage'], 1.0)
+                self.assertEqual(gate['best_chunk_coverage'], 0.25)
+
+    def test_dense_gate_accepts_cohesive_evidence_below_lexical_best(self):
+        service = RetrievalService(self.repo, self.settings)
+        terms = [f'term{chr(97 + i)}' for i in range(10)]
+        chunks = [{'chunk_id': 'repeated', 'text': ' '.join(terms[:4] * 10)},
+                  {'chunk_id': 'cohesive', 'text': ' '.join(terms[4:] * 2 + ['padding'] * 28)}]
+        chunks.extend({'chunk_id': f'other-{i:02d}', 'text': ' '.join(['padding'] * 40)}
+                      for i in range(40))
+        service._bm25 = BM25Index(chunks)
+        question = ' '.join(terms)
+        lexical = service._bm25.rank(tokenize(question), {'repeated', 'cohesive'})
+        self.assertEqual([chunk_id for chunk_id, _ in lexical], ['repeated', 'cohesive'])
+        self.assertFalse(service._evidence_gate(question, lexical, 'bm25', 2)['passed'])
+        for mode in ('hybrid', 'vector'):
+            with self.subTest(mode=mode):
+                gate = service._evidence_gate(question, [('repeated', 0.99), ('cohesive', 0.8)], mode, 2)
+                self.assertTrue(gate['passed'])
+                self.assertEqual(gate['evidence_chunk_id'], 'cohesive')
+                self.assertEqual(gate['best_chunk_coverage'], 0.6)
+
     def test_unconfigured_optional_modes_return_503_without_synthetic_vectors(self):
         with patch('backend.services.retrieval.httpx.post', side_effect=AssertionError('network')):
             service = RetrievalService(self.repo, self.settings)
@@ -573,6 +627,58 @@ class IndexTests(EmbeddingFixtureTest):
         scoped = service.search('memory', chapter_id='ch02', mode='vector')
         self.assertTrue(scoped['citations'])
         self.assertTrue(all(c['chapter_id'] == 'ch02' for c in scoped['citations']))
+
+    def test_dense_modes_abstain_despite_positive_vector_candidates(self):
+        self.use_transport(self.dense_handler)
+        self.build_dense()
+        service = RetrievalService(self.repo, self.config)
+        questions = ('zzzxqvnomatch', 'the what how',
+                     'How does quantum memory enable teleportation?',
+                     'How should a university Agent choose a major?')
+        for mode in ('hybrid', 'vector'):
+            for question in questions:
+                with self.subTest(mode=mode, question=question):
+                    result = service.search(question, mode=mode, debug=True)
+                    self.assertGreater(result['debug']['vector_candidates'], 0)
+                    self.assertTrue(result['insufficient_evidence'])
+                    self.assertEqual(result['citations'], [])
+                    gate = result['debug']['evidence_gate']
+                    self.assertFalse(gate['passed'])
+                    self.assertEqual(gate['gate_version'], 'rank-bm25-returned-evidence-v1')
+
+    def test_dense_modes_pass_supported_questions_using_lexical_not_fused_scores(self):
+        self.use_transport(self.dense_handler)
+        self.build_dense()
+        service = RetrievalService(self.repo, self.config)
+        for mode in ('hybrid', 'vector'):
+            for question in ('Agent', 'How does BM25 rank documents?'):
+                with self.subTest(mode=mode, question=question):
+                    result = service.search(question, mode=mode, top_k=20, debug=True)
+                    self.assertFalse(result['insufficient_evidence'])
+                    gate = result['debug']['evidence_gate']
+                    self.assertTrue(gate['passed'])
+                    returned_ids = {citation['chunk_id'] for citation in result['citations']}
+                    self.assertIn(gate['evidence_chunk_id'], returned_ids)
+                    lexical = service._bm25.rank(tokenize(question), returned_ids)
+                    expected = service._evidence_gate(question, lexical, 'bm25', 20)
+                    self.assertEqual(gate['normalized_score'], expected['normalized_score'])
+                    self.assertEqual(gate['best_chunk_coverage'], expected['best_chunk_coverage'])
+                    self.assertEqual(gate['evidence_chunk_id'], lexical[0][0])
+                    if mode == 'hybrid':
+                        self.assertLess(result['citations'][0]['score'], 0.04)
+                        self.assertGreaterEqual(gate['normalized_score'], 0.7)
+
+    def test_dense_evidence_cannot_leak_from_outside_the_requested_scope(self):
+        self.use_transport(self.dense_handler)
+        self.build_dense()
+        service = RetrievalService(self.repo, self.config)
+        for mode in ('hybrid', 'vector'):
+            with self.subTest(mode=mode):
+                self.assertTrue(service.search('BM25', mode=mode, top_k=20)['citations'])
+                result = service.search('BM25', chapter_id='ch02', mode=mode, debug=True)
+                self.assertGreater(result['debug']['vector_candidates'], 0)
+                self.assertEqual(result['citations'], [])
+                self.assertTrue(result['insufficient_evidence'])
 
     def test_vector_index_rejects_changed_model_corpus_version_or_hash(self):
         self.use_transport(self.dense_handler)

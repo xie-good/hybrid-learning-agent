@@ -24,9 +24,9 @@ export async function request(
     const payload = await response.json().catch(() => null);
     if (!response.ok) {
       // 保留后端给出的可读错误与请求编号，便于用户描述问题、开发者定位日志。
-      const id = response.headers.get("X-Request-ID") || payload?.request_id;
+      const requestId = response.headers.get("X-Request-ID") || payload?.request_id;
       throw new Error(
-        `${payload?.error?.message || "请求失败，请稍后重试。"}${id ? `（请求编号：${id}）` : ""}`,
+        `${payload?.error?.message || "请求失败，请稍后重试。"}${requestId ? `（请求编号：${requestId}）` : ""}`,
       );
     }
     // 本项目的业务成功响应均为 JSON 对象；空值或数组说明服务契约不匹配。
@@ -47,24 +47,24 @@ export async function request(
 
 /** 当前标签页复用随机 UUID，刷新后仍能查到同一会话的问答历史。 */
 export function sessionId(storage = sessionStorage) {
-  const key = "zhixu-session";
-  let id = storage.getItem(key);
+  const sessionStorageKey = "zhixu-session";
+  let storedSessionId = storage.getItem(sessionStorageKey);
   // 只接受本客户端生成的 UUID v4 格式；缺失或损坏时重新生成，避免提交无效标识。
   // 这不是登录鉴权：session_id 是查询历史的会话参数，不代表已验证的用户身份。
   if (
     !/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(
-      id || "",
+      storedSessionId || "",
     )
   ) {
-    id = crypto.randomUUID();
-    storage.setItem(key, id);
+    storedSessionId = crypto.randomUUID();
+    storage.setItem(sessionStorageKey, storedSessionId);
   }
-  return id;
+  return storedSessionId;
 }
 
 // 分页固定每页十条；URLSearchParams 统一编码参数，每次翻页都保留同一个会话。
-export const historyPath = (id, offset = 0) =>
-  `/history?${new URLSearchParams({ session_id: id, limit: 10, offset })}`;
+export const historyPath = (currentSessionId, offset = 0) =>
+  `/history?${new URLSearchParams({ session_id: currentSessionId, limit: 10, offset })}`;
 
 // 只对选项键完全匹配的单选题计分；简答题的含义需要人工判断，不参与自动评分。
 export function gradeChoices(questions, answers) {

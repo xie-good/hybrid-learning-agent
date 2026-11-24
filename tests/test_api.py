@@ -11,7 +11,9 @@ from fastapi.testclient import TestClient
 
 from backend.config import Settings
 from backend.main import create_app
+from pipeline.build_index import build_indexes
 from pipeline.run_preprocess import preprocess
+from tests.corpus_fixture import make_corpus
 from test_preprocess import make_pdf
 
 
@@ -30,6 +32,7 @@ class APITests(unittest.TestCase):
         cls.temp.cleanup()
 
     def setUp(self):
+        # 此组专测无向量服务的本地能力；产品默认混合检索由下方独立夹具覆盖。
         self.settings = Settings(processed_dir=self.processed,
             database_path=self.base / f'{uuid4()}.sqlite3', index_dir=self.base / 'indexes',
             generation_mode='extractive', default_retrieval_mode='bm25', source_pdf=self.pdf,
@@ -48,6 +51,7 @@ class APITests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['knowledge_base_ready'])
         self.assertEqual(response.json()['retrieval_modes'], ['bm25'])
+        self.assertEqual(response.json()['default_retrieval_mode'], 'bm25')
         self.assertEqual(response.json()['generation_mode'], 'extractive')
         self.assertTrue(response.json()['retrieval_ready'])
         course = self.client.get('/api/course')
@@ -231,6 +235,53 @@ class APITests(unittest.TestCase):
         self.assertEqual(static['components'], spec['components'])
         self.assertEqual(self.client.get('/docs').status_code, 200)
         self.assertEqual(self.client.get('/redoc').status_code, 200)
+
+
+class HybridDefaultAPITests(unittest.TestCase):
+    """使用产品默认值验证混合检索路由，仅替换外部向量服务边界。"""
+
+    def setUp(self):
+        root = Path(self.enterContext(TemporaryDirectory()))
+        self.settings = make_corpus(root, default_retrieval_mode=Settings().default_retrieval_mode,
+            embedding_base_url='http://localhost:5678/v1', embedding_model='test-embedding')
+
+    def test_omitted_mode_uses_hybrid_and_explicit_bm25_remains_available(self):
+        with patch('pipeline.build_index.fetch_embeddings',
+                   side_effect=lambda config, texts: [[1.0, 0.0] for text in texts]):
+            build_indexes(self.settings.processed_dir / 'chunks.jsonl', self.settings.index_dir,
+                          settings=self.settings, mode='hybrid')
+        with TestClient(create_app(self.settings)) as client:
+            health = client.get('/api/health').json()
+            self.assertEqual(health['default_retrieval_mode'], 'hybrid')
+            self.assertEqual(health['retrieval_modes'], ['bm25', 'vector', 'hybrid'])
+            self.assertTrue(health['retrieval_ready'])
+            with patch('backend.services.retrieval.fetch_embeddings', return_value=[[1.0, 0.0]]):
+                for options in ({}, {'retrieval_mode': None}):
+                    with self.subTest(options=options):
+                        response = client.post('/api/qa', json={
+                            'question': 'get_weather', 'debug': True, **options})
+                        self.assertEqual(response.status_code, 200, response.text)
+                        self.assertEqual(response.json()['retrieval_mode'], 'hybrid')
+                        self.assertFalse(response.json()['insufficient_evidence'])
+                        self.assertTrue(response.json()['citations'])
+                        gate = response.json()['debug']['evidence_gate']
+                        self.assertEqual(gate['gate_version'], 'rank-bm25-returned-evidence-v1')
+                        self.assertTrue(gate['passed'])
+            with patch('backend.services.retrieval.fetch_embeddings', side_effect=AssertionError('network')):
+                response = client.post('/api/qa', json={
+                    'question': 'get_weather', 'retrieval_mode': 'bm25'})
+            self.assertEqual(response.status_code, 200, response.text)
+            self.assertEqual(response.json()['retrieval_mode'], 'bm25')
+
+    def test_missing_hybrid_index_reports_degraded_and_does_not_fall_back(self):
+        with TestClient(create_app(self.settings)) as client:
+            health = client.get('/api/health').json()
+            self.assertEqual(health['default_retrieval_mode'], 'hybrid')
+            self.assertEqual(health['retrieval_modes'], ['bm25'])
+            self.assertFalse(health['retrieval_ready'])
+            self.assertEqual(health['status'], 'degraded')
+            response = client.post('/api/qa', json={'question': 'get_weather'})
+            self.assertEqual(response.status_code, 503, response.text)
 
 
 if __name__ == '__main__':

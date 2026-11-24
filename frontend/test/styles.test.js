@@ -4,7 +4,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-// 只检查样式拆分边界，不启动浏览器，也不改变层叠顺序。
+// 检查样式模块边界和可访问性规则，不启动浏览器，也不改变层叠顺序。
 const source = fileURLToPath(new URL("../src/", import.meta.url));
 const read = (name) => readFileSync(path.join(source, name), "utf8");
 const stripComments = (text) => text.replace(/\/\*[\s\S]*?\*\//g, "");
@@ -47,4 +47,20 @@ test("所有样式模块均且仅被入口导入一次，并保留非空内容�
     const comments = content.match(/\/\*[\s\S]*?\*\//g) || [];
     assert.ok(comments.some((comment) => /[\u3400-\u9fff]/.test(comment)), `${filename} 应说明中文职责`);
   }
+});
+
+test("主区保留键盘焦点环，移动抽屉隔离滚动，基础排版沿用主题", () => {
+  assert.match(read("App.vue"), /<main\b[^>]*id="main"[^>]*tabindex="-1"/);
+  const layout = read("styles/layout.css");
+  assert.match(layout, /\.main-content:focus-visible\s*\{[^}]*outline:\s*3px solid #69ad9e;/);
+  assert.match(layout, /\.main-content:focus-visible\s*\{[^}]*outline-offset:\s*-3px;/);
+  const base = read("styles/base.css");
+  assert.match(base, /:root\s*\{[^}]*color-scheme:\s*light;/);
+  assert.match(base, /h1,\s*h2,\s*h3\s*\{[^}]*text-wrap:\s*balance;/);
+  for (const selector of [".stat-card strong", ".pagination", ".quiz-question .tiny-label"])
+    assert.ok(base.includes(selector));
+  assert.match(base, /font-variant-numeric:\s*tabular-nums;/);
+  const mobile = read("styles/responsive.css") + read("styles/accessibility.css");
+  assert.match(mobile, /@media[^{}]+\{[\s\S]*?\.sidebar(?:\.open)?\s*\{[^}]*overscroll-behavior:\s*contain;/);
+  assert.doesNotMatch(read("styles/views/overview.css") + mobile, /\.(?:learning-steps|chapter-card-bottom) button/);
 });

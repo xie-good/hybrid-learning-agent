@@ -27,6 +27,7 @@ INDEX_FORMAT_VERSION = 1
 BM25_ALGORITHM = 'rank_bm25.BM25Okapi'
 BM25_BACKEND_VERSION = version('rank-bm25')
 EVIDENCE_GATE_VERSION = 'rank-bm25-cohesive-evidence-v2'
+RANKED_EVIDENCE_GATE_VERSION = 'rank-bm25-returned-evidence-v1'
 EVIDENCE_MIN_CHUNK_COVERAGE = 0.5
 EVIDENCE_MIN_NORMALIZED_SCORE = 0.7
 TOKEN_PATTERN = re.compile(r'[A-Za-z_][A-Za-z0-9_]*(?:[.:-][A-Za-z0-9_]+)*|\d+(?:\.\d+)*|[\u3400-\u9fff]+')
@@ -255,12 +256,26 @@ class RetrievalService:
 
     def _evidence_gate(self, question: str, ranked: list[tuple[str, float]], mode: str,
                        top_k: int) -> dict:
+        """BM25 保持原门控；稠密模式须在实际返回窗口内找到共同支撑片段。"""
+        if mode == 'bm25':
+            return self._bm25_evidence_gate(question, ranked, top_k)
+        # RRF/余弦分数不能除以 BM25 IDF，未返回的 BM25 侧证据也不能放行。
+        returned_ids = {chunk_id for chunk_id, _ in ranked[:top_k]}
+        lexical_ranked = self._bm25.rank(tokenize(question), returned_ids)
+        evidence_id = None
+        for candidate in lexical_ranked:
+            if self._bm25_evidence_gate(question, [candidate], 1)['passed']:
+                evidence_id = candidate[0]
+                # 只在门控内部选择见证，不改变引用的原始排序或分数。
+                lexical_ranked = [candidate] + [item for item in lexical_ranked if item[0] != evidence_id]
+                break
+        gate = self._bm25_evidence_gate(question, lexical_ranked, top_k)
+        gate.update(gate_version=RANKED_EVIDENCE_GATE_VERSION, evidence_chunk_id=evidence_id)
+        return gate
+
+    def _bm25_evidence_gate(self, question: str, ranked: list[tuple[str, float]],
+                            top_k: int) -> dict:
         """拒绝关键词分散命中、但没有一段教材能共同支撑的问题。"""
-        if mode != 'bm25':
-            return {'passed': True, 'reason': '该实验模式尚未完成独立证据门控校准。',
-                    'query_token_count': 0, 'supported_token_count': 0, 'coverage': None,
-                    'best_chunk_coverage': None, 'normalized_score': None,
-                    'gate_version': None}
         terms = evidence_query_tokens(question)
         candidate_ids = [chunk_id for chunk_id, _ in ranked[:max(5, top_k)]]
         supported = {term for term in terms if any(
@@ -298,6 +313,7 @@ class RetrievalService:
             raise AppError(502, 'embedding_dimension_mismatch', '查询向量维数与离线索引不一致，请重建索引。')
         vector_ranked = []
         for chunk_id in allowed_ids:
+            #向量×块
             score = sum(query_value * chunk_value
                         for query_value, chunk_value in zip(query_vector, self._vectors[chunk_id]))
             if score > 0:

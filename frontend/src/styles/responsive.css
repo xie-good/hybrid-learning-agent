@@ -14,7 +14,7 @@
     font-size: 37px;
   }
   .hero p {
-    font-size: 12px;
+    font-size: 14px;
   }
   .hero-art {
     margin-right: 25px;
@@ -30,10 +30,10 @@
     padding: 21px 21px 0;
   }
   .chapter-card h3 {
-    font-size: 14px;
+    font-size: 15px;
   }
   .chapter-card > p {
-    font-size: 11px;
+    font-size: 13px;
     height: 39px;
   }
   .chapter-card-bottom {
@@ -42,14 +42,14 @@
   .path-card {
     padding: 25px 25px 0;
   }
-  .learning-steps button {
+  .learning-steps a {
     padding: 15px 0;
   }
   .learning-steps strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .learning-steps small {
-    font-size: 10px;
+    font-size: 12px;
   }
   .stats-grid {
     margin: 23px 0 32px;
@@ -116,7 +116,7 @@
   .chapter-card-bottom {
     font-size: 7px;
   }
-  .chapter-card-bottom button {
+  .chapter-card-bottom a {
     width: 25px;
     height: 25px;
   }
@@ -235,13 +235,13 @@
     margin-bottom: 23px;
   }
   h1 {
-    font-size: 26px;
+    font-size: 28px;
   }
   .page-heading p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .eyebrow {
-    font-size: 8px;
+    font-size: 12px;
   }
   .hero {
     min-height: 270px;
@@ -256,7 +256,7 @@
     font-size: 29px;
   }
   .hero p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .hero-tag {
     font-size: 8px;
@@ -278,11 +278,11 @@
     padding: 18px 18px 0;
   }
   .chapter-card > p {
-    font-size: 10px;
+    font-size: 12px;
     height: 36px;
   }
   .chapter-card h3 {
-    font-size: 14px;
+    font-size: 15px;
   }
   .workbench-grid {
     gap: 24px;
@@ -294,7 +294,7 @@
     display: none;
   }
   .message {
-    font-size: 11px;
+    font-size: 13px;
     flex-wrap: wrap;
   }
   .sidebar-course {
@@ -304,7 +304,7 @@
     padding-top: 25px;
   }
   .page-footer {
-    font-size: 7px;
+    font-size: 11px;
   }
   .form-grid {
     gap: 12px;
@@ -328,17 +328,17 @@
     gap: 8px;
   }
   .service-status {
-    font-size: 9px;
+    font-size: 11px;
   }
   .eyebrow {
-    font-size: 7px;
+    font-size: 12px;
     letter-spacing: 1.5px;
   }
   .page-heading p {
-    font-size: 10px;
+    font-size: 13px;
   }
   h1 {
-    font-size: 25px;
+    font-size: 27px;
   }
   .hero {
     min-height: 293px;
@@ -353,7 +353,7 @@
     margin-top: 16px;
   }
   .hero p {
-    font-size: 10px;
+    font-size: 13px;
     max-width: 220px;
     line-height: 1.9;
     margin-top: 13px;
@@ -430,13 +430,13 @@
     margin-left: 5px;
   }
   .section-heading h2 {
-    font-size: 15px;
+    font-size: 16px;
   }
   .section-heading p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .text-button {
-    font-size: 9px;
+    font-size: 12px;
   }
   .chapter-grid {
     gap: 10px;
@@ -445,13 +445,13 @@
     padding: 13px 12px 0;
   }
   .chapter-card h3 {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.7;
     min-height: 40px;
     margin-top: 9px;
   }
   .chapter-card > p {
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.7;
     height: 31px;
     margin-top: 5px;
@@ -462,7 +462,7 @@
     position: relative;
     padding: 11px 0 13px;
   }
-  .chapter-card-bottom button {
+  .chapter-card-bottom a {
     width: 22px;
     height: 22px;
     flex-shrink: 0;
@@ -488,14 +488,14 @@
   .path-card {
     padding: 22px 22px 0;
   }
-  .learning-steps button {
+  .learning-steps a {
     padding: 12px 0;
   }
   .learning-steps strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .learning-steps small {
-    font-size: 10px;
+    font-size: 12px;
   }
   .recent-empty {
     padding: 17px 0 5px;
@@ -505,12 +505,12 @@
     gap: 8px;
   }
   .page-footer > span:last-child {
-    font-size: 6px;
+    font-size: 10px;
     letter-spacing: 0.3px;
   }
   .footer-mark {
     margin-right: 4px;
-    font-size: 9px;
+    font-size: 12px;
   }
   .panel {
     padding: 18px;
@@ -535,10 +535,13 @@
     font-size: 8px;
   }
   .prose {
-    font-size: 12px;
+    font-size: 16px;
+  }
+  .key-points {
+    font-size: 16px;
   }
   .quiz-options label {
-    font-size: 11px;
+    font-size: 14px;
   }
   .history-toolbar {
     align-items: flex-start;
@@ -546,20 +549,20 @@
     gap: 12px;
   }
   .history-toolbar h3 {
-    font-size: 13px;
+    font-size: 15px;
   }
   .history-toolbar p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .history-item > summary {
     padding: 17px 15px;
     gap: 10px;
   }
   .history-item-title {
-    font-size: 12px;
+    font-size: 14px;
   }
   .history-item-title small {
-    font-size: 9px;
+    font-size: 11px;
   }
   .history-answer {
     padding: 8px 17px 20px;
@@ -583,7 +586,7 @@
     gap: 20px;
   }
   .source-item > summary {
-    font-size: 10px;
+    font-size: 13px;
   }
   .message > .text-button {
     margin-left: auto;
@@ -601,10 +604,10 @@
     width: 100%;
   }
   .question-footer .button {
-    font-size: 11px;
+    font-size: 13px;
   }
   .quiz-question .tiny-label {
-    font-size: 9px;
+    font-size: 12px;
   }
 }
 /* 用户选择减少动态效果时，停用过渡并缩短动画；业务状态仍由文字提示。 */

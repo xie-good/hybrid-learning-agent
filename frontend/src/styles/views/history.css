@@ -7,11 +7,11 @@
   gap: 20px;
 }
 .history-toolbar h3 {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 550;
 }
 .history-toolbar p {
-  font-size: 11px;
+  font-size: 13px;
   color: #99a78e;
   margin-top: 6px;
 }
@@ -37,7 +37,7 @@
   place-items: center;
 }
 .history-item-title {
-  font-size: 13px;
+  font-size: 15px;
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -45,7 +45,7 @@
 .history-item-title small {
   display: block;
   color: #a4ae9b;
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 6px;
 }
 .history-item > summary > svg {
@@ -72,11 +72,11 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  font-size: 11px;
+  font-size: 13px;
   color: #8b9d80;
 }
 .pagination .button {
-  font-size: 10px;
+  font-size: 12px;
   padding: 8px 13px;
   min-height: 34px;
 }
@@ -88,6 +88,6 @@
 .clear-history label {
   flex-direction: row;
   align-items: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #9ea993;
 }

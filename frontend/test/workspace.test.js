@@ -42,64 +42,64 @@ const chapters = [
 
 test("章/节范围共享，切换章节清空小节；全部课程发送 null", async () => {
   const workspace = create();
-  assert.deepEqual(workspace.scope(), { chapter_id: null, section_id: null });
-  workspace.chapterId.value = "ch01";
+  assert.deepEqual(workspace.buildLearningScope(), { chapter_id: null, section_id: null });
+  workspace.selectedChapterId.value = "ch01";
   await nextTick();
-  workspace.sectionId.value = "ch01-s001";
-  workspace.chapterId.value = "ch02";
+  workspace.selectedSectionId.value = "ch01-s001";
+  workspace.selectedChapterId.value = "ch02";
   await nextTick();
-  assert.deepEqual(workspace.scope(), { chapter_id: "ch02", section_id: null });
+  assert.deepEqual(workspace.buildLearningScope(), { chapter_id: "ch02", section_id: null });
 });
 
 test("导航同步地址并收起抽屉；总结和练习自动选择首章", async () => {
   const workspace = create();
   workspace.chapters.value = chapters;
-  workspace.drawer.value = true;
-  workspace.error.value = "旧错误";
+  workspace.isSidebarOpen.value = true;
+  workspace.errorMessage.value = "旧错误";
   workspace.navigate("summary");
   await nextTick();
-  assert.equal(workspace.page.value, "summary");
+  assert.equal(workspace.currentPageId.value, "summary");
   assert.equal(location.hash, "summary");
-  assert.equal(workspace.chapterId.value, "ch01");
-  assert.equal(workspace.drawer.value, false);
-  assert.equal(workspace.error.value, "");
+  assert.equal(workspace.selectedChapterId.value, "ch01");
+  assert.equal(workspace.isSidebarOpen.value, false);
+  assert.equal(workspace.errorMessage.value, "");
   location.hash = "#quiz";
-  workspace.chapterId.value = "";
-  workspace.hashChanged();
+  workspace.selectedChapterId.value = "";
+  workspace.syncPageFromHash();
   await nextTick();
-  assert.equal(workspace.chapterId.value, "ch01");
+  assert.equal(workspace.selectedChapterId.value, "ch01");
   location.hash = "#unknown";
-  workspace.hashChanged();
-  assert.equal(workspace.page.value, "overview");
+  workspace.syncPageFromHash();
+  assert.equal(workspace.currentPageId.value, "overview");
 });
 
 test("可用状态取决于章节和后端三项实际能力", () => {
   const workspace = create();
-  workspace.health.value = { ...health };
-  assert.equal(workspace.ready.value, false);
+  workspace.serviceHealth.value = { ...health };
+  assert.equal(workspace.isLearningReady.value, false);
   workspace.chapters.value = chapters;
-  assert.equal(workspace.ready.value, true);
+  assert.equal(workspace.isLearningReady.value, true);
   for (const key of [
     "knowledge_base_ready",
     "generation_ready",
     "retrieval_ready",
   ]) {
-    workspace.health.value = { ...health, [key]: false };
-    assert.equal(workspace.ready.value, false);
+    workspace.serviceHealth.value = { ...health, [key]: false };
+    assert.equal(workspace.isLearningReady.value, false);
   }
 });
 
-test("请求成功或失败都会释放 busy，并用公共区域展示错误", async () => {
+test("请求成功或失败都会释放 activeTask，并用公共区域展示错误", async () => {
   const workspace = create();
-  await workspace.run("qa", async () => {
-    assert.equal(workspace.busy.value, "qa");
+  await workspace.runTask("qa", async () => {
+    assert.equal(workspace.activeTask.value, "qa");
   });
-  assert.equal(workspace.busy.value, "");
-  await workspace.run("quiz", async () => {
+  assert.equal(workspace.activeTask.value, "");
+  await workspace.runTask("quiz", async () => {
     throw new Error("生成失败");
   });
-  assert.equal(workspace.busy.value, "");
-  assert.equal(workspace.error.value, "生成失败");
+  assert.equal(workspace.activeTask.value, "");
+  assert.equal(workspace.errorMessage.value, "生成失败");
 });
 
 test("初始化先检查知识库，再加载课程目录和同一会话的历史", async () => {
@@ -112,13 +112,13 @@ test("初始化先检查知识库，再加载课程目录和同一会话的历�
     return Response.json({ items: [], total: 0 });
   };
   const workspace = create();
-  await workspace.init();
+  await workspace.initializeWorkspace();
   assert.equal(calls[0], "/api/health");
-  assert.match(calls.at(-1), new RegExp(workspace.session));
-  assert.equal(workspace.course.value.name, "测试课程");
-  assert.equal(workspace.chapterId.value, "ch01");
-  assert.equal(workspace.loading.value, false);
-  assert.equal(workspace.ready.value, true);
+  assert.match(calls.at(-1), new RegExp(workspace.currentSessionId));
+  assert.equal(workspace.courseInfo.value.name, "测试课程");
+  assert.equal(workspace.selectedChapterId.value, "ch01");
+  assert.equal(workspace.isInitializing.value, false);
+  assert.equal(workspace.isLearningReady.value, true);
 });
 
 test("知识库未就绪时停止初始化，保留原因且恢复加载状态", async () => {
@@ -131,10 +131,10 @@ test("知识库未就绪时停止初始化，保留原因且恢复加载状态",
     });
   };
   const workspace = create();
-  await workspace.init();
+  await workspace.initializeWorkspace();
   assert.deepEqual(calls, ["/api/health"]);
-  assert.equal(workspace.error.value, "课程数据缺失");
-  assert.equal(workspace.loading.value, false);
+  assert.equal(workspace.errorMessage.value, "课程数据缺失");
+  assert.equal(workspace.isInitializing.value, false);
 });
 
 test("只有第一页更新最近三条记录，翻页保留会话参数", async () => {
@@ -142,17 +142,17 @@ test("只有第一页更新最近三条记录，翻页保留会话参数", async
   const items = Array.from({ length: 5 }, (_, index) => ({ id: `${index}` }));
   globalThis.fetch = async (url) => {
     const params = new URL(url, "http://localhost").searchParams;
-    assert.equal(params.get("session_id"), workspace.session);
+    assert.equal(params.get("session_id"), workspace.currentSessionId);
     assert.equal(params.get("offset"), String(workspace.historyOffset.value));
     return Response.json({ items, total: 15 });
   };
   await workspace.loadHistory();
-  assert.equal(workspace.recent.value.length, 3);
+  assert.equal(workspace.recentHistoryItems.value.length, 3);
   workspace.historyOffset.value = 10;
   await workspace.loadHistory();
   assert.deepEqual(
-    workspace.recent.value.map((item) => item.id),
+    workspace.recentHistoryItems.value.map((item) => item.id),
     ["0", "1", "2"],
   );
-  assert.equal(workspace.historyLoading.value, false);
+  assert.equal(workspace.isHistoryLoading.value, false);
 });

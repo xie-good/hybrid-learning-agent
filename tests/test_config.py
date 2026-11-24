@@ -25,15 +25,16 @@ class SettingsTests(unittest.TestCase):
         self.enterContext(patch.dict(os.environ, {}, clear=True))
 
     def test_constructor_is_independent_of_environment(self):
-        os.environ.update(GENERATION_MODE='llm', DEFAULT_RETRIEVAL_MODE='hybrid', MODEL_TIMEOUT='12')
+        os.environ.update(GENERATION_MODE='llm', DEFAULT_RETRIEVAL_MODE='bm25', MODEL_TIMEOUT='12')
         config = Settings()
         self.assertEqual(config.generation_mode, 'extractive')
-        self.assertEqual(config.default_retrieval_mode, 'bm25')
+        self.assertEqual(config.default_retrieval_mode, 'hybrid')
         self.assertEqual(config.model_timeout, 30)
 
     def test_defaults_match_environment_factory_without_overrides(self):
         config = Settings.from_env()
         self.assertEqual(asdict(config), asdict(Settings()))
+        self.assertEqual(config.default_retrieval_mode, 'hybrid')
         self.assertEqual(len(fields(config)), 14)
         self.assertEqual(config.processed_dir, DATA_DIR / 'processed/hello-agents')
         self.assertEqual(config.database_path, DATA_DIR / 'runtime/history.sqlite3')
@@ -68,6 +69,11 @@ class SettingsTests(unittest.TestCase):
         os.environ['MODEL_TIMEOUT'] = '20'
         second = Settings.from_env()
         self.assertEqual((first.model_timeout, second.model_timeout), (10, 20))
+
+    def test_environment_can_override_hybrid_default_for_evaluation(self):
+        for mode in ('bm25', 'vector', 'hybrid'):
+            with self.subTest(mode=mode), patch.dict(os.environ, DEFAULT_RETRIEVAL_MODE=mode):
+                self.assertEqual(Settings.from_env().default_retrieval_mode, mode)
 
     def test_dotenv_loads_once_and_process_environment_takes_priority(self):
         with TemporaryDirectory() as temp:

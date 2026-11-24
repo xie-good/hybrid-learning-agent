@@ -37,8 +37,26 @@ export const modeLabel = (mode) =>
   mode === "llm" ? "模型生成 · 教材依据" : "教材原文摘录";
 export const retrievalLabels = {
   bm25: "BM25 关键词检索",
-  vector: "向量检索（实验）",
-  hybrid: "混合检索（实验）",
+  vector: "向量检索",
+  hybrid: "混合检索",
+};
+
+// 仅用于界面展示：去掉生成方式英文前缀，不改动后端原始字段。
+const DISPLAY_PREFIXES = [
+  ["原文摘录总结（extractive）：", "原文摘录总结："],
+  ["原文摘录（extractive）：", "原文摘录："],
+  ["代表性小节总结（llm，非逐段完整覆盖）：", "代表性小节总结（大模型生成，非逐段完整覆盖）："],
+];
+export const displayLearningText = (text) => {
+  if (!text) return "";
+  let value = String(text).trim();
+  for (const [original, chinese] of DISPLAY_PREFIXES) {
+    if (value.startsWith(original)) {
+      value = chinese + value.slice(original.length);
+      break;
+    }
+  }
+  return value;
 };
 
 // 卡片标题和历史时间的展示格式，不改变后端原始数据。

@@ -2,11 +2,12 @@
 /* 样式阅读顺序：全局基础 → 导航/顶栏 → 工作台 → 学习表单/结果 → 历史 → 响应式。
    下方 --green、--dark 等变量统一控制主题色；改配色优先改这里，避免到处替换色值。 */
 :root {
-  font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color-scheme: light;
+  font-family: "Songti SC", "SimSun", "NSimSun", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", serif;
   color: #273b38;
   background: #f5f7f6;
   font-synthesis: none;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   font-weight: 400;
   --green: #21675b;
@@ -71,6 +72,28 @@ h3,
 p {
   margin: 0;
 }
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+a[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.stat-card strong,
+.coverage-stats dd,
+.pill,
+.pagination,
+.quiz-question .tiny-label,
+.question-footer > span,
+.chapter-number,
+.chapter-pages,
+.step-number,
+.citation-number {
+  font-variant-numeric: tabular-nums;
+}
 button {
   border: 0;
   background: none;
@@ -119,7 +142,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
 }
 fieldset {

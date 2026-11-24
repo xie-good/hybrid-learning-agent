@@ -32,7 +32,7 @@
 }
 .brand-en {
   display: block;
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 1.25px;
   font-weight: 500;
   color: #899991;
@@ -40,13 +40,13 @@
 }
 .workspace-label {
   padding: 40px 14px 15px;
-  font-size: 10px;
+  font-size: 13px;
   color: #9ba7a1;
   letter-spacing: 1px;
 }
 .workspace-label span {
   float: right;
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 1px;
   line-height: 18px;
 }
@@ -57,7 +57,7 @@
   padding: 13px 16px;
   margin-bottom: 8px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 15px;
   color: #7c8984;
   transition: background 0.15s;
 }
@@ -83,7 +83,7 @@
   border-top: 1px solid var(--border);
 }
 .tiny-label {
-  font-size: 10px;
+  font-size: 13px;
   color: #8f9f96;
   letter-spacing: 1.2px;
 }
@@ -91,7 +91,7 @@
   display: flex;
   gap: 11px;
   align-items: center;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   margin-top: 16px;
 }
@@ -106,14 +106,14 @@
 }
 .sidebar-course-title small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: #94a099;
   font-weight: 400;
   margin-top: 4px;
 }
 .course-version {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: #a0aaa5;
   margin: 13px 0 0 43px;
 }
@@ -126,35 +126,9 @@
 }
 .study-note p {
   color: #8b9b92;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.9;
   margin-top: 10px;
-}
-.help-button {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  padding: 15px 12px;
-  color: #8a9690;
-  font-size: 11px;
-  border-top: 1px solid var(--border);
-}
-.help-button svg:last-child {
-  margin-left: auto;
-}
-.help-panel {
-  font-size: 11px;
-  color: #76857d;
-  background: #f2f6f3;
-  border-radius: 7px;
-  padding: 13px;
-  margin-bottom: 10px;
-  line-height: 1.9;
-}
-.help-panel a {
-  color: var(--green);
 }
 .session-user {
   display: flex;
@@ -162,7 +136,7 @@
   gap: 10px;
   border-top: 1px solid var(--border);
   padding: 19px 8px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 .avatar {
@@ -179,7 +153,7 @@
 }
 .session-user small {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   color: #a4ada8;
   font-weight: 400;
   margin-top: 2px;
@@ -213,7 +187,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  font-size: 11px;
+  font-size: 13px;
   color: #9ca69f;
 }
 .breadcrumb strong {
@@ -226,7 +200,7 @@
   gap: 23px;
 }
 .service-status {
-  font-size: 10px;
+  font-size: 12px;
   color: #668572;
   display: flex;
   gap: 7px;
@@ -254,13 +228,17 @@
 .avatar-small {
   width: 29px;
   height: 29px;
-  font-size: 11px;
+  font-size: 12px;
 }
 .main-content {
   max-width: 1640px;
   margin: 0 auto;
   padding: 35px 40px 0;
   outline: none;
+}
+.main-content:focus-visible {
+  outline: 3px solid #69ad9e;
+  outline-offset: -3px;
 }
 .page-heading {
   display: flex;
@@ -269,14 +247,14 @@
   margin-bottom: 27px;
 }
 .eyebrow {
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: 1.9px;
   color: #8e9f95;
   font-weight: 600;
   margin-bottom: 8px;
 }
 h1 {
-  font-size: 29px;
+  font-size: 31px;
   font-weight: 650;
   letter-spacing: 1px;
   line-height: 1.5;
@@ -287,14 +265,14 @@ h1 {
 }
 .page-heading p {
   color: #8d9992;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 6px;
 }
 .heading-badge {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 10px;
+  font-size: 13px;
   border: 1px solid #e1e7df;
   border-radius: 6px;
   padding: 7px 11px;

@@ -5,53 +5,60 @@ import AppIcon from "../components/AppIcon.vue";
 import SourceList from "../components/SourceList.vue";
 import { useWorkspace } from "../composables/useWorkspace.js";
 import { request } from "../lib/api.js";
-import { dateLabel, modeLabel } from "../lib/presentation.js";
+import {dateLabel, modeLabel, displayLearningText} from "../lib/presentation.js";
 
 const {
-  busy,
-  notice,
-  run,
-  session,
-  history,
+  activeTask,
+  noticeMessage,
+  runTask,
+  currentSessionId,
+  historyResult,
   historyOffset,
-  historyLoading,
+  isHistoryLoading,
   loadHistory,
-  historyCleared,
+  historyClearCount,
   navigate,
 } = useWorkspace();
-const clearConfirm = ref(false);
+const isClearHistoryConfirmed = ref(false);
+const pendingDeleteHistoryId = ref(null);
 
 // KeepAlive 重新激活页面也要刷新，避免从问答页返回后仍停留在旧的记录列表。
 onActivated(loadHistory);
 
-function deleteRecord(id) {
-  run("delete", async () => {
-    await request(`/history/${encodeURIComponent(id)}?session_id=${session}`, {
+function requestDelete(historyId) {
+  // 首次点击仅进入确认态，再次点击才真正删除，避免误触。
+  if (pendingDeleteHistoryId.value !== historyId) {
+    pendingDeleteHistoryId.value = historyId;
+    return;
+  }
+  pendingDeleteHistoryId.value = null;
+  runTask("delete", async () => {
+    await request(`/history/${encodeURIComponent(historyId)}?session_id=${currentSessionId}`, {
       method: "DELETE",
     });
     // 删除当前页最后一条时退回上一页，避免仍有历史却显示空白分页。
-    if (history.value.items.length === 1 && historyOffset.value > 0)
+    if (historyResult.value.items.length === 1 && historyOffset.value > 0)
       historyOffset.value -= 10;
     await loadHistory();
-    notice.value = "该问答记录已删除。";
+    noticeMessage.value = "该问答记录已删除。";
   });
 }
 
 function clearHistory() {
-  run("delete", async () => {
-    await request(`/history?session_id=${session}`, { method: "DELETE" });
+  runTask("delete", async () => {
+    await request(`/history?session_id=${currentSessionId}`, { method: "DELETE" });
     historyOffset.value = 0;
-    clearConfirm.value = false;
+    isClearHistoryConfirmed.value = false;
     // 用共享通知清除问答页旧结果，不越过组件边界直接操作它的局部状态。
-    historyCleared.value += 1;
+    historyClearCount.value += 1;
     await loadHistory();
-    notice.value = "当前会话的问答记录已清空。";
+    noticeMessage.value = "当前会话的问答记录已清空。";
   });
 }
 
 // 后端接收跳过的记录条数；界面的上一页/下一页换算成十条的增减。
-function changeHistoryPage(delta) {
-  historyOffset.value += delta * 10;
+function changeHistoryPage(pageDelta) {
+  historyOffset.value += pageDelta * 10;
   loadHistory();
 }
 </script>
@@ -62,60 +69,71 @@ function changeHistoryPage(delta) {
     <div>
       <h3>
         本次会话的学习足迹
-        <span class="pill">{{ history.total }} 条</span>
+        <span class="pill">{{ historyResult.total }} 条</span>
       </h3>
       <p>仅保存当前标签页的问答；总结与练习不计入历史。</p>
     </div>
     <button
       class="button secondary"
-      :disabled="historyLoading || !!busy"
+      :disabled="isHistoryLoading || !!activeTask"
       @click="loadHistory"
     >
       <AppIcon name="refresh" :size="16" /> 刷新记录
     </button>
   </section>
-  <div v-if="historyLoading" class="empty-state" role="status">
+  <div v-if="isHistoryLoading" class="empty-state" role="status">
     <span class="spinner"></span>正在读取会话记录…
   </div>
-  <section v-else-if="!history.items.length" class="panel empty-state">
+  <section v-else-if="!historyResult.items.length" class="panel empty-state">
     <span class="placeholder-symbol"
       ><AppIcon name="history" :size="32"
     /></span>
     <h3>每一次思考，都值得留下</h3>
     <p>向教材提出第一个问题，你的学习足迹就会出现在这里。</p>
-    <button class="button primary" @click="navigate('qa')">
+    <a class="button primary" :href="'#qa'" @click.exact.prevent="navigate('qa')">
       去提个问题 <AppIcon name="arrow" :size="16" />
-    </button>
+    </a>
   </section>
   <template v-else>
     <details
-      v-for="item in history.items"
-      :key="item.id"
+      v-for="historyItem in historyResult.items"
+      :key="historyItem.id"
       class="panel history-item"
     >
       <summary>
         <span class="history-item-icon"><AppIcon name="chat" /></span>
         <span class="history-item-title">
-          {{ item.question }}
+          {{ historyItem.question }}
           <small>
-            {{ dateLabel(item.created_at) }} ·
-            {{ modeLabel(item.generation_mode) }}
+            {{ dateLabel(historyItem.created_at) }} ·
+            {{ modeLabel(historyItem.generation_mode) }}
           </small>
         </span>
         <AppIcon name="chevron" :size="18" />
       </summary>
       <div class="history-answer">
-        <p v-if="item.insufficient_evidence" class="message warning">
+        <p v-if="historyItem.insufficient_evidence" class="message warning">
           本条记录的教材证据不足。
         </p>
-        <p class="prose">{{ item.answer }}</p>
-        <SourceList :citations="item.citations" />
+        <p class="prose">{{ displayLearningText(historyItem.answer) }}</p>
+        <SourceList :citations="historyItem.citations" />
         <button
           class="text-button danger"
-          :disabled="!!busy"
-          @click="deleteRecord(item.id)"
+          :disabled="!!activeTask"
+          @click="requestDelete(historyItem.id)"
         >
-          <AppIcon name="trash" :size="15" /> 删除这条记录
+          <AppIcon name="trash" :size="15" />
+          {{
+            pendingDeleteHistoryId === historyItem.id ? "确认删除这条记录" : "删除这条记录"
+          }}
+        </button>
+        <button
+          v-if="pendingDeleteHistoryId === historyItem.id"
+          class="text-button"
+          :disabled="!!activeTask"
+          @click="pendingDeleteHistoryId = null"
+        >
+          取消
         </button>
       </div>
     </details>
@@ -123,19 +141,19 @@ function changeHistoryPage(delta) {
       <div class="pagination">
         <button
           class="button secondary"
-          :disabled="historyOffset === 0 || historyLoading || !!busy"
+          :disabled="historyOffset === 0 || isHistoryLoading || !!activeTask"
           @click="changeHistoryPage(-1)"
         >
           上一页
         </button>
         <span>
           第 {{ historyOffset / 10 + 1 }} /
-          {{ Math.max(1, Math.ceil(history.total / 10)) }} 页
+          {{ Math.max(1, Math.ceil(historyResult.total / 10)) }} 页
         </span>
         <button
           class="button secondary"
           :disabled="
-            historyOffset + 10 >= history.total || historyLoading || !!busy
+            historyOffset + 10 >= historyResult.total || isHistoryLoading || !!activeTask
           "
           @click="changeHistoryPage(1)"
         >
@@ -144,12 +162,12 @@ function changeHistoryPage(delta) {
       </div>
       <div class="clear-history">
         <label>
-          <input v-model="clearConfirm" type="checkbox" />
+          <input v-model="isClearHistoryConfirmed" type="checkbox" />
           确认清空当前会话
         </label>
         <button
           class="text-button danger"
-          :disabled="!clearConfirm || !!busy"
+          :disabled="!isClearHistoryConfirmed || !!activeTask"
           @click="clearHistory"
         >
           清空记录

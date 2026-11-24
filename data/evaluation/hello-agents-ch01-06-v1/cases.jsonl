@@ -1,0 +1,120 @@
+{"case_id":"cal-ch01-001","dataset_version":"caeb372d8f756b87","split":"calibration","question":"智能体的定义是什么，自主性如何支持独立决策？","answerable":true,"expected_section_ids":["ch01-s001"]}
+{"case_id":"reg-ch01-002","dataset_version":"caeb372d8f756b87","split":"regression","question":"PEAS 模型用哪四个方面描述智能体的任务环境？","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"val-ch01-003","dataset_version":"caeb372d8f756b87","split":"validation","question":"智能旅行助手如何分步查询天气并推荐旅游景点？","answerable":true,"expected_section_ids":["ch01-s003"]}
+{"case_id":"cal-ch01-004","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Workflow 与 Agent 在执行指令和自主达成目标上有何差异？","answerable":true,"expected_section_ids":["ch01-s004"]}
+{"case_id":"reg-ch01-005","dataset_version":"caeb372d8f756b87","split":"regression","question":"简单反射智能体与基于模型的反射智能体有何差别？","answerable":true,"expected_section_ids":["ch01-s001"]}
+{"case_id":"val-ch01-006","dataset_version":"caeb372d8f756b87","split":"validation","question":"旅行助手的随机性环境对处理不确定性有什么要求？","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"cal-ch01-007","dataset_version":"caeb372d8f756b87","split":"calibration","question":"系统提示词如何规定输出格式，用 Finish 结束任务？","answerable":true,"expected_section_ids":["ch01-s003"]}
+{"case_id":"reg-ch01-008","dataset_version":"caeb372d8f756b87","split":"regression","question":"GitHub Copilot 与 Cursor 的编辑器集成方式有何不同？","answerable":true,"expected_section_ids":["ch01-s004"]}
+{"case_id":"val-ch01-009","dataset_version":"caeb372d8f756b87","split":"validation","question":"基于效用的智能体如何权衡相互冲突的目标？","answerable":true,"expected_section_ids":["ch01-s001"]}
+{"case_id":"cal-ch01-010","dataset_version":"caeb372d8f756b87","split":"calibration","question":"思考阶段的规划和工具选择各做什么？","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"reg-ch01-011","dataset_version":"caeb372d8f756b87","split":"regression","question":"get_weather 如何提取 JSON 天气数据并格式化成自然语言？","answerable":true,"expected_section_ids":["ch01-s003"]}
+{"case_id":"val-ch01-012","dataset_version":"caeb372d8f756b87","split":"validation","question":"CAMEL 的角色扮演式对话与 MetaGPT、CrewAI 的组织化工作流有何区别？","answerable":true,"expected_section_ids":["ch01-s004"]}
+{"case_id":"cal-ch01-013","dataset_version":"caeb372d8f756b87","split":"calibration","question":"反应式智能体与规划式智能体如何权衡速度、计算成本和长远规划？","answerable":true,"expected_section_ids":["ch01-s001"]}
+{"case_id":"reg-ch01-014","dataset_version":"caeb372d8f756b87","split":"regression","question":"工具已经返回了 JSON，感知系统为什么还要把它封装成 Observation 文本？","answerable":true,"expected_section_ids":["ch01-s002"]}
+{"case_id":"val-ch01-015","dataset_version":"caeb372d8f756b87","split":"validation","question":"主循环如何用 prompt_history 记录观察结果、构建 Prompt？","answerable":true,"expected_section_ids":["ch01-s003"]}
+{"case_id":"cal-ch01-016","dataset_version":"caeb372d8f756b87","split":"calibration","question":"高级控制流架构 LangGraph 能实现哪些复杂流程？","answerable":true,"expected_section_ids":["ch01-s004"]}
+{"case_id":"reg-ch01-017","dataset_version":"caeb372d8f756b87","split":"regression","question":"为什么大语言模型驱动的智能体可以作为神经符号混合主义的实践例子？","answerable":true,"expected_section_ids":["ch01-s001"]}
+{"case_id":"cal-ch01-018","dataset_version":"caeb372d8f756b87","split":"calibration","question":"家里做清蒸鲈鱼，鱼身有六百克时应怎样安排蒸制时间和调味步骤？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch01-019","dataset_version":"caeb372d8f756b87","split":"regression","question":"持中国普通护照去法国旅游，申根签证通常需要准备哪些材料？","answerable":false,"expected_section_ids":[]}
+{"case_id":"val-ch01-020","dataset_version":"caeb372d8f756b87","split":"validation","question":"高中生喜欢绘画但数学成绩一般，大学选视觉传达还是工业设计更合适？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-ch02-001","dataset_version":"caeb372d8f756b87","split":"calibration","question":"物理符号系统假说的充分性论断和必要性论断分别是什么？","answerable":true,"expected_section_ids":["ch02-s001"]}
+{"case_id":"reg-ch02-002","dataset_version":"caeb372d8f756b87","split":"regression","question":"ELIZA 如何通过关键词识别、分解规则、重组规则和代词转换生成回应？","answerable":true,"expected_section_ids":["ch02-s002"]}
+{"case_id":"val-ch02-003","dataset_version":"caeb372d8f756b87","split":"validation","question":"在明斯基的心智社会中，简单智能体与 Agency 分别指什么，它们如何组织起来？","answerable":true,"expected_section_ids":["ch02-s003"]}
+{"case_id":"cal-ch02-004","dataset_version":"caeb372d8f756b87","split":"calibration","question":"联结主义如何表示知识并通过学习调整权重？","answerable":true,"expected_section_ids":["ch02-s004"]}
+{"case_id":"reg-ch02-005","dataset_version":"caeb372d8f756b87","split":"regression","question":"专家系统的正向链与反向链各从什么出发？","answerable":true,"expected_section_ids":["ch02-s001"]}
+{"case_id":"val-ch02-006","dataset_version":"caeb372d8f756b87","split":"validation","question":"swap_pronouns 如何进行第一、第二人称转换？","answerable":true,"expected_section_ids":["ch02-s002"]}
+{"case_id":"cal-ch02-007","dataset_version":"caeb372d8f756b87","split":"calibration","question":"心智社会中，搭建积木塔的智能行为如何从简单机构的交互中涌现？","answerable":true,"expected_section_ids":["ch02-s003"]}
+{"case_id":"reg-ch02-008","dataset_version":"caeb372d8f756b87","split":"regression","question":"强化学习智能体为什么有时应牺牲当前奖励，它最终要最大化的目标是什么？","answerable":true,"expected_section_ids":["ch02-s004"]}
+{"case_id":"val-ch02-009","dataset_version":"caeb372d8f756b87","split":"validation","question":"MYCIN 的置信因子如何表示不确定结论的可信度？","answerable":true,"expected_section_ids":["ch02-s001"]}
+{"case_id":"cal-ch02-010","dataset_version":"caeb372d8f756b87","split":"calibration","question":"ELIZA 为什么会误解否定词并缺乏连贯的多轮对话？","answerable":true,"expected_section_ids":["ch02-s002"]}
+{"case_id":"reg-ch02-011","dataset_version":"caeb372d8f756b87","split":"regression","question":"心智社会理论在去中心化控制、涌现式计算和智能体社会性方面，怎样启发了多智能体系统研究？","answerable":true,"expected_section_ids":["ch02-s003"]}
+{"case_id":"val-ch02-012","dataset_version":"caeb372d8f756b87","split":"validation","question":"预训练与微调的两阶段范式如何缓解传统 NLP 为每个任务从零训练、逐一标注数据的问题？","answerable":true,"expected_section_ids":["ch02-s004"]}
+{"case_id":"cal-ch02-013","dataset_version":"caeb372d8f756b87","split":"calibration","question":"SHRDLU 能回答哪些环境和自身行为问题？","answerable":true,"expected_section_ids":["ch02-s001"]}
+{"case_id":"reg-ch02-014","dataset_version":"caeb372d8f756b87","split":"regression","question":"ELIZA 为何让用户相信它理解自己，这种智能幻觉叫什么？","answerable":true,"expected_section_ids":["ch02-s002"]}
+{"case_id":"val-ch02-015","dataset_version":"caeb372d8f756b87","split":"validation","question":"上下文学习如何让模型无需调整权重就理解新任务？","answerable":true,"expected_section_ids":["ch02-s004"]}
+{"case_id":"cal-ch02-016","dataset_version":"caeb372d8f756b87","split":"calibration","question":"符号主义的框架问题为何难以显式声明所有不变状态？","answerable":true,"expected_section_ids":["ch02-s001"]}
+{"case_id":"reg-ch02-017","dataset_version":"caeb372d8f756b87","split":"regression","question":"LLM 智能体如何衔接执行模块、工具结果与记忆更新？","answerable":true,"expected_section_ids":["ch02-s004"]}
+{"case_id":"cal-ch02-018","dataset_version":"caeb372d8f756b87","split":"calibration","question":"烤箱做八寸戚风蛋糕时，面糊配比、温度和烘烤时长应该怎样设置？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch02-019","dataset_version":"caeb372d8f756b87","split":"regression","question":"第一次申请日本个人旅游签证，自由职业者需要提交哪些收入和行程证明？","answerable":false,"expected_section_ids":[]}
+{"case_id":"val-ch02-020","dataset_version":"caeb372d8f756b87","split":"validation","question":"准备报考大学的学生想进入会计行业，应该怎样比较会计学、财务管理和审计学专业？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-ch03-001","dataset_version":"caeb372d8f756b87","split":"calibration","question":"N-gram 语言模型怎样利用马尔可夫假设缩小所需的历史上下文？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"reg-ch03-002","dataset_version":"caeb372d8f756b87","split":"regression","question":"词嵌入为什么能改善 N-gram 模型难以泛化到语义相近词的问题？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"val-ch03-003","dataset_version":"caeb372d8f756b87","split":"validation","question":"标准 RNN 为什么难以学习长距离依赖，LSTM 又通过哪些门控制记忆？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"cal-ch03-004","dataset_version":"caeb372d8f756b87","split":"calibration","question":"多头注意力如何同时捕捉不同的特征关系？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"reg-ch03-005","dataset_version":"caeb372d8f756b87","split":"regression","question":"Transformer 为什么需要在词嵌入上添加位置编码？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"val-ch03-006","dataset_version":"caeb372d8f756b87","split":"validation","question":"Transformer 的逐位置前馈网络如何处理不同位置的词元，它们是否共享参数？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"cal-ch03-007","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Decoder-Only 的因果掩码如何阻止关注后面的信息？","answerable":true,"expected_section_ids":["ch03-s001"]}
+{"case_id":"reg-ch03-008","dataset_version":"caeb372d8f756b87","split":"regression","question":"Temperature 和 Top-k 如何调整下一 token 的采样？","answerable":true,"expected_section_ids":["ch03-s002"]}
+{"case_id":"val-ch03-009","dataset_version":"caeb372d8f756b87","split":"validation","question":"零样本、单样本与少样本提示各提供多少示例？","answerable":true,"expected_section_ids":["ch03-s002"]}
+{"case_id":"cal-ch03-010","dataset_version":"caeb372d8f756b87","split":"calibration","question":"BPE 如何迭代合并相邻词元对，何时停止？","answerable":true,"expected_section_ids":["ch03-s002"]}
+{"case_id":"reg-ch03-011","dataset_version":"caeb372d8f756b87","split":"regression","question":"上下文窗口限制与 API 成本为何按 Token 数量计算？","answerable":true,"expected_section_ids":["ch03-s002"]}
+{"case_id":"val-ch03-012","dataset_version":"caeb372d8f756b87","split":"validation","question":"本地部署 Qwen 对话模型的示例中，Hugging Face Transformers 使用哪些类加载模型和分词器？","answerable":true,"expected_section_ids":["ch03-s002"]}
+{"case_id":"cal-ch03-013","dataset_version":"caeb372d8f756b87","split":"calibration","question":"模型选型如何权衡性能、成本、速度和部署方式？","answerable":true,"expected_section_ids":["ch03-s002"]}
+{"case_id":"reg-ch03-014","dataset_version":"caeb372d8f756b87","split":"regression","question":"大语言模型的缩放法则描述了性能与哪三类资源之间的关系？","answerable":true,"expected_section_ids":["ch03-s003"]}
+{"case_id":"val-ch03-015","dataset_version":"caeb372d8f756b87","split":"validation","question":"给定计算预算下，Chinchilla 定律要求怎样的模型参数量与训练数据量配比？","answerable":true,"expected_section_ids":["ch03-s003"]}
+{"case_id":"cal-ch03-016","dataset_version":"caeb372d8f756b87","split":"calibration","question":"大语言模型的事实性幻觉与忠实性幻觉有什么区别？","answerable":true,"expected_section_ids":["ch03-s003"]}
+{"case_id":"reg-ch03-017","dataset_version":"caeb372d8f756b87","split":"regression","question":"自回归生成机制为何产生模型幻觉，RAG 如何缓解？","answerable":true,"expected_section_ids":["ch03-s003"]}
+{"case_id":"cal-ch03-018","dataset_version":"caeb372d8f756b87","split":"calibration","question":"初学小提琴时，怎样练习换弓才能减少杂音？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch03-019","dataset_version":"caeb372d8f756b87","split":"regression","question":"徒手深蹲时膝盖和脚尖应如何对齐？","answerable":false,"expected_section_ids":[]}
+{"case_id":"val-ch03-020","dataset_version":"caeb372d8f756b87","split":"validation","question":"用小型天文望远镜观察土星环需要怎样选择目镜？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-ch04-001","dataset_version":"caeb372d8f756b87","split":"calibration","question":"第四章的 HelloAgentsLLM 初始化时，模型 ID、API 密钥和服务地址从哪里读取，显式参数与环境变量谁优先？","answerable":true,"expected_section_ids":["ch04-s001"]}
+{"case_id":"reg-ch04-002","dataset_version":"caeb372d8f756b87","split":"regression","question":"HelloAgentsLLM 客户端封装模型服务交互，有什么作用？","answerable":true,"expected_section_ids":["ch04-s001"]}
+{"case_id":"val-ch04-003","dataset_version":"caeb372d8f756b87","split":"validation","question":"HelloAgentsLLM 的 think 如何拼接流式响应？","answerable":true,"expected_section_ids":["ch04-s001"]}
+{"case_id":"cal-ch04-004","dataset_version":"caeb372d8f756b87","split":"calibration","question":"ReAct 的 Thought、Action、Observation 各有什么作用，如何循环？","answerable":true,"expected_section_ids":["ch04-s002"]}
+{"case_id":"reg-ch04-005","dataset_version":"caeb372d8f756b87","split":"regression","question":"ReAct 工具包含哪些核心要素，描述为什么最关键？","answerable":true,"expected_section_ids":["ch04-s002"]}
+{"case_id":"val-ch04-006","dataset_version":"caeb372d8f756b87","split":"validation","question":"SerpApi 如何选择直接答案或前三个搜索结果摘要？","answerable":true,"expected_section_ids":["ch04-s002"]}
+{"case_id":"cal-ch04-007","dataset_version":"caeb372d8f756b87","split":"calibration","question":"ReActAgent 为什么需要 max_steps 参数限制核心循环？","answerable":true,"expected_section_ids":["ch04-s002"]}
+{"case_id":"reg-ch04-008","dataset_version":"caeb372d8f756b87","split":"regression","question":"ReAct 输出解析失败时，如何分析原始输出？","answerable":true,"expected_section_ids":["ch04-s002"]}
+{"case_id":"val-ch04-009","dataset_version":"caeb372d8f756b87","split":"validation","question":"Plan-and-Solve 怎样划分任务处理阶段，与 ReAct 的逐步决策有什么不同？","answerable":true,"expected_section_ids":["ch04-s003"]}
+{"case_id":"cal-ch04-010","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Plan-and-Solve 规划器为什么用 Python 列表输出行动计划？","answerable":true,"expected_section_ids":["ch04-s003"]}
+{"case_id":"reg-ch04-011","dataset_version":"caeb372d8f756b87","split":"regression","question":"Plan-and-Solve 执行器的提示词包含哪些关键信息？","answerable":true,"expected_section_ids":["ch04-s003"]}
+{"case_id":"val-ch04-012","dataset_version":"caeb372d8f756b87","split":"validation","question":"PlanAndSolveAgent 在规划器没有生成有效计划时，会怎样处理后续执行流程？","answerable":true,"expected_section_ids":["ch04-s003"]}
+{"case_id":"cal-ch04-013","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Reflection 执行、反思、优化各产出什么，优化需要哪些上下文？","answerable":true,"expected_section_ids":["ch04-s004"]}
+{"case_id":"reg-ch04-014","dataset_version":"caeb372d8f756b87","split":"regression","question":"Reflection 的 Memory 如何存储行动和反思，提供上下文？","answerable":true,"expected_section_ids":["ch04-s004"]}
+{"case_id":"val-ch04-015","dataset_version":"caeb372d8f756b87","split":"validation","question":"ReflectionAgent 的迭代循环何时停止，次数上限如何设置？","answerable":true,"expected_section_ids":["ch04-s004"]}
+{"case_id":"cal-ch04-016","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Reflection 查找素数案例如何改进算法的时间复杂度？","answerable":true,"expected_section_ids":["ch04-s004"]}
+{"case_id":"reg-ch04-017","dataset_version":"caeb372d8f756b87","split":"regression","question":"Reflection 有哪些主要成本，适合什么实时性要求？","answerable":true,"expected_section_ids":["ch04-s004"]}
+{"case_id":"cal-ch04-018","dataset_version":"caeb372d8f756b87","split":"calibration","question":"在中国驾驶私家车经过没有交通信号灯的人行横道时应怎样让行？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch04-019","dataset_version":"caeb372d8f756b87","split":"regression","question":"做戚风蛋糕时，蛋白霜打发到什么状态较合适？","answerable":false,"expected_section_ids":[]}
+{"case_id":"val-ch04-020","dataset_version":"caeb372d8f756b87","split":"validation","question":"申请首套住房商业贷款时，银行一般要求准备哪些收入和房产材料？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-ch05-001","dataset_version":"caeb372d8f756b87","split":"calibration","question":"低代码平台通过哪些方式降低智能体开发门槛、提高开发效率，并沉淀团队开发规范？","answerable":true,"expected_section_ids":["ch05-s001"]}
+{"case_id":"reg-ch05-002","dataset_version":"caeb372d8f756b87","split":"regression","question":"低代码平台的选择取决于哪些因素？","answerable":true,"expected_section_ids":["ch05-s001"]}
+{"case_id":"val-ch05-003","dataset_version":"caeb372d8f756b87","split":"validation","question":"扣子项目空间和资源库存放什么？","answerable":true,"expected_section_ids":["ch05-s002"]}
+{"case_id":"cal-ch05-004","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Coze 每日 AI 简报案例如何用 RSS、GitHub 和 arXiv 插件聚合不同类型的信息？","answerable":true,"expected_section_ids":["ch05-s002"]}
+{"case_id":"reg-ch05-005","dataset_version":"caeb372d8f756b87","split":"regression","question":"每日 AI 简报要求哪些输出栏目，各有几条内容？","answerable":true,"expected_section_ids":["ch05-s002"]}
+{"case_id":"val-ch05-006","dataset_version":"caeb372d8f756b87","split":"validation","question":"Dify 融合哪些理念，分层模块化架构包含哪几层？","answerable":true,"expected_section_ids":["ch05-s003"]}
+{"case_id":"cal-ch05-007","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Dify 问题分类器如何为多智能体架构进行智能路由？","answerable":true,"expected_section_ids":["ch05-s003"]}
+{"case_id":"reg-ch05-008","dataset_version":"caeb372d8f756b87","split":"regression","question":"在 Dify 数据查询案例中，为什么要向大模型提供清晰的表结构和字段信息？","answerable":true,"expected_section_ids":["ch05-s003"]}
+{"case_id":"val-ch05-009","dataset_version":"caeb372d8f756b87","split":"validation","question":"FastGPT 围绕知识库问答优化了哪些链路环节？","answerable":true,"expected_section_ids":["ch05-s004"]}
+{"case_id":"cal-ch05-010","dataset_version":"caeb372d8f756b87","split":"calibration","question":"FastGPT 导入知识库文档时可选哪些处理方式，教材介绍了哪些索引增强选项？","answerable":true,"expected_section_ids":["ch05-s004"]}
+{"case_id":"reg-ch05-011","dataset_version":"caeb372d8f756b87","split":"regression","question":"FastGPT 智能投顾助手如何将金融概念咨询、股票查询和投资诊断分流到不同处理分支？","answerable":true,"expected_section_ids":["ch05-s004"]}
+{"case_id":"val-ch05-012","dataset_version":"caeb372d8f756b87","split":"validation","question":"n8n 节点间如何传递数据、控制输入和输出？","answerable":true,"expected_section_ids":["ch05-s005"]}
+{"case_id":"cal-ch05-013","dataset_version":"caeb372d8f756b87","split":"calibration","question":"n8n 读取私有知识库时，Memory Key 和 Embeddings 有什么配置要求？","answerable":true,"expected_section_ids":["ch05-s005"]}
+{"case_id":"reg-ch05-014","dataset_version":"caeb372d8f756b87","split":"regression","question":"n8n 邮件助手如何使用 SerpAPI 和 Simple Vector Store？","answerable":true,"expected_section_ids":["ch05-s005"]}
+{"case_id":"val-ch05-015","dataset_version":"caeb372d8f756b87","split":"validation","question":"n8n 内置存储为何非持久，实际部署如何替换？","answerable":true,"expected_section_ids":["ch05-s005"]}
+{"case_id":"cal-ch05-016","dataset_version":"caeb372d8f756b87","split":"calibration","question":"Dify 集成 MCP 服务的配置步骤是什么？","answerable":true,"expected_section_ids":["ch05-s003"]}
+{"case_id":"reg-ch05-017","dataset_version":"caeb372d8f756b87","split":"regression","question":"n8n 的 Simple Memory 如何设置 Key、区分邮件线程？","answerable":true,"expected_section_ids":["ch05-s005"]}
+{"case_id":"cal-ch05-018","dataset_version":"caeb372d8f756b87","split":"calibration","question":"阳台盆栽绣球在梅雨季持续黄叶，该如何调整浇水频率和盆土配比？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch05-019","dataset_version":"caeb372d8f756b87","split":"regression","question":"厨房水槽下方的塑料排水接头渗水，应该怎样更换密封圈并确认接口尺寸？","answerable":false,"expected_section_ids":[]}
+{"case_id":"val-ch05-020","dataset_version":"caeb372d8f756b87","split":"validation","question":"真丝衬衫沾上咖啡后怎样清洗才能避免褪色和水痕？","answerable":false,"expected_section_ids":[]}
+{"case_id":"cal-ch06-001","dataset_version":"caeb372d8f756b87","split":"calibration","question":"智能体框架为何解耦模型层、工具层和记忆层，各层负责什么？","answerable":true,"expected_section_ids":["ch06-s001"]}
+{"case_id":"reg-ch06-002","dataset_version":"caeb372d8f756b87","split":"regression","question":"Callbacks 在哪些生命周期节点触发日志，如何简化可观测性？","answerable":true,"expected_section_ids":["ch06-s001"]}
+{"case_id":"val-ch06-003","dataset_version":"caeb372d8f756b87","split":"validation","question":"AutoGen 的 autogen-core 和 autogen-agentchat 各有什么功能？","answerable":true,"expected_section_ids":["ch06-s002"]}
+{"case_id":"cal-ch06-004","dataset_version":"caeb372d8f756b87","split":"calibration","question":"AutoGen 的 AssistantAgent 和 UserProxyAgent 各负责什么？","answerable":true,"expected_section_ids":["ch06-s002"]}
+{"case_id":"reg-ch06-005","dataset_version":"caeb372d8f756b87","split":"regression","question":"AutoGen 软件开发团队为什么同时设置 TextMentionTermination(\"TERMINATE\") 和 max_turns，这两个机制分别控制什么？","answerable":true,"expected_section_ids":["ch06-s002"]}
+{"case_id":"val-ch06-006","dataset_version":"caeb372d8f756b87","split":"validation","question":"AgentScope 的标准 Msg 消息由哪些字段组成，将消息作为交互单元如何实现异步解耦和位置透明？","answerable":true,"expected_section_ids":["ch06-s003"]}
+{"case_id":"cal-ch06-007","dataset_version":"caeb372d8f756b87","split":"calibration","question":"AgentScope 的 MsgHub 如何让跨进程或跨服务器通信对智能体透明，消息持久化又有什么作用？","answerable":true,"expected_section_ids":["ch06-s003"]}
+{"case_id":"reg-ch06-008","dataset_version":"caeb372d8f756b87","split":"regression","question":"在 AgentScope 三国狼人杀案例中，fanout_pipeline 如何并行收集投票，单个智能体异常时又如何维持流程？","answerable":true,"expected_section_ids":["ch06-s003"]}
+{"case_id":"val-ch06-009","dataset_version":"caeb372d8f756b87","split":"validation","question":"CAMEL 的 AI User、AI Assistant 如何分工、实现跨领域协作？","answerable":true,"expected_section_ids":["ch06-s004"]}
+{"case_id":"cal-ch06-010","dataset_version":"caeb372d8f756b87","split":"calibration","question":"CAMEL 引导性提示包含哪些部分，如何保证共同目标？","answerable":true,"expected_section_ids":["ch06-s004"]}
+{"case_id":"reg-ch06-011","dataset_version":"caeb372d8f756b87","split":"regression","question":"CAMEL 科普电子书案例为什么将作家设为 user_role_name、心理学家设为 assistant_role_name？","answerable":true,"expected_section_ids":["ch06-s004"]}
+{"case_id":"val-ch06-012","dataset_version":"caeb372d8f756b87","split":"validation","question":"LangGraph 为什么将智能体执行流程表示为有向图，图的节点与边各代表什么？","answerable":true,"expected_section_ids":["ch06-s005"]}
+{"case_id":"cal-ch06-013","dataset_version":"caeb372d8f756b87","split":"calibration","question":"LangGraph 的常规边与条件边有什么区别，条件边如何根据当前状态实现循环和分支？","answerable":true,"expected_section_ids":["ch06-s005"]}
+{"case_id":"reg-ch06-014","dataset_version":"caeb372d8f756b87","split":"regression","question":"SearchState 为何同时包含 user_query 和 search_query？","answerable":true,"expected_section_ids":["ch06-s005"]}
+{"case_id":"val-ch06-015","dataset_version":"caeb372d8f756b87","split":"validation","question":"LangGraph 搜索失败如何更新 step，回答节点如何应对？","answerable":true,"expected_section_ids":["ch06-s005"]}
+{"case_id":"cal-ch06-016","dataset_version":"caeb372d8f756b87","split":"calibration","question":"教材示例中 AutoGen 接入 DeepSeek 这类非 OpenAI 模型时，为什么要向 OpenAIChatCompletionClient 额外传入 model_info，其作用是什么？","answerable":true,"expected_section_ids":["ch06-s002"]}
+{"case_id":"reg-ch06-017","dataset_version":"caeb372d8f756b87","split":"regression","question":"CAMEL 的 init_chat、step 如何驱动对话，循环何时终止？","answerable":true,"expected_section_ids":["ch06-s004"]}
+{"case_id":"cal-ch06-018","dataset_version":"caeb372d8f756b87","split":"calibration","question":"乘坐国际航班时，随身携带的洗发水和香水分别有什么容量与包装要求？","answerable":false,"expected_section_ids":[]}
+{"case_id":"reg-ch06-019","dataset_version":"caeb372d8f756b87","split":"regression","question":"给三个月大的垂耳兔安排每日喂养时，干草、兔粮和饮水应如何搭配？","answerable":false,"expected_section_ids":[]}
+{"case_id":"val-ch06-020","dataset_version":"caeb372d8f756b87","split":"validation","question":"个人出租住房取得的租金收入应如何计算应缴税额，需要留存哪些凭证？","answerable":false,"expected_section_ids":[]}

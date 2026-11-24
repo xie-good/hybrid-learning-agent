@@ -1,27 +1,27 @@
 /* 最终覆盖：辅助文字可读性、总结覆盖统计、手机抽屉可见性；必须在响应式之后加载。 */
 /* 保持辅助信息的可读性，并让隐藏的移动端导航退出键盘焦点序列。 */
 .chapter-card > p {
-  font-size: 11px;
+  font-size: 12px;
   height: 39px;
 }
 .chapter-card-bottom {
-  font-size: 10px;
+  font-size: 11px;
 }
 .chapter-pages {
-  font-size: 10px;
+  font-size: 11px;
 }
 .chapter-card h3 {
-  font-size: 14px;
+  font-size: 15px;
 }
 .section-heading p,
 .path-card .muted {
-  font-size: 11px;
+  font-size: 13px;
 }
 .learning-steps strong {
-  font-size: 12px;
+  font-size: 13px;
 }
 .learning-steps small {
-  font-size: 10px;
+  font-size: 12px;
 }
 .coverage-stats {
   display: grid;
@@ -47,6 +47,7 @@
   .sidebar {
     visibility: hidden;
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .sidebar.open {
     visibility: visible;
@@ -54,16 +55,16 @@
 }
 @media (max-width: 520px) {
   .chapter-card > p {
-    font-size: 10px;
+    font-size: 12px;
     height: 36px;
   }
   .chapter-card h3 {
-    font-size: 12px;
+    font-size: 14px;
   }
   .chapter-card-bottom {
-    font-size: 8px;
+    font-size: 11px;
   }
   .chapter-pages {
-    font-size: 8px;
+    font-size: 10px;
   }
 }

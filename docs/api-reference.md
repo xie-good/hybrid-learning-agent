@@ -1,15 +1,15 @@
 # 课程学习助手 API v1 接口文档
 
-更新：2026-10-25。契约来源为后端 Pydantic 模型与路由；静态机器文档见同目录 `openapi.json`。默认 API 根地址为 `http://127.0.0.1:8000`。在线 Swagger：`/docs`，ReDoc：`/redoc`，OpenAPI：`/openapi.json`。
+更新：2026-11-05。契约来源为后端 Pydantic 模型与路由；静态机器文档见 [openapi.json](F:/桌面/毕设/docs/openapi.json)。默认 API 根地址为 `http://127.0.0.1:8000`。在线 Swagger：`/docs`，ReDoc：`/redoc`，OpenAPI：`/openapi.json`。初次阅读先看[项目运行流程](F:/桌面/毕设/docs/project-runtime-flow.md)。
 
 ## 1. 当前实现与运行模式
 
 - 13 个 HTTP 操作覆盖课程、章/节、原文/PDF、问答、总结、练习和当前会话历史；业务不再使用 501 占位。
-- 默认 `bm25 + extractive`：中文字符词项和英文标识符参与真实 BM25 检索；回答、总结与阅读练习依据实际教材原文形成，响应明确标记 `generation_mode=extractive`，不冒充模型推理。
+- 默认 `hybrid + extractive`：BM25 与真实 Embedding 向量召回经 RRF 融合，并对实际返回证据执行充分性门控；回答、总结与阅读练习依据实际教材原文形成，响应明确标记 `generation_mode=extractive`，不冒充模型推理。
 - `GENERATION_MODE=llm` 接入配置的 Chat Completions 兼容服务。缺少配置返回 503；超时 504；上游错误或引用/结构验证失败 502。测试使用模拟上游，不等于真实云服务已验收。
 - `vector`/`hybrid` 要求真实 Embedding 服务配置和匹配数据版本的离线向量索引；未就绪返回 503。`hybrid` 使用 BM25、向量及 RRF；本次没有将 Reranker 模型列为已实现功能。
 - 数据仍限第 1—12 章。图片/OCR和跨页代码重建不在当前语料处理能力内，引用携带 `review_flags`。
-- 历史只保存问答结果；总结与练习不写入问答历史。会话 UUID 是访问该会话记录的凭据，保存在浏览器会话中，不是账号登录体系。
+- 历史只保存问答结果；总结与练习不写入问答历史。Vue 将会话 UUID 保存在当前标签页的 `sessionStorage`，刷新后复用并重新查询问答历史；总结、题组、作答和自评只在页面内存中保留，不随刷新恢复。UUID 不是账号登录体系。
 
 ## 2. 公共约定
 
@@ -20,7 +20,7 @@
 - `session_id` 为 UUID。问答省略该值时创建新会话，前端应保存响应值并在后续请求中复用；历史接口必须携带。
 - `latency_ms` 为服务端检索/生成及响应组装耗时，不包括浏览器网络时间，问答不包括 SQLite 插入阶段。
 - `dataset_version` 绑定清洗规则和文本块版本；PDF 页码从 1 开始。
-- 默认允许 `http://127.0.0.1:8501` 和 `http://localhost:8501` 的跨域请求，可用 `CORS_ORIGINS` 调整。
+- 后端代码的默认 CORS 白名单仍为 `http://127.0.0.1:8501` 和 `http://localhost:8501`；这不是当前 Vue 访问地址。Vue 开发/预览使用同源 `/api` 代理，通常无需改该项；浏览器直连不同源后端时，按实际前端来源配置 `CORS_ORIGINS`。
 
 ### 统一错误结构
 
@@ -84,7 +84,7 @@
 | score | number/null | 检索分数，不是答案正确率 |
 | review_flags | string[] | 图表、低文本量等覆盖提示 |
 
-`GET /api/sources/{chunk_id}` 返回一个 Citation。`GET /api/course/source` 返回 `application/pdf`；只服务环境配置或报告登记且通过来源 SHA256 校验的 PDF。文件不存在或来源不匹配时返回错误，不读取请求携带的路径。前端定位形式为 `http://127.0.0.1:8000/api/course/source#page=10`；`#page` 由浏览器 PDF 阅读器处理。
+`GET /api/sources/{chunk_id}` 返回一个 Citation。`GET /api/course/source` 返回 `application/pdf`；只服务环境配置或报告登记且通过来源 SHA256 校验的 PDF。文件不存在或来源不匹配时返回错误，不读取请求携带的路径。API 直连定位例为 `http://127.0.0.1:8000/api/course/source#page=10`；当前 Vue 页面使用同源 `/api/course/source#page=10`。`#page` 由浏览器 PDF 阅读器处理；打开的是完整原 PDF，不是仅保留知识内容的裁剪文件。
 
 ## 5. POST /api/qa
 
@@ -94,7 +94,7 @@
   "chapter_id": "ch01",
   "section_id": null,
   "session_id": "6a69df9b-695b-4f6c-ae41-e582408791ee",
-  "retrieval_mode": "bm25",
+  "retrieval_mode": "hybrid",
   "top_k": 5,
   "debug": false
 }
@@ -106,7 +106,7 @@
 | chapter_id | 否 | null，全课程；也可按 section_id 定位章节 |
 | section_id | 否 | null，不限定小节 |
 | session_id | 否 | 服务端生成 UUID |
-| retrieval_mode | 否 | 服务端 `DEFAULT_RETRIEVAL_MODE`，出厂 bm25；允许 bm25/vector/hybrid |
+| retrieval_mode | 否 | 服务端 `DEFAULT_RETRIEVAL_MODE`，出厂 hybrid；允许评测显式指定 bm25/vector/hybrid |
 | top_k | 否 | 5，1—10 |
 | debug | 否 | false |
 
@@ -139,7 +139,7 @@
 - `difficulty` 为 `easy|medium|hard`，默认 medium。默认摘录模式生成原文阅读理解/填空题；难度是题目组织参数，不代表经过教学测量的难度等级。
 - 返回 `questions,citations,generation_mode,scope,dataset_version,latency_ms,request_id`。
 - 每题包含 `question_id,type,question,options,answer,explanation,citation_ids`。单选选项为 `[{key,text},...]`，answer 为正确选项 key；简答 options 为空列表，answer 为参考答案。
-- UI 默认折叠答案和解析。后端同时返回答案供本地自测；这不是隐藏答案的考试系统。
+- Vue 页面在全部作答并提交前不渲染答案、解析和教材引用；提交后才展示反馈。后端同时返回答案供本地自测，该交互不是服务端答案保密机制。
 - 所选章/节的可用原文不足以生成请求题量时返回 422；不会静默少出题或编造内容。
 
 ## 8. 会话历史
@@ -155,18 +155,20 @@
 
 ## 9. 配置与启动
 
-完整变量见项目根目录 `.env.example`；现有 `.env` 不会被安装或测试覆盖。`DATABASE_PATH` 默认 `data/runtime/history.sqlite3`；模型密钥仅服务端读取，前端只配置 `BACKEND_URL` 和超时。
+完整变量见[配置示例](F:/桌面/毕设/.env.example)。现有配置按需合并，保留已有值；默认数据库为 `F:/桌面/毕设/data/runtime/history.sqlite3`。模型密钥仅服务端读取，Vite 只加载 `BACKEND_URL` 作为代理目标；Vue 的 `request()` 默认超时 90000 毫秒，不读取 `BACKEND_TIMEOUT` 环境变量。
 
-访问 localhost、127.0.0.0/8、::1 的前端 HTTP 和模型 HTTP 客户端使用直连，避免 Windows 系统代理拦截本机服务；远程目标仍遵循部署环境的代理配置。
+后端模型 HTTP 客户端访问 localhost、127.0.0.0/8、::1 时使用直连；远程模型目标仍遵循部署环境的代理配置。浏览器通过原生 `fetch` 访问同源 `/api`，由 Vite 或生产 Web 服务转发，不使用 Python HTTP 客户端。
 
 ```powershell
 Set-Location 'F:/桌面/毕设'
 & 'F:/桌面/毕设/.venv/Scripts/python.exe' -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 # 另一个终端：
-& 'F:/桌面/毕设/.venv/Scripts/python.exe' -m streamlit run frontend/app.py --server.address 127.0.0.1 --server.port 8501
+Set-Location 'F:/桌面/毕设/frontend'
+npm ci
+npm run dev
 ```
 
-前端封装、方法映射、页面状态和错误处理见 `frontend-api.md`。离线预处理和索引构建不暴露为网络写入接口；没有上传、账号或管理员 API。
+浏览器访问 [http://127.0.0.1:5173](http://127.0.0.1:5173)。前端封装、方法映射、页面状态和错误处理见[前端接入文档](F:/桌面/毕设/docs/frontend-api.md)。离线预处理和索引构建不暴露为网络写入接口；没有上传、账号或管理员 API。
 
 ## 10. 测试
 
@@ -175,4 +177,12 @@ Set-Location 'F:/桌面/毕设'
 & 'F:/桌面/毕设/.venv/Scripts/python.exe' -B -m unittest discover -s tests -v
 ```
 
-测试使用真实合成 PDF、隔离 SQLite、TestClient、MockTransport 和 Streamlit AppTest；覆盖参数错误、来源与范围、引用、模型错误/超时、会话隔离、删除、并发写入、持久化和前端交互。具体执行次数与结果记录在交付验证报告中。
+后端测试使用真实合成 PDF、隔离 SQLite、FastAPI TestClient 和模型模拟传输，检查参数、来源、范围、引用、模型错误/超时、会话隔离、删除和持久化等行为。Vue 测试与构建单独执行：
+
+```powershell
+Set-Location 'F:/桌面/毕设/frontend'
+npm test
+npm run build
+```
+
+前端测试使用 Node 内置测试运行器，不再执行旧 Python 前端测试。单元/组件测试与构建成功不等于真实浏览器和真实模型的全过程验收；具体运行结果以对应验证记录为准。

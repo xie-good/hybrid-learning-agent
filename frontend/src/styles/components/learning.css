@@ -23,7 +23,7 @@
   border-radius: 8px;
   padding: 13px 16px;
   margin-bottom: 20px;
-  font-size: 12px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 .message > span {
@@ -78,7 +78,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   margin-bottom: 20px;
 }
@@ -92,16 +92,16 @@
 }
 .form-grid > label {
   color: #6a7f72;
-  font-size: 11px;
+  font-size: 13px;
 }
 .form-grid select,
 .form-grid input {
-  font-size: 12px;
+  font-size: 14px;
 }
 .question-panel textarea {
   background: #f9fbf8;
   border-color: #edf0e9;
-  font-size: 13px;
+  font-size: 16px;
 }
 .question-footer {
   display: flex;
@@ -109,7 +109,7 @@
   justify-content: space-between;
   margin-top: 13px;
   color: #a1ada3;
-  font-size: 10px;
+  font-size: 12px;
 }
 .retrieval-settings {
   margin-top: 20px;
@@ -118,7 +118,7 @@
 }
 .retrieval-settings > summary {
   color: #7f9384;
-  font-size: 11px;
+  font-size: 13px;
 }
 .retrieval-settings > summary:after,
 .coverage > summary:after {
@@ -138,13 +138,13 @@
   padding: 25px;
 }
 .tip-panel h3 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 550;
   margin: 13px 0;
   letter-spacing: 1px;
 }
 .tip-panel p {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 2;
   color: #8b9c84;
 }
@@ -158,13 +158,13 @@
   margin-bottom: 12px;
 }
 .tip-panel > strong {
-  font-size: 12px;
+  font-size: 14px;
   display: block;
   font-weight: 550;
   margin-bottom: 9px;
 }
 .mode-note {
-  font-size: 10px;
+  font-size: 13px;
   color: #97a48f;
   display: flex;
   gap: 7px;
@@ -182,11 +182,11 @@
   gap: 15px;
 }
 .action-panel h3 {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 550;
 }
 .action-panel p {
-  font-size: 11px;
+  font-size: 13px;
   color: #9caaa0;
   margin-top: 5px;
 }
@@ -203,13 +203,13 @@
 }
 .learning-placeholder h3,
 .empty-state h3 {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   color: #82917d;
 }
 .learning-placeholder p,
 .empty-state p {
-  font-size: 11px;
+  font-size: 14px;
   color: #9aa796;
 }
 .placeholder-symbol {
@@ -229,32 +229,32 @@
   align-items: center;
   gap: 9px;
   color: #66866c;
-  font-size: 11px;
+  font-size: 13px;
   margin-bottom: 20px;
 }
 .result-kicker .pill {
   margin-left: auto;
 }
 .result-panel h2 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 550;
   margin-bottom: 22px;
 }
 .result-panel h3 {
-  font-size: 14px;
-  font-weight: 550;
-  margin: 20px 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 22px 0 14px;
 }
 .prose {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  line-height: 2.1;
-  font-size: 13px;
-  color: #52675a;
+  line-height: 1.9;
+  font-size: 18px;
+  color: #2f4538;
 }
 .result-meta {
-  font-size: 9px;
-  color: #a7b2a5;
+  font-size: 13px;
+  color: #6f7f72;
   margin-top: 20px;
   overflow-wrap: anywhere;
 }
@@ -268,8 +268,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  font-weight: 550;
+  font-size: 15px;
+  font-weight: 600;
   margin: 15px 0;
 }
 .source-item {
@@ -283,7 +283,7 @@
   align-items: center;
   gap: 11px;
   padding: 12px 13px;
-  font-size: 11px;
+  font-size: 14px;
   background: #fafbf8;
 }
 .citation-number {
@@ -295,8 +295,8 @@
 }
 .source-item > summary small {
   display: block;
-  font-size: 9px;
-  color: #a1ad9a;
+  font-size: 12px;
+  color: #6f7f72;
   margin-top: 3px;
 }
 .source-item > summary > svg {
@@ -310,11 +310,14 @@
   padding: 16px;
   border-top: 1px solid #e4ebe0;
 }
+.source-body .prose {
+  font-size: 17px;
+}
 .source-body p {
-  font-size: 12px;
+  font-size: 17px;
 }
 .source-body a {
-  font-size: 11px;
+  font-size: 13px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -323,21 +326,21 @@
 }
 .key-points {
   padding-left: 20px;
-  font-size: 13px;
-  line-height: 2;
-  color: #73856a;
+  font-size: 18px;
+  line-height: 1.85;
+  color: #314a3c;
 }
 .key-points li {
   padding-left: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .key-points li::marker {
   color: #92b080;
 }
 .coverage {
   margin: 20px 0;
-  color: #899b80;
-  font-size: 11px;
+  color: #6f7f72;
+  font-size: 14px;
   background: #f8faf5;
   padding: 13px;
   border-radius: 7px;
@@ -351,8 +354,8 @@
   margin-top: 12px;
 }
 .field-note {
-  font-size: 10px;
-  color: #99a690;
-  line-height: 1.9;
+  font-size: 14px;
+  color: #6f7f72;
+  line-height: 1.7;
   margin: 16px 0;
 }

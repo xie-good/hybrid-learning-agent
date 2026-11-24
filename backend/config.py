@@ -1,4 +1,4 @@
-"""服务端配置：默认本地 BM25 和带出处的原文摘录。"""
+"""服务端配置：默认混合检索和带出处的原文摘录。"""
 import os
 import ipaddress
 from dataclasses import dataclass
@@ -44,9 +44,9 @@ class Settings:
     index_dir: Path = DATA_DIR / 'indexes/hello-agents'
     source_pdf: Path | None = None
 
-    # 运行模式：默认不依赖外部模型服务。
+    # 运行模式：默认原文摘录和混合检索；混合检索需配置向量服务并预建索引。
     generation_mode: str = 'extractive'
-    default_retrieval_mode: str = 'bm25'
+    default_retrieval_mode: str = 'hybrid'
 
     # 可选的大模型生成服务。
     llm_base_url: str = ''

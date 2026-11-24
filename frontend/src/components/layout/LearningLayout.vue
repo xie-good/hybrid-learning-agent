@@ -7,9 +7,12 @@ import { modeLabel, pages } from "../../lib/presentation.js";
 
 // 共用学习页布局，不负责问答、总结或练习的业务；插槽内容由各自 View 提供。
 const props = defineProps({ pageId: String, hasResult: Boolean });
-const { busy, health } = useWorkspace();
-const currentPage = computed(() =>
-  pages.find((item) => item.id === props.pageId),
+const {
+  activeTask,
+  serviceHealth,
+} = useWorkspace();
+const pageConfig = computed(() =>
+  pages.find((navigationPage) => navigationPage.id === props.pageId),
 );
 </script>
 
@@ -20,13 +23,13 @@ const currentPage = computed(() =>
       <slot />
       <div v-if="!hasResult" class="learning-placeholder">
         <span class="placeholder-symbol"
-          ><AppIcon :name="currentPage.icon" :size="32"
+          ><AppIcon :name="pageConfig.icon" :size="32"
         /></span>
-        <h3>{{ busy ? "正在连接知识与理解…" : "准备好，开启一次新的探索" }}</h3>
+        <h3>{{ activeTask ? "正在连接…" : "准备好，开启一次新的探索" }}</h3>
         <p>
           {{
-            busy
-              ? "正在处理教材证据，请稍候。"
+            activeTask
+              ? "正在处理教材证据，请稍候…"
               : "选择学习范围，在这里收获有依据的理解。"
           }}
         </p>
@@ -34,7 +37,7 @@ const currentPage = computed(() =>
     </section>
     <aside class="learning-aside">
       <section class="panel tip-panel">
-        <span class="tiny-label">LEARNING NOTES</span>
+        <span class="tiny-label">学习提示</span>
         <h3>让理解，多走一步。</h3>
         <p>
           {{
@@ -53,7 +56,7 @@ const currentPage = computed(() =>
       </section>
       <div class="mode-note">
         <span class="online-dot"></span> 当前模式：{{
-          health ? modeLabel(health.generation_mode) : "正在连接"
+          serviceHealth ? modeLabel(serviceHealth.generation_mode) : "正在连接…"
         }}
       </div>
     </aside>

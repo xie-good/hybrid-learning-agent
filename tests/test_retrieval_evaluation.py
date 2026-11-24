@@ -1,8 +1,10 @@
 """检索效果评测工具测试：功能测试与效果指标分开报告。"""
 from contextlib import redirect_stdout
+from dataclasses import replace
 import json
 import hashlib
 import io
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -11,6 +13,7 @@ from unittest.mock import patch
 from backend.services.corpus import CorpusRepository
 from backend.services.retrieval import RetrievalService
 from corpus_fixture import make_corpus
+from pipeline.build_index import build_indexes
 from tools.evaluate_retrieval import evaluate_cases, load_cases, main
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -103,6 +106,64 @@ class RetrievalEvaluationTests(unittest.TestCase):
         self.assertEqual({section for row in rows for section in row['expected_section_ids']},
                          {'ch01-s001', 'ch01-s002', 'ch01-s003'})
         self.assertTrue(any(row.get('section_id') == 'ch01-s002' for row in rows))
+
+    def test_cli_reads_embedding_environment_and_explicit_paths_take_priority(self):
+        settings = replace(self.settings, embedding_base_url='http://localhost:5678/v1',
+                           embedding_model='test-embedding', embedding_api_key='test-only')
+        with patch('pipeline.build_index.fetch_embeddings',
+                   side_effect=lambda config, texts: [[1.0, 0.0] for text in texts]):
+            build_indexes(settings.processed_dir / 'chunks.jsonl', settings.index_dir,
+                          mode='vector', settings=settings)
+        cases_path = Path(self.temp) / 'env-cases.jsonl'
+        output_path = Path(self.temp) / 'env-report.json'
+        cases_path.write_text('\n'.join(json.dumps(row) for row in self.cases()), encoding='utf-8')
+        environment = {
+            'PROCESSED_DIR': str(Path(self.temp) / 'missing'),
+            'INDEX_DIR': str(Path(self.temp) / 'missing-index'),
+            'EMBEDDING_BASE_URL': settings.embedding_base_url,
+            'EMBEDDING_MODEL': settings.embedding_model,
+            'EMBEDDING_API_KEY': settings.embedding_api_key,
+            'MODEL_TIMEOUT': '12.5',
+        }
+
+        def embeddings(config, texts):
+            self.assertEqual(config.embedding_base_url, settings.embedding_base_url)
+            self.assertEqual(config.embedding_model, settings.embedding_model)
+            self.assertEqual(config.embedding_api_key, settings.embedding_api_key)
+            self.assertEqual(config.model_timeout, 12.5)
+            return [[1.0, 0.0] for text in texts]
+
+        arguments = ['evaluate_retrieval', '--cases', str(cases_path), '--mode', 'hybrid',
+                     '--processed-dir', str(settings.processed_dir),
+                     '--index-dir', str(settings.index_dir), '--output', str(output_path)]
+        with patch.dict(os.environ, environment, clear=True), patch('sys.argv', arguments), \
+                patch('backend.services.retrieval.fetch_embeddings', side_effect=embeddings), \
+                redirect_stdout(io.StringIO()):
+            self.assertEqual(main(), 0)
+        report = json.loads(output_path.read_text('utf-8'))
+        self.assertEqual(report['retrieval_mode'], 'hybrid')
+        self.assertEqual(report['case_count'], 3)
+        self.assertEqual(report['reproducibility']['evidence_gate_version'],
+                         'rank-bm25-returned-evidence-v1')
+        self.assertEqual(report['reproducibility']['evidence_min_chunk_coverage'], 0.5)
+        self.assertEqual(report['reproducibility']['evidence_min_normalized_score'], 0.7)
+
+    def test_cli_uses_environment_paths_but_keeps_bm25_default_mode(self):
+        cases_path = Path(self.temp) / 'env-path-cases.jsonl'
+        output_path = Path(self.temp) / 'env-path-report.json'
+        cases_path.write_text('\n'.join(json.dumps(row) for row in self.cases()), encoding='utf-8')
+        environment = {'PROCESSED_DIR': str(self.settings.processed_dir),
+                       'INDEX_DIR': str(self.settings.index_dir),
+                       'DEFAULT_RETRIEVAL_MODE': 'hybrid'}
+        arguments = ['evaluate_retrieval', '--cases', str(cases_path), '--output', str(output_path)]
+        with patch.dict(os.environ, environment, clear=True), patch('sys.argv', arguments), \
+                redirect_stdout(io.StringIO()):
+            self.assertEqual(main(), 0)
+        report = json.loads(output_path.read_text('utf-8'))
+        self.assertEqual(report['retrieval_mode'], 'bm25')
+        self.assertEqual(report['dataset_version'], self.repo.dataset_version)
+        self.assertEqual(report['reproducibility']['processed_report_sha256'],
+                         hashlib.sha256((self.settings.processed_dir / 'report.json').read_bytes()).hexdigest())
 
 
 if __name__ == '__main__':

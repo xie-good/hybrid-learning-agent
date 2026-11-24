@@ -20,7 +20,7 @@ class QuestionRequest(InputModel):
     chapter_id: ChapterId | None = None
     section_id: SectionId | None = None
     session_id: UUID | None = Field(default=None, description='省略时创建会话；客户端须保存响应中的 UUID')
-    retrieval_mode: RetrievalMode | None = Field(default=None, description='省略时使用服务端默认模式，默认 bm25')
+    retrieval_mode: RetrievalMode | None = Field(default=None, description='省略时使用服务端默认模式，默认 hybrid')
     top_k: int = Field(default=5, ge=1, le=10, strict=True)
     debug: bool = False
 

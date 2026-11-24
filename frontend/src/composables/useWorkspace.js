@@ -12,151 +12,159 @@ export function useWorkspace() {
 }
 
 export function createWorkspace() {
-  const readPage = () =>
-    pages.some((p) => p.id === location.hash.slice(1))
+  const readPageIdFromHash = () =>
+    pages.some((pageConfig) => pageConfig.id === location.hash.slice(1))
       ? location.hash.slice(1)
       : "overview";
-  const page = ref(readPage());
-  const activePage = computed(() => pages.find((p) => p.id === page.value));
-  const drawer = ref(false);
-  const health = ref(null);
-  const course = ref(null);
-  const chapters = ref([]);
-  const loading = ref(true);
-  const busy = ref("");
-  const error = ref("");
-  const notice = ref("");
-  const session = sessionId();
-  const chapterId = ref("");
-  const sectionId = ref("");
-  const selectedChapter = computed(() =>
-    chapters.value.find((chapter) => chapter.chapter_id === chapterId.value),
+  const currentPageId = ref(readPageIdFromHash());
+  const activePageConfig = computed(() =>
+    pages.find((pageConfig) => pageConfig.id === currentPageId.value),
   );
-  const ready = computed(
+  const isSidebarOpen = ref(false);
+  const serviceHealth = ref(null);
+  const courseInfo = ref(null);
+  const chapters = ref([]);
+  const isInitializing = ref(true);
+  const activeTask = ref("");
+  const errorMessage = ref("");
+  const noticeMessage = ref("");
+  const currentSessionId = sessionId();
+  const selectedChapterId = ref("");
+  const selectedSectionId = ref("");
+  const selectedChapter = computed(() =>
+    chapters.value.find(
+      (chapter) => chapter.chapter_id === selectedChapterId.value,
+    ),
+  );
+  const isLearningReady = computed(
     () =>
       chapters.value.length > 0 &&
-      health.value?.knowledge_base_ready &&
-      health.value?.generation_ready &&
-      health.value?.retrieval_ready,
+      serviceHealth.value?.knowledge_base_ready &&
+      serviceHealth.value?.generation_ready &&
+      serviceHealth.value?.retrieval_ready,
   );
 
   // 问答写入后端历史；工作台和历史页共用此快照，分页仍按每页十条计算。
-  const history = ref({ items: [], total: 0 });
+  const historyResult = ref({ items: [], total: 0 });
   const historyOffset = ref(0);
-  const historyLoading = ref(false);
-  const recent = ref([]);
+  const isHistoryLoading = ref(false);
+  const recentHistoryItems = ref([]);
   // 历史页通过这个计数通知问答页清除旧回答，避免页面间直接操作彼此的局部状态。
-  const historyCleared = ref(0);
-  const scope = () => ({
-    chapter_id: chapterId.value || null,
-    section_id: sectionId.value || null,
+  const historyClearCount = ref(0);
+  const buildLearningScope = () => ({
+    chapter_id: selectedChapterId.value || null,
+    section_id: selectedSectionId.value || null,
   });
 
-  function navigate(id, chapter) {
-    if (chapter) chapterId.value = chapter;
-    if (id !== "qa" && !chapterId.value)
-      chapterId.value = chapters.value[0]?.chapter_id || "";
-    page.value = id;
-    location.hash = id;
-    drawer.value = false;
-    error.value = "";
-    notice.value = "";
+  function navigate(pageId, targetChapterId) {
+    if (targetChapterId) selectedChapterId.value = targetChapterId;
+    if (pageId !== "qa" && !selectedChapterId.value)
+      selectedChapterId.value = chapters.value[0]?.chapter_id || "";
+    currentPageId.value = pageId;
+    location.hash = pageId;
+    isSidebarOpen.value = false;
+    errorMessage.value = "";
+    noticeMessage.value = "";
     window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   // 浏览器前进/后退也需要同步页面；地址监听由 App.vue 在挂载/卸载时注册/移除。
-  function hashChanged() {
-    page.value = readPage();
-    drawer.value = false;
+  function syncPageFromHash() {
+    currentPageId.value = readPageIdFromHash();
+    isSidebarOpen.value = false;
   }
-  watch(page, (value) => {
-    if (["summary", "quiz"].includes(value) && !chapterId.value)
-      chapterId.value = chapters.value[0]?.chapter_id || "";
+  watch(currentPageId, (pageId) => {
+    if (["summary", "quiz"].includes(pageId) && !selectedChapterId.value)
+      selectedChapterId.value = chapters.value[0]?.chapter_id || "";
   });
   // 这里只维护章/节从属关系，各页面自行监听范围变化并清除自己的旧结果。
-  watch(chapterId, () => {
-    sectionId.value = "";
+  watch(selectedChapterId, () => {
+    selectedSectionId.value = "";
   });
 
   // 统一请求进度和中文提示，finally 让失败后的按钮也能恢复。
-  async function run(task, action) {
-    busy.value = task;
-    error.value = "";
-    notice.value = "";
+  async function runTask(taskName, taskAction) {
+    activeTask.value = taskName;
+    errorMessage.value = "";
+    noticeMessage.value = "";
     try {
-      await action();
-    } catch (e) {
-      error.value = e.message;
+      await taskAction();
+    } catch (requestError) {
+      errorMessage.value = requestError.message;
     } finally {
-      busy.value = "";
+      activeTask.value = "";
     }
   }
 
   async function loadHistory() {
-    historyLoading.value = true;
+    isHistoryLoading.value = true;
     try {
-      const data = await request(historyPath(session, historyOffset.value));
-      history.value = data;
-      if (historyOffset.value === 0) recent.value = data.items.slice(0, 3);
-    } catch (e) {
-      error.value = e.message;
+      const historyResponse = await request(
+        historyPath(currentSessionId, historyOffset.value),
+      );
+      historyResult.value = historyResponse;
+      if (historyOffset.value === 0)
+        recentHistoryItems.value = historyResponse.items.slice(0, 3);
+    } catch (requestError) {
+      errorMessage.value = requestError.message;
     } finally {
-      historyLoading.value = false;
+      isHistoryLoading.value = false;
     }
   }
 
   // 首屏先确认知识库，再取课程目录，最后读取当前会话历史；不填充演示数据。
-  async function init() {
-    loading.value = true;
-    error.value = "";
+  async function initializeWorkspace() {
+    isInitializing.value = true;
+    errorMessage.value = "";
     try {
-      health.value = await request("/health");
-      if (!health.value.knowledge_base_ready)
+      serviceHealth.value = await request("/health");
+      if (!serviceHealth.value.knowledge_base_ready)
         throw new Error(
-          health.value.reason || "课程知识库尚未就绪，请检查后端数据配置。",
+          serviceHealth.value.reason || "课程知识库尚未就绪，请检查后端数据配置。",
         );
-      const [info, list] = await Promise.all([
+      const [courseResponse, chapterListResponse] = await Promise.all([
         request("/course"),
         request("/chapters"),
       ]);
-      course.value = info;
-      chapters.value = list.chapters;
-      if (!chapterId.value)
-        chapterId.value = list.chapters[0]?.chapter_id || "";
+      courseInfo.value = courseResponse;
+      chapters.value = chapterListResponse.chapters;
+      if (!selectedChapterId.value)
+        selectedChapterId.value =
+          chapterListResponse.chapters[0]?.chapter_id || "";
       await loadHistory();
-    } catch (e) {
-      error.value = e.message;
+    } catch (requestError) {
+      errorMessage.value = requestError.message;
     } finally {
-      loading.value = false;
+      isInitializing.value = false;
     }
   }
 
   return {
-    page,
-    activePage,
-    drawer,
-    health,
-    course,
+    currentPageId,
+    activePageConfig,
+    isSidebarOpen,
+    serviceHealth,
+    courseInfo,
     chapters,
-    loading,
-    busy,
-    error,
-    notice,
-    session,
-    chapterId,
-    sectionId,
+    isInitializing,
+    activeTask,
+    errorMessage,
+    noticeMessage,
+    currentSessionId,
+    selectedChapterId,
+    selectedSectionId,
     selectedChapter,
-    ready,
-    history,
+    isLearningReady,
+    historyResult,
     historyOffset,
-    historyLoading,
-    recent,
-    historyCleared,
-    scope,
+    isHistoryLoading,
+    recentHistoryItems,
+    historyClearCount,
+    buildLearningScope,
     navigate,
-    hashChanged,
-    run,
+    syncPageFromHash,
+    runTask,
     loadHistory,
-    init,
+    initializeWorkspace,
   };
 }

@@ -1,0 +1,4016 @@
+{
+  "dataset_version": "caeb372d8f756b87",
+  "retrieval_mode": "bm25",
+  "generated_at": "2026-11-03T07:07:03.643836+00:00",
+  "top_ks": [
+    5,
+    10
+  ],
+  "case_count": 120,
+  "metrics": {
+    "case_count": 120,
+    "answerable_count": 102,
+    "unanswerable_count": 18,
+    "abstained_count": 18,
+    "citation_case_count": 33,
+    "citation_valid_count": 33,
+    "recall_at_5": 0.323529,
+    "recall_at_10": 0.323529,
+    "mrr_at_10": 0.323529,
+    "abstention_accuracy": 1.0,
+    "citation_validity": 1.0,
+    "latency_p50_ms": 12.304,
+    "latency_p95_ms": 16.955
+  },
+  "splits": {
+    "calibration": {
+      "case_count": 42,
+      "answerable_count": 36,
+      "unanswerable_count": 6,
+      "abstained_count": 6,
+      "citation_case_count": 11,
+      "citation_valid_count": 11,
+      "recall_at_5": 0.305556,
+      "recall_at_10": 0.305556,
+      "mrr_at_10": 0.305556,
+      "abstention_accuracy": 1.0,
+      "citation_validity": 1.0,
+      "latency_p50_ms": 12.489,
+      "latency_p95_ms": 16.548
+    },
+    "regression": {
+      "case_count": 42,
+      "answerable_count": 36,
+      "unanswerable_count": 6,
+      "abstained_count": 6,
+      "citation_case_count": 13,
+      "citation_valid_count": 13,
+      "recall_at_5": 0.361111,
+      "recall_at_10": 0.361111,
+      "mrr_at_10": 0.361111,
+      "abstention_accuracy": 1.0,
+      "citation_validity": 1.0,
+      "latency_p50_ms": 12.284,
+      "latency_p95_ms": 16.955
+    },
+    "validation": {
+      "case_count": 36,
+      "answerable_count": 30,
+      "unanswerable_count": 6,
+      "abstained_count": 6,
+      "citation_case_count": 9,
+      "citation_valid_count": 9,
+      "recall_at_5": 0.3,
+      "recall_at_10": 0.3,
+      "mrr_at_10": 0.3,
+      "abstention_accuracy": 1.0,
+      "citation_validity": 1.0,
+      "latency_p50_ms": 12.304,
+      "latency_p95_ms": 16.979
+    }
+  },
+  "cases": [
+    {
+      "case_id": "cal-ch01-001",
+      "split": "calibration",
+      "question": "什么样的实体可以称为智能体，自主性在这个定义中起什么作用？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.058,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 16,
+        "coverage": 0.727273,
+        "best_chunk_coverage": 0.409091,
+        "normalized_score": 0.366205,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch01-002",
+      "split": "regression",
+      "question": "PEAS 模型用哪四个方面描述智能体的任务环境？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0015-00010",
+        "caeb372d8f756b87-p0016-00011",
+        "caeb372d8f756b87-p0034-00038",
+        "caeb372d8f756b87-p0018-00015",
+        "caeb372d8f756b87-p0498-00676",
+        "caeb372d8f756b87-p0143-00187",
+        "caeb372d8f756b87-p0095-00131",
+        "caeb372d8f756b87-p0396-00543",
+        "caeb372d8f756b87-p0383-00528",
+        "caeb372d8f756b87-p0087-00116"
+      ],
+      "retrieved_section_ids": [
+        "ch01-s002",
+        "ch01-s002",
+        "ch02-s001",
+        "ch01-s003",
+        "ch12-s001",
+        "ch05-s003",
+        "ch04-s002",
+        "ch10-s002",
+        "ch10-s002",
+        "ch04-s002"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 109.452,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 18,
+        "supported_token_count": 13,
+        "coverage": 0.722222,
+        "best_chunk_coverage": 0.555556,
+        "normalized_score": 0.972703,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch01-003",
+      "split": "validation",
+      "question": "入门旅行助手要根据天气推荐景点时，两个工具的调用顺序是什么，前一步的结果如何影响后一步？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.417,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 31,
+        "supported_token_count": 22,
+        "coverage": 0.709677,
+        "best_chunk_coverage": 0.451613,
+        "normalized_score": 0.425453,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch01-004",
+      "split": "calibration",
+      "question": "预先编排的 Workflow 与目标驱动的 Agent，在决定执行步骤的方式上有什么本质区别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.546,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 20,
+        "coverage": 0.740741,
+        "best_chunk_coverage": 0.259259,
+        "normalized_score": 0.217659,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch01-005",
+      "split": "regression",
+      "question": "简单反射智能体与基于模型的反射智能体，在利用当前感知和保存内部状态方面有什么差别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 15.261,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 32,
+        "supported_token_count": 23,
+        "coverage": 0.71875,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.439135,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch01-006",
+      "split": "validation",
+      "question": "旅行助手为什么不能假定相邻两次航班查询的票价和余票一致，这对它的设计提出了什么要求？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.752,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 33,
+        "supported_token_count": 21,
+        "coverage": 0.636364,
+        "best_chunk_coverage": 0.484848,
+        "normalized_score": 0.486969,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch01-007",
+      "split": "calibration",
+      "question": "第一个旅行助手的系统提示词怎样约束每轮输出格式，信息收集完毕后又怎样表示任务结束？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.263,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 30,
+        "supported_token_count": 17,
+        "coverage": 0.566667,
+        "best_chunk_coverage": 0.166667,
+        "normalized_score": 0.288072,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch01-008",
+      "split": "regression",
+      "question": "教材介绍的 GitHub Copilot 与 Cursor，在融入代码编辑环境的方式上有何不同？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.358,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 25,
+        "supported_token_count": 15,
+        "coverage": 0.6,
+        "best_chunk_coverage": 0.44,
+        "normalized_score": 0.499148,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch01-009",
+      "split": "validation",
+      "question": "在到达目的地之外还要兼顾耗时和油耗时，基于效用的智能体比基于目标的智能体多考虑了什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.94,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 33,
+        "supported_token_count": 15,
+        "coverage": 0.454545,
+        "best_chunk_coverage": 0.30303,
+        "normalized_score": 0.35672,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch01-010",
+      "split": "calibration",
+      "question": "智能体循环中的思考阶段，规划和工具选择分别要完成什么工作？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.402,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 19,
+        "coverage": 0.791667,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.327864,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch01-011",
+      "split": "regression",
+      "question": "入门案例中的 get_weather 如何把天气接口的 JSON 结果转成给模型读取的文本？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.939,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 25,
+        "supported_token_count": 13,
+        "coverage": 0.52,
+        "best_chunk_coverage": 0.2,
+        "normalized_score": 0.49717,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch01-012",
+      "split": "validation",
+      "question": "在自主协作的架构分类中，CAMEL 的角色扮演式对话与 MetaGPT、CrewAI 的组织化工作流有什么区别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.304,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 35,
+        "supported_token_count": 27,
+        "coverage": 0.771429,
+        "best_chunk_coverage": 0.714286,
+        "normalized_score": 0.682146,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch01-013",
+      "split": "calibration",
+      "question": "反应式与规划式智能体，在决策速度、计算成本和长期任务能力之间各有什么取舍？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.169,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 30,
+        "supported_token_count": 21,
+        "coverage": 0.7,
+        "best_chunk_coverage": 0.433333,
+        "normalized_score": 0.551681,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch01-014",
+      "split": "regression",
+      "question": "工具已经返回了 JSON，感知系统为什么还要把它封装成 Observation 文本？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0017-00013",
+        "caeb372d8f756b87-p0017-00012",
+        "caeb372d8f756b87-p0383-00528",
+        "caeb372d8f756b87-p0516-00700",
+        "caeb372d8f756b87-p0096-00132",
+        "caeb372d8f756b87-p0557-00757",
+        "caeb372d8f756b87-p0045-00056",
+        "caeb372d8f756b87-p0297-00417",
+        "caeb372d8f756b87-p0231-00310",
+        "caeb372d8f756b87-p0419-00575"
+      ],
+      "retrieved_section_ids": [
+        "ch01-s002",
+        "ch01-s002",
+        "ch10-s002",
+        "ch12-s002",
+        "ch04-s002",
+        "ch12-s005",
+        "ch02-s004",
+        "ch08-s004",
+        "ch07-s004",
+        "ch10-s005"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.41,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 18,
+        "supported_token_count": 12,
+        "coverage": 0.666667,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.71918,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch01-015",
+      "split": "validation",
+      "question": "第一个旅行助手的主循环为什么要把工具的观察结果追加到 prompt_history，下一轮如何用到这些历史记录？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 15.995,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 32,
+        "supported_token_count": 26,
+        "coverage": 0.8125,
+        "best_chunk_coverage": 0.34375,
+        "normalized_score": 0.527763,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch01-016",
+      "split": "calibration",
+      "question": "教材如何用 LangGraph 说明高级控制流架构，它能支持哪些复杂执行流程？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.588,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 20,
+        "supported_token_count": 14,
+        "coverage": 0.7,
+        "best_chunk_coverage": 0.6,
+        "normalized_score": 0.5955,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch01-017",
+      "split": "regression",
+      "question": "为什么大语言模型驱动的智能体可以作为神经符号混合主义的实践例子？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch01-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0015-00009",
+        "caeb372d8f756b87-p0041-00052",
+        "caeb372d8f756b87-p0046-00058",
+        "caeb372d8f756b87-p0045-00056",
+        "caeb372d8f756b87-p0027-00032",
+        "caeb372d8f756b87-p0046-00057",
+        "caeb372d8f756b87-p0012-00005",
+        "caeb372d8f756b87-p0023-00025",
+        "caeb372d8f756b87-p0039-00047",
+        "caeb372d8f756b87-p0042-00053"
+      ],
+      "retrieved_section_ids": [
+        "ch01-s001",
+        "ch02-s004",
+        "ch02-s004",
+        "ch02-s004",
+        "ch01-s005",
+        "ch02-s004",
+        "ch01-s001",
+        "ch01-s003",
+        "ch02-s002",
+        "ch02-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 12.601,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 26,
+        "supported_token_count": 24,
+        "coverage": 0.923077,
+        "best_chunk_coverage": 0.692308,
+        "normalized_score": 0.884565,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch01-018",
+      "split": "calibration",
+      "question": "家里做清蒸鲈鱼，鱼身有六百克时应怎样安排蒸制时间和调味步骤？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 9.223,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 6,
+        "coverage": 0.26087,
+        "best_chunk_coverage": 0.086957,
+        "normalized_score": 0.374032,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch01-019",
+      "split": "regression",
+      "question": "持中国普通护照去法国旅游，申根签证通常需要准备哪些材料？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.132,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 21,
+        "supported_token_count": 7,
+        "coverage": 0.333333,
+        "best_chunk_coverage": 0.190476,
+        "normalized_score": 0.212005,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "val-ch01-020",
+      "split": "validation",
+      "question": "高中生喜欢绘画但数学成绩一般，大学选视觉传达还是工业设计更合适？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.964,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 11,
+        "coverage": 0.392857,
+        "best_chunk_coverage": 0.142857,
+        "normalized_score": 0.169799,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-ch02-001",
+      "split": "calibration",
+      "question": "物理符号系统假说的充分性论断和必要性论断分别是什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0030-00034",
+        "caeb372d8f756b87-p0031-00035",
+        "caeb372d8f756b87-p0033-00037",
+        "caeb372d8f756b87-p0034-00039",
+        "caeb372d8f756b87-p0015-00009",
+        "caeb372d8f756b87-p0034-00038",
+        "caeb372d8f756b87-p0540-00731",
+        "caeb372d8f756b87-p0254-00345",
+        "caeb372d8f756b87-p0376-00520",
+        "caeb372d8f756b87-p0325-00454"
+      ],
+      "retrieved_section_ids": [
+        "ch02-s001",
+        "ch02-s001",
+        "ch02-s001",
+        "ch02-s001",
+        "ch01-s001",
+        "ch02-s001",
+        "ch12-s004",
+        "ch07-s006",
+        "ch10-s001",
+        "ch09-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.582,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 19,
+        "supported_token_count": 16,
+        "coverage": 0.842105,
+        "best_chunk_coverage": 0.736842,
+        "normalized_score": 1.202264,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch02-002",
+      "split": "regression",
+      "question": "ELIZA 从用户的一句话生成回应时，关键词识别、分解、重组和代词转换各起什么作用？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.637,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 17,
+        "coverage": 0.607143,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.578121,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch02-003",
+      "split": "validation",
+      "question": "在明斯基的心智社会中，简单智能体与 Agency 分别指什么，它们如何组织起来？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0039-00049",
+        "caeb372d8f756b87-p0041-00051",
+        "caeb372d8f756b87-p0039-00048",
+        "caeb372d8f756b87-p0049-00062",
+        "caeb372d8f756b87-p0040-00050",
+        "caeb372d8f756b87-p0041-00052",
+        "caeb372d8f756b87-p0025-00029",
+        "caeb372d8f756b87-p0309-00430",
+        "caeb372d8f756b87-p0372-00515",
+        "caeb372d8f756b87-p0172-00219"
+      ],
+      "retrieved_section_ids": [
+        "ch02-s003",
+        "ch02-s003",
+        "ch02-s003",
+        "ch02-s005",
+        "ch02-s003",
+        "ch02-s004",
+        "ch01-s004",
+        "ch09-s001",
+        null,
+        "ch06-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 12.468,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 22,
+        "supported_token_count": 19,
+        "coverage": 0.863636,
+        "best_chunk_coverage": 0.681818,
+        "normalized_score": 0.934709,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch02-004",
+      "split": "calibration",
+      "question": "联结主义把知识存在哪里，又通过什么过程让系统从经验中改进？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.901,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 12,
+        "coverage": 0.5,
+        "best_chunk_coverage": 0.375,
+        "normalized_score": 0.552251,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch02-005",
+      "split": "regression",
+      "question": "专家系统的正向链和反向链各从什么出发，为什么分别称为数据驱动和目标驱动？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.64,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 17,
+        "coverage": 0.653846,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.688398,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch02-006",
+      "split": "validation",
+      "question": "迷你 ELIZA 的 swap_pronouns 函数如何处理捕获到的短语，为什么需要进行第一、第二人称转换？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.9,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 20,
+        "coverage": 0.869565,
+        "best_chunk_coverage": 0.478261,
+        "normalized_score": 0.956818,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch02-007",
+      "split": "calibration",
+      "question": "心智社会的搭积木塔例子如何说明：没有任何单个模块掌握全局规划，整体仍能完成复杂任务？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.304,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 32,
+        "supported_token_count": 22,
+        "coverage": 0.6875,
+        "best_chunk_coverage": 0.40625,
+        "normalized_score": 0.544631,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch02-008",
+      "split": "regression",
+      "question": "强化学习智能体为什么有时应牺牲当前奖励，它最终要最大化的目标是什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0043-00054",
+        "caeb372d8f756b87-p0435-00595",
+        "caeb372d8f756b87-p0443-00607",
+        "caeb372d8f756b87-p0042-00053",
+        "caeb372d8f756b87-p0433-00591",
+        "caeb372d8f756b87-p0011-00004",
+        "caeb372d8f756b87-p0437-00598",
+        "caeb372d8f756b87-p0461-00630",
+        "caeb372d8f756b87-p0433-00592",
+        "caeb372d8f756b87-p0454-00618"
+      ],
+      "retrieved_section_ids": [
+        "ch02-s004",
+        "ch11-s001",
+        "ch11-s002",
+        "ch02-s004",
+        "ch11-s001",
+        "ch01-s001",
+        "ch11-s001",
+        "ch11-s004",
+        "ch11-s001",
+        "ch11-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 14.183,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 23,
+        "supported_token_count": 18,
+        "coverage": 0.782609,
+        "best_chunk_coverage": 0.652174,
+        "normalized_score": 0.762091,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch02-009",
+      "split": "validation",
+      "question": "MYCIN 用什么机制处理不确定的医学知识，该机制的数值范围和含义是什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.41,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 17,
+        "coverage": 0.73913,
+        "best_chunk_coverage": 0.478261,
+        "normalized_score": 0.514691,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch02-010",
+      "split": "calibration",
+      "question": "为什么规则版 ELIZA 既可能错误处理否定句，也难以进行连贯的多轮对话？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.38,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 17,
+        "coverage": 0.772727,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.640117,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch02-011",
+      "split": "regression",
+      "question": "心智社会理论在去中心化控制、涌现式计算和智能体社会性方面，怎样启发了多智能体系统研究？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0041-00051",
+        "caeb372d8f756b87-p0049-00062",
+        "caeb372d8f756b87-p0040-00050",
+        "caeb372d8f756b87-p0039-00049",
+        "caeb372d8f756b87-p0041-00052",
+        "caeb372d8f756b87-p0039-00048",
+        "caeb372d8f756b87-p0172-00219",
+        "caeb372d8f756b87-p0203-00266",
+        "caeb372d8f756b87-p0375-00519",
+        "caeb372d8f756b87-p0497-00673"
+      ],
+      "retrieved_section_ids": [
+        "ch02-s003",
+        "ch02-s005",
+        "ch02-s003",
+        "ch02-s003",
+        "ch02-s004",
+        "ch02-s003",
+        "ch06-s001",
+        "ch06-s006",
+        "ch10-s001",
+        null
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 16.441,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 32,
+        "supported_token_count": 26,
+        "coverage": 0.8125,
+        "best_chunk_coverage": 0.8125,
+        "normalized_score": 0.970559,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch02-012",
+      "split": "validation",
+      "question": "预训练与微调的两阶段范式如何缓解传统 NLP 为每个任务从零训练、逐一标注数据的问题？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0044-00055",
+        "caeb372d8f756b87-p0097-00134",
+        "caeb372d8f756b87-p0434-00593",
+        "caeb372d8f756b87-p0096-00133",
+        "caeb372d8f756b87-p0435-00595",
+        "caeb372d8f756b87-p0433-00591",
+        "caeb372d8f756b87-p0492-00671",
+        "caeb372d8f756b87-p0454-00618",
+        "caeb372d8f756b87-p0440-00604",
+        "caeb372d8f756b87-p0184-00237"
+      ],
+      "retrieved_section_ids": [
+        "ch02-s004",
+        "ch04-s003",
+        "ch11-s001",
+        "ch04-s003",
+        "ch11-s001",
+        "ch11-s001",
+        "ch11-s007",
+        "ch11-s003",
+        "ch11-s002",
+        "ch06-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 18.177,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 30,
+        "supported_token_count": 24,
+        "coverage": 0.8,
+        "best_chunk_coverage": 0.6,
+        "normalized_score": 0.752398,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch02-013",
+      "split": "calibration",
+      "question": "SHRDLU 的记忆与问答能力体现在哪几类用户提问上？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.737,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 19,
+        "supported_token_count": 12,
+        "coverage": 0.631579,
+        "best_chunk_coverage": 0.578947,
+        "normalized_score": 0.421089,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch02-014",
+      "split": "regression",
+      "question": "ELIZA 没有真正理解对话，为什么仍会让使用者相信它理解自己，这种现象称为什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.144,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 18,
+        "coverage": 0.782609,
+        "best_chunk_coverage": 0.391304,
+        "normalized_score": 0.445553,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch02-015",
+      "split": "validation",
+      "question": "上下文学习怎样让大语言模型适应新任务，它是否需要调整模型权重？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.952,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 21,
+        "supported_token_count": 19,
+        "coverage": 0.904762,
+        "best_chunk_coverage": 0.619048,
+        "normalized_score": 0.401194,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch02-016",
+      "split": "calibration",
+      "question": "符号主义面对的框架问题具体是什么，为什么显式列出动作后所有不变状态难以实现？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.489,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 19,
+        "coverage": 0.678571,
+        "best_chunk_coverage": 0.464286,
+        "normalized_score": 0.646109,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch02-017",
+      "split": "regression",
+      "question": "在现代 LLM 智能体中，执行模块、工具结果和记忆更新怎样衔接成下一轮交互？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch02-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.736,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 18,
+        "coverage": 0.75,
+        "best_chunk_coverage": 0.625,
+        "normalized_score": 0.512026,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch02-018",
+      "split": "calibration",
+      "question": "烤箱做八寸戚风蛋糕时，面糊配比、温度和烘烤时长应该怎样设置？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 9.889,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 21,
+        "supported_token_count": 5,
+        "coverage": 0.238095,
+        "best_chunk_coverage": 0.142857,
+        "normalized_score": 0.575414,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch02-019",
+      "split": "regression",
+      "question": "第一次申请日本个人旅游签证，自由职业者需要提交哪些收入和行程证明？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.707,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 14,
+        "coverage": 0.538462,
+        "best_chunk_coverage": 0.115385,
+        "normalized_score": 0.264164,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "val-ch02-020",
+      "split": "validation",
+      "question": "准备报考大学的学生想进入会计行业，应该怎样比较会计学、财务管理和审计学专业？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.224,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 14,
+        "coverage": 0.518519,
+        "best_chunk_coverage": 0.185185,
+        "normalized_score": 0.223645,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-ch03-001",
+      "split": "calibration",
+      "question": "N-gram 语言模型怎样利用马尔可夫假设缩小所需的历史上下文？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0052-00064",
+        "caeb372d8f756b87-p0057-00071",
+        "caeb372d8f756b87-p0055-00069",
+        "caeb372d8f756b87-p0436-00597",
+        "caeb372d8f756b87-p0353-00489",
+        "caeb372d8f756b87-p0078-00106",
+        "caeb372d8f756b87-p0024-00026",
+        "caeb372d8f756b87-p0073-00096",
+        "caeb372d8f756b87-p0308-00429",
+        "caeb372d8f756b87-p0217-00286"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch11-s001",
+        "ch09-s006",
+        "ch03-s004",
+        "ch01-s003",
+        "ch03-s002",
+        "ch09-s001",
+        "ch07-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 12.183,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 23,
+        "supported_token_count": 20,
+        "coverage": 0.869565,
+        "best_chunk_coverage": 0.608696,
+        "normalized_score": 0.726667,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch03-002",
+      "split": "regression",
+      "question": "词嵌入为什么能改善 N-gram 模型难以泛化到语义相近词的问题？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0055-00069",
+        "caeb372d8f756b87-p0057-00071",
+        "caeb372d8f756b87-p0052-00064",
+        "caeb372d8f756b87-p0294-00410",
+        "caeb372d8f756b87-p0070-00092",
+        "caeb372d8f756b87-p0291-00405",
+        "caeb372d8f756b87-p0277-00379",
+        "caeb372d8f756b87-p0060-00076",
+        "caeb372d8f756b87-p0280-00385",
+        "caeb372d8f756b87-p0283-00392"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch08-s003",
+        "ch03-s002",
+        "ch08-s003",
+        "ch08-s002",
+        "ch03-s001",
+        "ch08-s002",
+        "ch08-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 12.269,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 21,
+        "supported_token_count": 18,
+        "coverage": 0.857143,
+        "best_chunk_coverage": 0.666667,
+        "normalized_score": 0.802183,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch03-003",
+      "split": "validation",
+      "question": "标准 RNN 为什么难以学习长距离依赖，LSTM 又通过哪些门控制记忆？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0057-00071",
+        "caeb372d8f756b87-p0057-00072",
+        "caeb372d8f756b87-p0079-00107",
+        "caeb372d8f756b87-p0300-00420",
+        "caeb372d8f756b87-p0433-00592",
+        "caeb372d8f756b87-p0206-00268",
+        "caeb372d8f756b87-p0327-00459",
+        "caeb372d8f756b87-p0207-00269",
+        "caeb372d8f756b87-p0262-00355",
+        "caeb372d8f756b87-p0437-00598"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s004",
+        "ch08-s004",
+        "ch11-s001",
+        "ch07-s001",
+        "ch09-s004",
+        "ch07-s001",
+        "ch08-s001",
+        "ch11-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 11.887,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 17,
+        "supported_token_count": 14,
+        "coverage": 0.823529,
+        "best_chunk_coverage": 0.764706,
+        "normalized_score": 0.885827,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch03-004",
+      "split": "calibration",
+      "question": "多头注意力相较于单头注意力，怎样同时捕捉词元之间不同类型的关联？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.03,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 16,
+        "coverage": 0.695652,
+        "best_chunk_coverage": 0.521739,
+        "normalized_score": 0.667542,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch03-005",
+      "split": "regression",
+      "question": "Transformer 为什么需要在词嵌入上添加位置编码？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0065-00084",
+        "caeb372d8f756b87-p0064-00082",
+        "caeb372d8f756b87-p0064-00083",
+        "caeb372d8f756b87-p0059-00074",
+        "caeb372d8f756b87-p0055-00069",
+        "caeb372d8f756b87-p0058-00073",
+        "caeb372d8f756b87-p0056-00070",
+        "caeb372d8f756b87-p0065-00085",
+        "caeb372d8f756b87-p0057-00071",
+        "caeb372d8f756b87-p0260-00351"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch08-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 10.888,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 13,
+        "supported_token_count": 9,
+        "coverage": 0.692308,
+        "best_chunk_coverage": 0.615385,
+        "normalized_score": 0.809825,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch03-006",
+      "split": "validation",
+      "question": "Transformer 的逐位置前馈网络如何处理不同位置的词元，它们是否共享参数？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0063-00080",
+        "caeb372d8f756b87-p0064-00082",
+        "caeb372d8f756b87-p0059-00074",
+        "caeb372d8f756b87-p0063-00081",
+        "caeb372d8f756b87-p0055-00069",
+        "caeb372d8f756b87-p0066-00086",
+        "caeb372d8f756b87-p0060-00076",
+        "caeb372d8f756b87-p0065-00084",
+        "caeb372d8f756b87-p0070-00092",
+        "caeb372d8f756b87-p0071-00093"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s001",
+        "ch03-s002",
+        "ch03-s002"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 11.261,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 19,
+        "supported_token_count": 15,
+        "coverage": 0.789474,
+        "best_chunk_coverage": 0.526316,
+        "normalized_score": 0.799818,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch03-007",
+      "split": "calibration",
+      "question": "Decoder-Only 模型训练时如何防止某个位置的词元看到未来信息？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.028,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 21,
+        "supported_token_count": 16,
+        "coverage": 0.761905,
+        "best_chunk_coverage": 0.571429,
+        "normalized_score": 0.643685,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch03-008",
+      "split": "regression",
+      "question": "Temperature 和 Top-k 分别以什么方式影响大语言模型的下一词元采样？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.661,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 17,
+        "coverage": 0.708333,
+        "best_chunk_coverage": 0.458333,
+        "normalized_score": 0.850157,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch03-009",
+      "split": "validation",
+      "question": "零样本、单样本和少样本提示在向模型提供示例方面有什么区别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.666,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 17,
+        "coverage": 0.772727,
+        "best_chunk_coverage": 0.545455,
+        "normalized_score": 0.650663,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch03-010",
+      "split": "calibration",
+      "question": "BPE 分词算法每轮依据什么选择要合并的词元对，何时停止合并？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 25.381,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 11,
+        "coverage": 0.5,
+        "best_chunk_coverage": 0.363636,
+        "normalized_score": 0.776525,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch03-011",
+      "split": "regression",
+      "question": "为什么管理大模型的上下文窗口和 API 成本时应统计 Token，而不是只统计字符数？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.104,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 25,
+        "supported_token_count": 19,
+        "coverage": 0.76,
+        "best_chunk_coverage": 0.6,
+        "normalized_score": 0.612095,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch03-012",
+      "split": "validation",
+      "question": "本地部署 Qwen 对话模型的示例中，Hugging Face Transformers 使用哪些类加载模型和分词器？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0073-00096",
+        "caeb372d8f756b87-p0073-00097",
+        "caeb372d8f756b87-p0074-00098",
+        "caeb372d8f756b87-p0213-00279",
+        "caeb372d8f756b87-p0212-00278",
+        "caeb372d8f756b87-p0076-00100",
+        "caeb372d8f756b87-p0524-00711",
+        "caeb372d8f756b87-p0079-00107",
+        "caeb372d8f756b87-p0490-00668",
+        "caeb372d8f756b87-p0454-00618"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s002",
+        "ch03-s002",
+        "ch03-s002",
+        "ch07-s002",
+        "ch07-s002",
+        "ch03-s002",
+        "ch12-s003",
+        "ch03-s004",
+        "ch11-s006",
+        "ch11-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 14.083,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 22,
+        "supported_token_count": 19,
+        "coverage": 0.863636,
+        "best_chunk_coverage": 0.727273,
+        "normalized_score": 0.744478,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch03-013",
+      "split": "calibration",
+      "question": "为智能体选择大语言模型时，除了能力表现，还应权衡哪些部署和运行因素？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.758,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 25,
+        "supported_token_count": 18,
+        "coverage": 0.72,
+        "best_chunk_coverage": 0.6,
+        "normalized_score": 0.588607,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch03-014",
+      "split": "regression",
+      "question": "大语言模型的缩放法则描述了性能与哪三类资源之间的关系？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0077-00103",
+        "caeb372d8f756b87-p0079-00107",
+        "caeb372d8f756b87-p0075-00099",
+        "caeb372d8f756b87-p0061-00077",
+        "caeb372d8f756b87-p0073-00096",
+        "caeb372d8f756b87-p0217-00286",
+        "caeb372d8f756b87-p0055-00069",
+        "caeb372d8f756b87-p0109-00150",
+        "caeb372d8f756b87-p0052-00064",
+        "caeb372d8f756b87-p0052-00063"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s003",
+        "ch03-s004",
+        "ch03-s002",
+        "ch03-s001",
+        "ch03-s002",
+        "ch07-s003",
+        "ch03-s001",
+        "ch04-s004",
+        "ch03-s001",
+        null
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.925,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 25,
+        "supported_token_count": 18,
+        "coverage": 0.72,
+        "best_chunk_coverage": 0.6,
+        "normalized_score": 0.864663,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch03-015",
+      "split": "validation",
+      "question": "固定计算预算下，Chinchilla 定律对模型参数量与训练数据量的配比提出了什么要求？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.45,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 29,
+        "supported_token_count": 22,
+        "coverage": 0.758621,
+        "best_chunk_coverage": 0.551724,
+        "normalized_score": 0.588911,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch03-016",
+      "split": "calibration",
+      "question": "大语言模型的事实性幻觉与忠实性幻觉有什么区别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0078-00104",
+        "caeb372d8f756b87-p0154-00199",
+        "caeb372d8f756b87-p0078-00105",
+        "caeb372d8f756b87-p0015-00009",
+        "caeb372d8f756b87-p0075-00099",
+        "caeb372d8f756b87-p0151-00196",
+        "caeb372d8f756b87-p0067-00088",
+        "caeb372d8f756b87-p0052-00063",
+        "caeb372d8f756b87-p0079-00107",
+        "caeb372d8f756b87-p0434-00593"
+      ],
+      "retrieved_section_ids": [
+        "ch03-s003",
+        "ch05-s004",
+        "ch03-s003",
+        "ch01-s001",
+        "ch03-s002",
+        "ch05-s004",
+        "ch03-s002",
+        null,
+        "ch03-s004",
+        "ch11-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 14.012,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 17,
+        "supported_token_count": 15,
+        "coverage": 0.882353,
+        "best_chunk_coverage": 0.647059,
+        "normalized_score": 0.841319,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch03-017",
+      "split": "regression",
+      "question": "为什么仅预测下一个词元可能让大语言模型编造信息，RAG 如何为回答补充事实依据？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch03-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.137,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 18,
+        "coverage": 0.666667,
+        "best_chunk_coverage": 0.518519,
+        "normalized_score": 0.493446,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch03-018",
+      "split": "calibration",
+      "question": "初学小提琴时，怎样练习换弓才能减少杂音？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.176,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 14,
+        "supported_token_count": 5,
+        "coverage": 0.357143,
+        "best_chunk_coverage": 0.142857,
+        "normalized_score": 0.268633,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch03-019",
+      "split": "regression",
+      "question": "徒手深蹲时膝盖和脚尖应如何对齐？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 8.5,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 11,
+        "supported_token_count": 2,
+        "coverage": 0.181818,
+        "best_chunk_coverage": 0.090909,
+        "normalized_score": 0.468707,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "val-ch03-020",
+      "split": "validation",
+      "question": "用小型天文望远镜观察土星环需要怎样选择目镜？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.435,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 17,
+        "supported_token_count": 5,
+        "coverage": 0.294118,
+        "best_chunk_coverage": 0.176471,
+        "normalized_score": 0.436164,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-ch04-001",
+      "split": "calibration",
+      "question": "第四章的 HelloAgentsLLM 初始化时，模型 ID、API 密钥和服务地址从哪里读取，显式参数与环境变量谁优先？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0083-00110",
+        "caeb372d8f756b87-p0214-00280",
+        "caeb372d8f756b87-p0082-00109",
+        "caeb372d8f756b87-p0213-00279",
+        "caeb372d8f756b87-p0215-00282",
+        "caeb372d8f756b87-p0215-00283",
+        "caeb372d8f756b87-p0198-00258",
+        "caeb372d8f756b87-p0247-00332",
+        "caeb372d8f756b87-p0214-00281",
+        "caeb372d8f756b87-p0020-00018"
+      ],
+      "retrieved_section_ids": [
+        "ch04-s001",
+        "ch07-s002",
+        "ch04-s001",
+        "ch07-s002",
+        "ch07-s002",
+        "ch07-s002",
+        "ch06-s005",
+        "ch07-s005",
+        "ch07-s002",
+        "ch01-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 14.887,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 35,
+        "supported_token_count": 21,
+        "coverage": 0.6,
+        "best_chunk_coverage": 0.571429,
+        "normalized_score": 0.711579,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch04-002",
+      "split": "regression",
+      "question": "构建不同智能体范式前，为什么要先把模型服务调用封装进 HelloAgentsLLM 客户端？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.406,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 16,
+        "coverage": 0.615385,
+        "best_chunk_coverage": 0.538462,
+        "normalized_score": 0.574012,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch04-003",
+      "split": "validation",
+      "question": "HelloAgentsLLM 的 think 方法如何把流式响应片段拼成完整字符串返回？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.267,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 14,
+        "coverage": 0.636364,
+        "best_chunk_coverage": 0.409091,
+        "normalized_score": 0.748448,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch04-004",
+      "split": "calibration",
+      "question": "ReAct 中 Thought、Action 和 Observation 分别承担什么职责，它们怎样构成闭环？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.032,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 18,
+        "supported_token_count": 12,
+        "coverage": 0.666667,
+        "best_chunk_coverage": 0.444444,
+        "normalized_score": 0.602264,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch04-005",
+      "split": "regression",
+      "question": "为 ReAct 定义一个工具时需要提供哪些核心要素，工具描述为什么重要？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.862,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 19,
+        "supported_token_count": 15,
+        "coverage": 0.789474,
+        "best_chunk_coverage": 0.421053,
+        "normalized_score": 0.426086,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch04-006",
+      "split": "validation",
+      "question": "ReAct 示例的网页搜索工具怎样决定返回直接答案还是常规搜索结果摘要？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 16.979,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 20,
+        "coverage": 0.740741,
+        "best_chunk_coverage": 0.518519,
+        "normalized_score": 0.457321,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch04-007",
+      "split": "calibration",
+      "question": "ReActAgent 为什么需要 max_steps 参数限制核心循环？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0091-00122",
+        "caeb372d8f756b87-p0229-00307",
+        "caeb372d8f756b87-p0230-00308",
+        "caeb372d8f756b87-p0092-00124",
+        "caeb372d8f756b87-p0372-00516",
+        "caeb372d8f756b87-p0090-00121",
+        "caeb372d8f756b87-p0228-00306",
+        "caeb372d8f756b87-p0171-00218",
+        "caeb372d8f756b87-p0219-00289",
+        "caeb372d8f756b87-p0112-00154"
+      ],
+      "retrieved_section_ids": [
+        "ch04-s002",
+        "ch07-s004",
+        "ch07-s004",
+        "ch04-s002",
+        "ch10-s001",
+        "ch04-s002",
+        "ch07-s004",
+        "ch06-s001",
+        "ch07-s003",
+        "ch04-s005"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.662,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 15,
+        "supported_token_count": 14,
+        "coverage": 0.933333,
+        "best_chunk_coverage": 0.8,
+        "normalized_score": 1.269653,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch04-008",
+      "split": "regression",
+      "question": "ReAct 无法解析出 Action 时，应检查哪些原始信息来区分模型格式错误和解析逻辑错误？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 15.829,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 17,
+        "coverage": 0.607143,
+        "best_chunk_coverage": 0.25,
+        "normalized_score": 0.303187,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch04-009",
+      "split": "validation",
+      "question": "Plan-and-Solve 怎样划分任务处理阶段，与 ReAct 的逐步决策有什么不同？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0096-00133",
+        "caeb372d8f756b87-p0112-00154",
+        "caeb372d8f756b87-p0111-00153",
+        "caeb372d8f756b87-p0232-00311",
+        "caeb372d8f756b87-p0115-00155",
+        "caeb372d8f756b87-p0103-00142",
+        "caeb372d8f756b87-p0171-00217",
+        "caeb372d8f756b87-p0097-00134",
+        "caeb372d8f756b87-p0095-00130",
+        "caeb372d8f756b87-p0229-00307"
+      ],
+      "retrieved_section_ids": [
+        "ch04-s003",
+        "ch04-s005",
+        "ch04-s004",
+        "ch07-s004",
+        null,
+        "ch04-s004",
+        null,
+        "ch04-s003",
+        "ch04-s002",
+        "ch07-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 15.568,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 22,
+        "supported_token_count": 13,
+        "coverage": 0.590909,
+        "best_chunk_coverage": 0.590909,
+        "normalized_score": 0.799011,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch04-010",
+      "split": "calibration",
+      "question": "Plan-and-Solve 的规划器为什么要求模型输出按逻辑顺序排列的 Python 列表？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.17,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 21,
+        "supported_token_count": 16,
+        "coverage": 0.761905,
+        "best_chunk_coverage": 0.571429,
+        "normalized_score": 0.644017,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch04-011",
+      "split": "regression",
+      "question": "Plan-and-Solve 执行器的提示词需要包含哪些上下文，才能把前面步骤的结果用于当前步骤？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.756,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 29,
+        "supported_token_count": 22,
+        "coverage": 0.758621,
+        "best_chunk_coverage": 0.62069,
+        "normalized_score": 0.688027,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch04-012",
+      "split": "validation",
+      "question": "PlanAndSolveAgent 在规划器没有生成有效计划时，会怎样处理后续执行流程？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0101-00138",
+        "caeb372d8f756b87-p0099-00136",
+        "caeb372d8f756b87-p0233-00312",
+        "caeb372d8f756b87-p0096-00133",
+        "caeb372d8f756b87-p0234-00313",
+        "caeb372d8f756b87-p0232-00311",
+        "caeb372d8f756b87-p0097-00134",
+        "caeb372d8f756b87-p0098-00135",
+        "caeb372d8f756b87-p0196-00254",
+        "caeb372d8f756b87-p0102-00140"
+      ],
+      "retrieved_section_ids": [
+        "ch04-s003",
+        "ch04-s003",
+        "ch07-s004",
+        "ch04-s003",
+        "ch07-s004",
+        "ch07-s004",
+        "ch04-s003",
+        "ch04-s003",
+        "ch06-s005",
+        "ch04-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.696,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 24,
+        "supported_token_count": 16,
+        "coverage": 0.666667,
+        "best_chunk_coverage": 0.541667,
+        "normalized_score": 0.719643,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch04-013",
+      "split": "calibration",
+      "question": "Reflection 的执行、反思和优化三个阶段分别产出什么，优化阶段需要接收哪些信息？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.937,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 16,
+        "coverage": 0.727273,
+        "best_chunk_coverage": 0.318182,
+        "normalized_score": 0.356803,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch04-014",
+      "split": "regression",
+      "question": "Reflection 中的 Memory 如何组织行动与反思记录，并为后续提示词提供上下文？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.982,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 17,
+        "coverage": 0.772727,
+        "best_chunk_coverage": 0.409091,
+        "normalized_score": 0.650483,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch04-015",
+      "split": "validation",
+      "question": "ReflectionAgent 根据什么反馈提前结束反思优化循环，循环次数又由什么参数约束？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.019,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 13,
+        "coverage": 0.5,
+        "best_chunk_coverage": 0.346154,
+        "normalized_score": 0.474027,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch04-016",
+      "split": "calibration",
+      "question": "Reflection 的素数生成案例中，代码评审反馈如何推动算法效率提升？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.351,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 20,
+        "supported_token_count": 13,
+        "coverage": 0.65,
+        "best_chunk_coverage": 0.45,
+        "normalized_score": 0.554251,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch04-017",
+      "split": "regression",
+      "question": "采用 Reflection 会增加哪些主要成本，它更适合怎样的任务质量与实时性要求？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch04-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.976,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 20,
+        "supported_token_count": 15,
+        "coverage": 0.75,
+        "best_chunk_coverage": 0.6,
+        "normalized_score": 0.546015,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch04-018",
+      "split": "calibration",
+      "question": "在中国驾驶私家车经过没有交通信号灯的人行横道时应怎样让行？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.14,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 9,
+        "coverage": 0.375,
+        "best_chunk_coverage": 0.083333,
+        "normalized_score": 0.194705,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch04-019",
+      "split": "regression",
+      "question": "做戚风蛋糕时，蛋白霜打发到什么状态较合适？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.698,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 16,
+        "supported_token_count": 3,
+        "coverage": 0.1875,
+        "best_chunk_coverage": 0.0625,
+        "normalized_score": 0.498385,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "val-ch04-020",
+      "split": "validation",
+      "question": "申请首套住房商业贷款时，银行一般要求准备哪些收入和房产材料？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.461,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 8,
+        "coverage": 0.347826,
+        "best_chunk_coverage": 0.086957,
+        "normalized_score": 0.315808,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-ch05-001",
+      "split": "calibration",
+      "question": "低代码平台通过哪些方式降低智能体开发门槛、提高开发效率，并沉淀团队开发规范？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s001"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0115-00156",
+        "caeb372d8f756b87-p0167-00215",
+        "caeb372d8f756b87-p0166-00213",
+        "caeb372d8f756b87-p0171-00217",
+        "caeb372d8f756b87-p0168-00216",
+        "caeb372d8f756b87-p0115-00157",
+        "caeb372d8f756b87-p0115-00155",
+        "caeb372d8f756b87-p0116-00158",
+        "caeb372d8f756b87-p0540-00731",
+        "caeb372d8f756b87-p0156-00201"
+      ],
+      "retrieved_section_ids": [
+        "ch05-s001",
+        "ch05-s006",
+        "ch05-s005",
+        null,
+        "ch05-s006",
+        "ch05-s001",
+        null,
+        "ch05-s001",
+        "ch12-s004",
+        "ch05-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 16.548,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 27,
+        "supported_token_count": 18,
+        "coverage": 0.666667,
+        "best_chunk_coverage": 0.555556,
+        "normalized_score": 0.773,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch05-002",
+      "split": "regression",
+      "question": "选择智能体低代码平台时，教材建议依据哪些需求和个人背景因素做判断？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.284,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 11,
+        "coverage": 0.423077,
+        "best_chunk_coverage": 0.346154,
+        "normalized_score": 0.691568,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch05-003",
+      "split": "validation",
+      "question": "Coze 的项目空间和资源库分别存放什么，两者在智能体开发中有什么区别？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.758,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 20,
+        "coverage": 0.769231,
+        "best_chunk_coverage": 0.346154,
+        "normalized_score": 0.439283,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch05-004",
+      "split": "calibration",
+      "question": "Coze 每日 AI 简报案例如何用 RSS、GitHub 和 arXiv 插件聚合不同类型的信息？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0120-00162",
+        "caeb372d8f756b87-p0121-00163",
+        "caeb372d8f756b87-p0122-00164",
+        "caeb372d8f756b87-p0123-00165",
+        "caeb372d8f756b87-p0124-00167",
+        "caeb372d8f756b87-p0129-00173",
+        "caeb372d8f756b87-p0396-00543",
+        "caeb372d8f756b87-p0397-00544",
+        "caeb372d8f756b87-p0167-00215",
+        "caeb372d8f756b87-p0384-00529"
+      ],
+      "retrieved_section_ids": [
+        "ch05-s002",
+        "ch05-s002",
+        "ch05-s002",
+        "ch05-s002",
+        "ch05-s002",
+        "ch05-s003",
+        "ch10-s002",
+        "ch10-s002",
+        "ch05-s006",
+        "ch10-s002"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.271,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 25,
+        "supported_token_count": 20,
+        "coverage": 0.8,
+        "best_chunk_coverage": 0.72,
+        "normalized_score": 1.067598,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch05-005",
+      "split": "regression",
+      "question": "Coze 每日 AI 简报的用户提示要求输出哪三个栏目，各栏目分别包含多少条内容？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.962,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 15,
+        "coverage": 0.535714,
+        "best_chunk_coverage": 0.25,
+        "normalized_score": 0.443619,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch05-006",
+      "split": "validation",
+      "question": "Dify 将哪些开发运营理念结合起来，其分层模块化架构包含哪四层？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.64,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 14,
+        "coverage": 0.608696,
+        "best_chunk_coverage": 0.391304,
+        "normalized_score": 0.566373,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch05-007",
+      "split": "calibration",
+      "question": "Dify 超级个人助手中的问题分类器如何把用户请求路由到不同智能体模块？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.706,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 20,
+        "coverage": 0.740741,
+        "best_chunk_coverage": 0.481481,
+        "normalized_score": 0.670323,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch05-008",
+      "split": "regression",
+      "question": "在 Dify 数据查询案例中，为什么要向大模型提供清晰的表结构和字段信息？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0138-00182",
+        "caeb372d8f756b87-p0139-00183",
+        "caeb372d8f756b87-p0129-00173",
+        "caeb372d8f756b87-p0198-00257",
+        "caeb372d8f756b87-p0419-00575",
+        "caeb372d8f756b87-p0133-00177",
+        "caeb372d8f756b87-p0131-00175",
+        "caeb372d8f756b87-p0069-00091",
+        "caeb372d8f756b87-p0149-00194",
+        "caeb372d8f756b87-p0320-00448"
+      ],
+      "retrieved_section_ids": [
+        "ch05-s003",
+        "ch05-s003",
+        "ch05-s003",
+        "ch06-s005",
+        "ch10-s005",
+        "ch05-s003",
+        "ch05-s003",
+        "ch03-s002",
+        "ch05-s004",
+        "ch09-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 16.955,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 25,
+        "supported_token_count": 22,
+        "coverage": 0.88,
+        "best_chunk_coverage": 0.76,
+        "normalized_score": 1.180921,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch05-009",
+      "split": "validation",
+      "question": "FastGPT 围绕知识库问答深度优化了哪条从文档进入系统到生成回答的 RAG 链路？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.121,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 31,
+        "supported_token_count": 22,
+        "coverage": 0.709677,
+        "best_chunk_coverage": 0.483871,
+        "normalized_score": 0.706522,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch05-010",
+      "split": "calibration",
+      "question": "FastGPT 导入知识库文档时可选哪些处理方式，教材介绍了哪些索引增强选项？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0146-00191",
+        "caeb372d8f756b87-p0156-00201",
+        "caeb372d8f756b87-p0144-00189",
+        "caeb372d8f756b87-p0145-00190",
+        "caeb372d8f756b87-p0147-00192",
+        "caeb372d8f756b87-p0167-00215",
+        "caeb372d8f756b87-p0148-00193",
+        "caeb372d8f756b87-p0149-00194",
+        "caeb372d8f756b87-p0116-00158",
+        "caeb372d8f756b87-p0286-00395"
+      ],
+      "retrieved_section_ids": [
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s006",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s001",
+        "ch08-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 12.814,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 23,
+        "supported_token_count": 18,
+        "coverage": 0.782609,
+        "best_chunk_coverage": 0.73913,
+        "normalized_score": 1.049351,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch05-011",
+      "split": "regression",
+      "question": "FastGPT 智能投顾助手如何将金融概念咨询、股票查询和投资诊断分流到不同处理分支？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0150-00195",
+        "caeb372d8f756b87-p0149-00194",
+        "caeb372d8f756b87-p0148-00193",
+        "caeb372d8f756b87-p0155-00200",
+        "caeb372d8f756b87-p0151-00196",
+        "caeb372d8f756b87-p0152-00197",
+        "caeb372d8f756b87-p0156-00201",
+        "caeb372d8f756b87-p0167-00215",
+        "caeb372d8f756b87-p0144-00189",
+        "caeb372d8f756b87-p0147-00192"
+      ],
+      "retrieved_section_ids": [
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s004",
+        "ch05-s006",
+        "ch05-s004",
+        "ch05-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 14.9,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 31,
+        "supported_token_count": 24,
+        "coverage": 0.774194,
+        "best_chunk_coverage": 0.677419,
+        "normalized_score": 0.820406,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch05-012",
+      "split": "validation",
+      "question": "n8n 工作流在节点之间采用什么数据格式传递信息，这种形式为什么便于控制输入和输出？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.849,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 32,
+        "supported_token_count": 22,
+        "coverage": 0.6875,
+        "best_chunk_coverage": 0.5625,
+        "normalized_score": 0.631825,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch05-013",
+      "split": "calibration",
+      "question": "n8n 邮件助手读取已加载的私有向量知识库时，Memory Key 和 Embeddings 模型应满足什么一致性要求？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 15.068,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 34,
+        "supported_token_count": 21,
+        "coverage": 0.617647,
+        "best_chunk_coverage": 0.470588,
+        "normalized_score": 0.424307,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch05-014",
+      "split": "regression",
+      "question": "n8n 邮件助手中的 SerpAPI 和 Simple Vector Store 分别承担什么信息检索职责？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.081,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 25,
+        "supported_token_count": 16,
+        "coverage": 0.64,
+        "best_chunk_coverage": 0.44,
+        "normalized_score": 0.629488,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch05-015",
+      "split": "validation",
+      "question": "为什么 n8n 案例中的 Simple Memory 和 Simple Vector Store 不宜直接用于生产持久化存储，教材提出了什么替换方向？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.21,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 32,
+        "supported_token_count": 18,
+        "coverage": 0.5625,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.513288,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch05-016",
+      "split": "calibration",
+      "question": "Dify 接入 MCP 工具时，教材配置流程如何选择智能体策略、运行模式与通信模式，还需如何处理 mcp-server 前缀？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s003"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.774,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 19,
+        "coverage": 0.678571,
+        "best_chunk_coverage": 0.428571,
+        "normalized_score": 0.479708,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch05-017",
+      "split": "regression",
+      "question": "n8n 邮件助手为对话记忆设置了什么 Key，如何利用邮件线程区分历史记录？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch05-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.9,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 18,
+        "coverage": 0.692308,
+        "best_chunk_coverage": 0.346154,
+        "normalized_score": 0.355548,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch05-018",
+      "split": "calibration",
+      "question": "阳台盆栽绣球在梅雨季持续黄叶，该如何调整浇水频率和盆土配比？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 9.852,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 4,
+        "coverage": 0.166667,
+        "best_chunk_coverage": 0.083333,
+        "normalized_score": 0.683242,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch05-019",
+      "split": "regression",
+      "question": "厨房水槽下方的塑料排水接头渗水，应该怎样更换密封圈并确认接口尺寸？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.686,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 6,
+        "coverage": 0.230769,
+        "best_chunk_coverage": 0.076923,
+        "normalized_score": 0.229945,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "val-ch05-020",
+      "split": "validation",
+      "question": "真丝衬衫沾上咖啡后怎样清洗才能避免褪色和水痕？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.903,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 18,
+        "supported_token_count": 4,
+        "coverage": 0.222222,
+        "best_chunk_coverage": 0.111111,
+        "normalized_score": 0.703442,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "cal-ch06-001",
+      "split": "calibration",
+      "question": "智能体框架为什么要将模型层、工具层和记忆层解耦，这三层各自负责什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.858,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 18,
+        "coverage": 0.782609,
+        "best_chunk_coverage": 0.521739,
+        "normalized_score": 0.434255,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch06-002",
+      "split": "regression",
+      "question": "智能体框架如何利用 Callbacks 简化可观测性，教材列举了哪些可触发日志记录的生命周期节点？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s001"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 13.238,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 28,
+        "supported_token_count": 21,
+        "coverage": 0.75,
+        "best_chunk_coverage": 0.642857,
+        "normalized_score": 0.513523,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch06-003",
+      "split": "validation",
+      "question": "教材介绍的 AutoGen 分层架构中，autogen-core 与 autogen-agentchat 各承担什么职责？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.937,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 20,
+        "supported_token_count": 14,
+        "coverage": 0.7,
+        "best_chunk_coverage": 0.5,
+        "normalized_score": 0.67775,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch06-004",
+      "split": "calibration",
+      "question": "AutoGen 中 AssistantAgent 和 UserProxyAgent 如何分别承担思考、用户代理与执行职责？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s002"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.891,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 24,
+        "supported_token_count": 18,
+        "coverage": 0.75,
+        "best_chunk_coverage": 0.416667,
+        "normalized_score": 0.673685,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch06-005",
+      "split": "regression",
+      "question": "AutoGen 软件开发团队为什么同时设置 TextMentionTermination(\"TERMINATE\") 和 max_turns，这两个机制分别控制什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0178-00228",
+        "caeb372d8f756b87-p0174-00223",
+        "caeb372d8f756b87-p0174-00222",
+        "caeb372d8f756b87-p0180-00230",
+        "caeb372d8f756b87-p0179-00229",
+        "caeb372d8f756b87-p0025-00029",
+        "caeb372d8f756b87-p0173-00221",
+        "caeb372d8f756b87-p0175-00225",
+        "caeb372d8f756b87-p0172-00219",
+        "caeb372d8f756b87-p0175-00224"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s002",
+        "ch06-s002",
+        "ch06-s002",
+        "ch06-s002",
+        "ch06-s002",
+        "ch01-s004",
+        "ch06-s002",
+        "ch06-s002",
+        "ch06-s001",
+        "ch06-s002"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 16.128,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 29,
+        "supported_token_count": 23,
+        "coverage": 0.793103,
+        "best_chunk_coverage": 0.551724,
+        "normalized_score": 0.765469,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch06-006",
+      "split": "validation",
+      "question": "AgentScope 的标准 Msg 消息由哪些字段组成，将消息作为交互单元如何实现异步解耦和位置透明？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0183-00235",
+        "caeb372d8f756b87-p0184-00236",
+        "caeb372d8f756b87-p0182-00234",
+        "caeb372d8f756b87-p0189-00243",
+        "caeb372d8f756b87-p0184-00237",
+        "caeb372d8f756b87-p0187-00241",
+        "caeb372d8f756b87-p0181-00233",
+        "caeb372d8f756b87-p0172-00219",
+        "caeb372d8f756b87-p0185-00238",
+        "caeb372d8f756b87-p0254-00345"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s001",
+        "ch06-s003",
+        "ch07-s006"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.818,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 28,
+        "supported_token_count": 22,
+        "coverage": 0.785714,
+        "best_chunk_coverage": 0.714286,
+        "normalized_score": 0.872575,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch06-007",
+      "split": "calibration",
+      "question": "AgentScope 的 MsgHub 如何让跨进程或跨服务器通信对智能体透明，消息持久化又有什么作用？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0184-00236",
+        "caeb372d8f756b87-p0183-00235",
+        "caeb372d8f756b87-p0184-00237",
+        "caeb372d8f756b87-p0182-00234",
+        "caeb372d8f756b87-p0185-00238",
+        "caeb372d8f756b87-p0181-00233",
+        "caeb372d8f756b87-p0189-00243",
+        "caeb372d8f756b87-p0373-00517",
+        "caeb372d8f756b87-p0393-00540",
+        "caeb372d8f756b87-p0172-00219"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch10-s001",
+        "ch10-s002",
+        "ch06-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 16.605,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 32,
+        "supported_token_count": 19,
+        "coverage": 0.59375,
+        "best_chunk_coverage": 0.59375,
+        "normalized_score": 0.798427,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch06-008",
+      "split": "regression",
+      "question": "在 AgentScope 三国狼人杀案例中，fanout_pipeline 如何并行收集投票，单个智能体异常时又如何维持流程？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s003"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0187-00241",
+        "caeb372d8f756b87-p0189-00243",
+        "caeb372d8f756b87-p0184-00236",
+        "caeb372d8f756b87-p0185-00238",
+        "caeb372d8f756b87-p0184-00237",
+        "caeb372d8f756b87-p0186-00240",
+        "caeb372d8f756b87-p0182-00234",
+        "caeb372d8f756b87-p0181-00233",
+        "caeb372d8f756b87-p0183-00235",
+        "caeb372d8f756b87-p0195-00252"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s003",
+        "ch06-s004"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 19.951,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 30,
+        "supported_token_count": 23,
+        "coverage": 0.766667,
+        "best_chunk_coverage": 0.666667,
+        "normalized_score": 1.083872,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch06-009",
+      "split": "validation",
+      "question": "CAMEL 角色扮演范式中的 AI User 和 AI Assistant 分别承担什么职责，为什么适合跨领域专家合作？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.287,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 26,
+        "supported_token_count": 20,
+        "coverage": 0.769231,
+        "best_chunk_coverage": 0.461538,
+        "normalized_score": 0.670892,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch06-010",
+      "split": "calibration",
+      "question": "CAMEL 的 Inception Prompting 在对话开始前通常定义哪些内容，怎样帮助智能体不偏离共同目标？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.865,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 25,
+        "supported_token_count": 19,
+        "coverage": 0.76,
+        "best_chunk_coverage": 0.56,
+        "normalized_score": 0.659139,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "reg-ch06-011",
+      "split": "regression",
+      "question": "CAMEL 科普电子书案例为什么将作家设为 user_role_name、心理学家设为 assistant_role_name？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s004"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0192-00247",
+        "caeb372d8f756b87-p0190-00245",
+        "caeb372d8f756b87-p0193-00249",
+        "caeb372d8f756b87-p0194-00251",
+        "caeb372d8f756b87-p0191-00246",
+        "caeb372d8f756b87-p0192-00248",
+        "caeb372d8f756b87-p0193-00250",
+        "caeb372d8f756b87-p0189-00244",
+        "caeb372d8f756b87-p0341-00477",
+        "caeb372d8f756b87-p0326-00456"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s004",
+        "ch06-s004",
+        "ch06-s004",
+        "ch06-s004",
+        "ch06-s004",
+        "ch06-s004",
+        "ch06-s004",
+        "ch06-s004",
+        "ch09-s004",
+        "ch09-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 11.751,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 20,
+        "supported_token_count": 16,
+        "coverage": 0.8,
+        "best_chunk_coverage": 0.55,
+        "normalized_score": 0.823439,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "val-ch06-012",
+      "split": "validation",
+      "question": "LangGraph 为什么将智能体执行流程表示为有向图，图的节点与边各代表什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s005"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0195-00253",
+        "caeb372d8f756b87-p0172-00220",
+        "caeb372d8f756b87-p0203-00265",
+        "caeb372d8f756b87-p0172-00219",
+        "caeb372d8f756b87-p0197-00256",
+        "caeb372d8f756b87-p0025-00029",
+        "caeb372d8f756b87-p0198-00257",
+        "caeb372d8f756b87-p0196-00254",
+        "caeb372d8f756b87-p0202-00264",
+        "caeb372d8f756b87-p0023-00025"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s005",
+        "ch06-s001",
+        "ch06-s005",
+        "ch06-s001",
+        "ch06-s005",
+        "ch01-s004",
+        "ch06-s005",
+        "ch06-s005",
+        "ch06-s005",
+        "ch01-s003"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 14.841,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 25,
+        "supported_token_count": 19,
+        "coverage": 0.76,
+        "best_chunk_coverage": 0.72,
+        "normalized_score": 1.075208,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "cal-ch06-013",
+      "split": "calibration",
+      "question": "LangGraph 的常规边与条件边有什么区别，条件边如何根据当前状态实现循环和分支？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s005"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0196-00254",
+        "caeb372d8f756b87-p0197-00256",
+        "caeb372d8f756b87-p0202-00264",
+        "caeb372d8f756b87-p0195-00253",
+        "caeb372d8f756b87-p0025-00029",
+        "caeb372d8f756b87-p0172-00220",
+        "caeb372d8f756b87-p0043-00054",
+        "caeb372d8f756b87-p0203-00265",
+        "caeb372d8f756b87-p0057-00072",
+        "caeb372d8f756b87-p0172-00219"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s005",
+        "ch06-s005",
+        "ch06-s005",
+        "ch06-s005",
+        "ch01-s004",
+        "ch06-s001",
+        "ch02-s004",
+        "ch06-s005",
+        "ch03-s001",
+        "ch06-s001"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.901,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 26,
+        "supported_token_count": 17,
+        "coverage": 0.653846,
+        "best_chunk_coverage": 0.653846,
+        "normalized_score": 0.730956,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch06-014",
+      "split": "regression",
+      "question": "LangGraph 三步问答助手的 SearchState 为什么同时保留 user_query 和 search_query 两个字段？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.357,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 23,
+        "supported_token_count": 21,
+        "coverage": 0.913043,
+        "best_chunk_coverage": 0.478261,
+        "normalized_score": 0.582396,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "val-ch06-015",
+      "split": "validation",
+      "question": "LangGraph 搜索助手在 Tavily 调用失败后如何标记 step，回答节点依据这一标记采用什么策略？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s005"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 12.821,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 15,
+        "coverage": 0.555556,
+        "best_chunk_coverage": 0.333333,
+        "normalized_score": 0.491033,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch06-016",
+      "split": "calibration",
+      "question": "教材示例中 AutoGen 接入 DeepSeek 这类非 OpenAI 模型时，为什么要向 OpenAIChatCompletionClient 额外传入 model_info，其作用是什么？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s002"
+      ],
+      "retrieved_chunk_ids": [
+        "caeb372d8f756b87-p0181-00232",
+        "caeb372d8f756b87-p0175-00224",
+        "caeb372d8f756b87-p0236-00315",
+        "caeb372d8f756b87-p0021-00020",
+        "caeb372d8f756b87-p0213-00279",
+        "caeb372d8f756b87-p0236-00316",
+        "caeb372d8f756b87-p0198-00258",
+        "caeb372d8f756b87-p0083-00110",
+        "caeb372d8f756b87-p0211-00276",
+        "caeb372d8f756b87-p0069-00091"
+      ],
+      "retrieved_section_ids": [
+        "ch06-s002",
+        "ch06-s002",
+        "ch07-s004",
+        "ch01-s003",
+        "ch07-s002",
+        "ch07-s004",
+        "ch06-s005",
+        "ch04-s001",
+        "ch07-s002",
+        "ch03-s002"
+      ],
+      "abstained": false,
+      "citations_valid": true,
+      "reciprocal_rank": 1.0,
+      "latency_ms": 13.509,
+      "evidence_gate": {
+        "passed": true,
+        "reason": "同一教材片段具备足够的关键词覆盖和相关性。",
+        "query_token_count": 31,
+        "supported_token_count": 20,
+        "coverage": 0.645161,
+        "best_chunk_coverage": 0.580645,
+        "normalized_score": 0.945344,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0
+    },
+    {
+      "case_id": "reg-ch06-017",
+      "split": "regression",
+      "question": "CAMEL 电子书案例如何用 init_chat 与 step 自动驱动多轮对话，轮次上限和 <CAMEL_TASK_DONE> 标志分别怎样结束循环？",
+      "answerable": true,
+      "expected_section_ids": [
+        "ch06-s004"
+      ],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 14.248,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 31,
+        "supported_token_count": 24,
+        "coverage": 0.774194,
+        "best_chunk_coverage": 0.645161,
+        "normalized_score": 0.682312,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0
+    },
+    {
+      "case_id": "cal-ch06-018",
+      "split": "calibration",
+      "question": "乘坐国际航班时，随身携带的洗发水和香水分别有什么容量与包装要求？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.687,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 27,
+        "supported_token_count": 10,
+        "coverage": 0.37037,
+        "best_chunk_coverage": 0.111111,
+        "normalized_score": 0.171386,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "reg-ch06-019",
+      "split": "regression",
+      "question": "给三个月大的垂耳兔安排每日喂养时，干草、兔粮和饮水应如何搭配？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 10.606,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 5,
+        "coverage": 0.227273,
+        "best_chunk_coverage": 0.045455,
+        "normalized_score": 0.435571,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    },
+    {
+      "case_id": "val-ch06-020",
+      "split": "validation",
+      "question": "个人出租住房取得的租金收入应如何计算应缴税额，需要留存哪些凭证？",
+      "answerable": false,
+      "expected_section_ids": [],
+      "retrieved_chunk_ids": [],
+      "retrieved_section_ids": [],
+      "abstained": true,
+      "citations_valid": true,
+      "reciprocal_rank": 0.0,
+      "latency_ms": 11.159,
+      "evidence_gate": {
+        "passed": false,
+        "reason": "关键词只零散出现在教材中，尚不能形成可靠证据。",
+        "query_token_count": 22,
+        "supported_token_count": 7,
+        "coverage": 0.318182,
+        "best_chunk_coverage": 0.136364,
+        "normalized_score": 0.331817,
+        "gate_version": "rank-bm25-cohesive-evidence-v2"
+      },
+      "recall_at_5": null,
+      "recall_at_10": null
+    }
+  ],
+  "interpretation": "这是冻结小样本的项目基线，不代表总体失败率或泛化性能。",
+  "reproducibility": {
+    "evaluator_version": "retrieval-evaluator-v1",
+    "evaluator_sha256": "e5c439d6db1304de0b767d5560dd826e4475490642f9a7dc8214278651004f96",
+    "retrieval_source_sha256": "1e69a990a5807357d472b7857bc8a940e30dbf734a717686af4b25492f0744c7",
+    "cases_sha256": "93d49d534bd3474a9070d8a435fa5c204952cc3e529fba19fd43041afbd74381",
+    "processed_report_sha256": "d17acff58d580dc5f4df8df4cee3555000a121e001c890d919a28a6ee17532e9",
+    "index_manifest_sha256": "a895482bbcbeb46c56d4c599b8067b7585f2253e121ce869489097c4c91ba63b",
+    "evidence_gate_version": "rank-bm25-cohesive-evidence-v2",
+    "evidence_min_chunk_coverage": 0.5,
+    "evidence_min_normalized_score": 0.7
+  }
+}

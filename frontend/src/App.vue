@@ -15,18 +15,18 @@ import { createWorkspace, workspaceKey } from "./composables/useWorkspace.js";
 const workspace = createWorkspace();
 provide(workspaceKey, workspace);
 const {
-  page,
-  activePage,
-  drawer,
-  course,
-  health,
-  loading,
-  busy,
-  error,
-  notice,
-  init,
+  currentPageId,
+  activePageConfig,
+  isSidebarOpen,
+  courseInfo,
+  serviceHealth,
+  isInitializing,
+  activeTask,
+  errorMessage,
+  noticeMessage,
+  initializeWorkspace,
 } = workspace;
-const views = {
+const pageComponents = {
   overview: OverviewView,
   qa: QuestionView,
   summary: SummaryView,
@@ -35,11 +35,11 @@ const views = {
 };
 
 onMounted(() => {
-  init();
-  window.addEventListener("hashchange", workspace.hashChanged);
+  initializeWorkspace();
+  window.addEventListener("hashchange", workspace.syncPageFromHash);
 });
 onUnmounted(() =>
-  window.removeEventListener("hashchange", workspace.hashChanged),
+  window.removeEventListener("hashchange", workspace.syncPageFromHash),
 );
 </script>
 
@@ -47,10 +47,10 @@ onUnmounted(() =>
   <!-- 公共导航与手机遮罩始终保留，切换页面只替换 main 中的 View。 -->
   <a class="skip-link" href="#main">跳转到主要内容</a>
   <button
-    v-if="drawer"
+    v-if="isSidebarOpen"
     class="drawer-overlay"
     aria-label="关闭导航"
-    @click="drawer = false"
+    @click="isSidebarOpen = false"
   ></button>
   <AppSidebar />
   <div class="app-shell">
@@ -59,40 +59,36 @@ onUnmounted(() =>
       <div class="page-heading">
         <div>
           <div class="eyebrow">
-            {{
-              page === "overview"
-                ? "YOUR LEARNING, CONNECTED"
-                : "EXPLORE · UNDERSTAND · REMEMBER"
-            }}
+            {{ currentPageId === "overview" ? "学习相连" : "探索 · 理解 · 记忆" }}
           </div>
           <h1>
-            {{ activePage.title
-            }}<span v-if="page === 'overview'" class="heading-dot">.</span>
+            {{ activePageConfig.title
+            }}<span v-if="currentPageId === 'overview'" class="heading-dot">.</span>
           </h1>
-          <p>{{ activePage.subtitle }}</p>
+          <p>{{ activePageConfig.subtitle }}</p>
         </div>
         <span class="heading-badge"
           ><AppIcon name="book" :size="16" />
-          {{ course?.name || "Hello-Agents 课程" }}</span
+          {{ courseInfo?.name || "Hello-Agents 课程" }}</span
         >
       </div>
-      <div v-if="error" class="message error" role="alert">
-        <AppIcon name="info" /><span>{{ error }}</span
+      <div v-if="errorMessage" class="message error" role="alert">
+        <AppIcon name="info" /><span>{{ errorMessage }}</span
         ><button
           class="text-button"
-          :disabled="loading || !!busy"
-          @click="init"
+          :disabled="isInitializing || !!activeTask"
+          @click="initializeWorkspace"
         >
           重新连接</button
-        ><button class="icon-button" aria-label="关闭提示" @click="error = ''">
+        ><button class="icon-button" aria-label="关闭提示" @click="errorMessage = ''">
           <AppIcon name="close" :size="16" />
         </button>
       </div>
-      <div v-if="notice" class="message success" role="status">
-        <AppIcon name="check" />{{ notice }}
+      <div v-if="noticeMessage" class="message success" role="status">
+        <AppIcon name="check" />{{ noticeMessage }}
       </div>
       <div
-        v-if="!loading && health && health.status !== 'ok'"
+        v-if="!isInitializing && serviceHealth && serviceHealth.status !== 'ok'"
         class="message warning"
         role="status"
       >
@@ -102,7 +98,7 @@ onUnmounted(() =>
       <!-- 缓存已访问页面：离开再回来时，搜索词、提问内容和本轮作答仍保留。
            章/节变化时，由各 View 的 watch 主动清除失效结果，而非依赖卸载重置。 -->
       <KeepAlive>
-        <component :is="views[page]" :key="page" />
+        <component :is="pageComponents[currentPageId]" :key="currentPageId" />
       </KeepAlive>
 
       <footer class="page-footer">
