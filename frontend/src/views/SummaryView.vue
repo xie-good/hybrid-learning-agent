@@ -11,22 +11,23 @@ import { modeLabel, displayLearningText } from "../lib/presentation.js";
 const {
   isLearningReady,
   activeTask,
+  selectedKbId,
   selectedChapterId,
   selectedSectionId,
-  buildLearningScope,
+  buildKbRequestScope,
   runTask,
   navigate,
 } = useWorkspace();
 const summaryResult = ref(null);
-// 即使页面暂时被 KeepAlive 缓存，范围变化也会清掉旧章节的总结。
-watch([selectedChapterId, selectedSectionId], () => {
+// 即使页面暂时被 KeepAlive 缓存，范围或知识库变化也会清掉旧总结。
+watch([selectedKbId, selectedChapterId, selectedSectionId], () => {
   summaryResult.value = null;
 });
 
 // 前端只发送学习范围；代表性要点、原文引用及实际生成方式都由后端返回。
 function summarize() {
   summaryResult.value = null;
-  const summaryRequest = buildLearningScope();
+  const summaryRequest = buildKbRequestScope();
   runTask("summary", async () => {
     summaryResult.value = await request("/summary", {
       method: "POST",
@@ -38,22 +39,18 @@ function summarize() {
 
 <template>
   <LearningLayout page-id="summary" :has-result="!!summaryResult">
-    <section class="panel action-panel">
-      <div>
-        <h3>从全貌开始理解</h3>
-        <p>提取章节重点，整理代表性教材证据。</p>
-      </div>
+    <template #scope-action>
       <button
         class="button primary"
         :disabled="!isLearningReady || !selectedChapterId || !!activeTask"
         @click="summarize"
       >
         <span v-if="activeTask === 'summary'" class="spinner"></span
-        ><AppIcon v-else name="spark" :size="17" />{{
+        ><AppIcon v-else name="spark" :size="16" />{{
           activeTask === "summary" ? "正在整理教材…" : "生成总结"
         }}
       </button>
-    </section>
+    </template>
 
     <section v-if="summaryResult" class="panel result-panel" aria-live="polite">
       <div class="result-kicker">
@@ -88,13 +85,23 @@ function summarize() {
           </div>
         </dl>
       </details>
-      <SourceList :citations="summaryResult.citations" /><a
-        class="button secondary"
-        :href="'#quiz'"
-        @click.exact.prevent="navigate('quiz')"
-      >
-        练习巩固本章 <AppIcon name="arrow" :size="16" />
-      </a>
+      <SourceList :citations="summaryResult.citations" />
+      <div class="result-next-actions">
+        <a
+          class="button secondary"
+          href="#qa"
+          @click.exact.prevent="navigate('qa')"
+        >
+          <AppIcon name="chat" :size="15" /> 就本章继续提问
+        </a>
+        <a
+          class="button primary"
+          href="#quiz"
+          @click.exact.prevent="navigate('quiz')"
+        >
+          练习巩固本章 <AppIcon name="arrow" :size="16" />
+        </a>
+      </div>
     </section>
   </LearningLayout>
 </template>

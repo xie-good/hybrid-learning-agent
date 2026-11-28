@@ -14,6 +14,7 @@ const expected = [
   "./styles/base.css",
   "./styles/layout.css",
   "./styles/views/overview.css",
+  "./styles/views/knowledge.css",
   "./styles/footer.css",
   "./styles/components/learning.css",
   "./styles/views/quiz.css",

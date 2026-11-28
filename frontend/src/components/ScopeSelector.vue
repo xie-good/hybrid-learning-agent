@@ -16,7 +16,10 @@ const {
 
 <template>
   <div class="panel scope-panel">
-    <div class="panel-title"><AppIcon name="book" /> 学习范围</div>
+    <div class="scope-header">
+      <div class="panel-title"><AppIcon name="book" /> 学习范围</div>
+      <slot name="action" />
+    </div>
     <div class="form-grid">
       <label
         >选择章节<select

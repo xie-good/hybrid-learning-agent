@@ -1,7 +1,7 @@
 /**
  * 浏览器与 FastAPI 的统一通信入口，页面只需要传路径和业务数据。
  * 例如 request('/qa', { method: 'POST', body: { question: '智能体是什么？' } })。
- * 开发/预览时 /api 由 Vite 代理；生产部署由 Web 服务配置同样的转发路径。
+ * 支持 JSON 对象与 FormData 文件上传；开发/预览时 /api 由 Vite 代理。
  */
 export async function request(
   path,
@@ -10,15 +10,16 @@ export async function request(
   // 默认等候 90 秒，超时后主动中止；比无限等待更容易让用户判断何时重试。
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
   try {
     const response = await fetch(`/api${path}`, {
       method,
       signal: controller.signal,
-      // 有请求数据才声明 JSON；GET 与无请求体的 DELETE 不附加空的业务数据。
-      headers: body ? { "Content-Type": "application/json" } : {},
-      body: body ? JSON.stringify(body) : undefined,
+      // JSON 请求声明 Content-Type；FormData 由浏览器自动生成带 boundary 的请求头。
+      headers: body && !isFormData ? { "Content-Type": "application/json" } : {},
+      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });
-    // 删除单条历史成功时返回 204，没有响应体；此时不能继续尝试读取 JSON。
+    // 删除成功时返回 204，没有响应体；此时不能继续尝试读取 JSON。
     if (response.status === 204) return null;
     // 代理异常可能返回 HTML，解析失败后交给下方的统一错误分支处理。
     const payload = await response.json().catch(() => null);
@@ -62,9 +63,23 @@ export function sessionId(storage = sessionStorage) {
   return storedSessionId;
 }
 
+/** 显式开启一段新的多轮学习对话并持久化到当前标签页。 */
+export function createFreshSessionId(storage = sessionStorage) {
+  const fresh = crypto.randomUUID();
+  storage?.setItem?.("zhixu-session", fresh);
+  return fresh;
+}
+
 // 分页固定每页十条；URLSearchParams 统一编码参数，每次翻页都保留同一个会话。
-export const historyPath = (currentSessionId, offset = 0) =>
-  `/history?${new URLSearchParams({ session_id: currentSessionId, limit: 10, offset })}`;
+export const historyPath = (currentSessionId, offset = 0, kbId = "") => {
+  const params = new URLSearchParams({
+    session_id: currentSessionId,
+    limit: 10,
+    offset,
+  });
+  if (kbId) params.set("kb_id", kbId);
+  return `/history?${params}`;
+};
 
 // 只对选项键完全匹配的单选题计分；简答题的含义需要人工判断，不参与自动评分。
 export function gradeChoices(questions, answers) {

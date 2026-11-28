@@ -1,67 +1,93 @@
 /* 工作台：主视觉、CSS书本、统计卡、课程目录、学习路径和最近记录。 */
-/* 工作台主视觉：左侧是学习入口，右侧是纯 CSS 书本插画；容器裁切溢出的装饰。 */
+/* 工作台主视觉：浅蓝白紧凑卡片，信息精炼，不占过多首屏高度。 */
 .hero {
   position: relative;
   overflow: hidden;
   display: flex;
-  justify-content: space-between;
-  min-height: 285px;
-  border-radius: 13px;
-  background: #173f3c;
-  color: #fff;
+  align-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f0f6ff 0%, #f8fbff 60%, #ffffff 100%);
+  border: 1px solid #dbeafe;
+  color: #0f172a;
+  padding: 20px 24px;
 }
 .hero-content {
-  padding: 29px 35px;
   position: relative;
   z-index: 2;
+  flex: 1;
+  min-width: 0;
 }
-.hero-tag {
+.hero-top-line {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  letter-spacing: 1.3px;
-  color: #afcabc;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 3px 10px;
+  border-radius: 999px;
 }
 .hero-tag > span {
-  width: 5px;
-  height: 5px;
-  background: #c7db9a;
+  width: 6px;
+  height: 6px;
+  background: #2563eb;
   border-radius: 50%;
 }
-.hero h2 {
-  font-size: 34px;
-  font-weight: 550;
-  line-height: 1.5;
-  letter-spacing: 2px;
-  margin-top: 15px;
+.hero-ready-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 10px;
+  border-radius: 999px;
 }
-.hero h2 > span {
-  color: #d7e8b2;
+.hero-ready-badge.pending {
+  color: #b45309;
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+.hero h2 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #0f172a;
+  margin-top: 10px;
 }
 .hero p {
-  font-size: 14px;
-  color: #a5bdb5;
-  line-height: 1.95;
-  margin-top: 11px;
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.7;
+  margin-top: 6px;
+  max-width: 680px;
 }
 .hero-actions {
   display: flex;
-  gap: 21px;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
-  margin-top: 21px;
+  margin-top: 14px;
 }
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  border-radius: 7px;
-  padding: 10px 17px;
-  font-size: 14px;
+  gap: 8px;
+  border-radius: 9px;
+  padding: 8px 15px;
+  font-size: 13px;
   font-weight: 550;
   white-space: nowrap;
-  min-height: 40px;
+  min-height: 36px;
   transition:
     background 0.15s,
     transform 0.15s;
@@ -70,20 +96,33 @@
   transform: translateY(-1px);
 }
 .hero-primary {
-  background: #e1edc7;
-  color: #284c3c;
-  padding: 10px 17px;
+  background: #2563eb;
+  color: #ffffff;
   font-size: 13px;
 }
 .hero-primary:hover:not(:disabled):not([aria-disabled="true"]) {
-  background: #f1f8df;
+  background: #1d4ed8;
 }
 .hero-secondary {
-  color: #c2d6ca;
-  font-size: 12px;
-  display: flex;
+  color: #1e40af;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
+}
+.hero-secondary:hover {
+  background: #eff6ff;
+}
+.chapter-card-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 .hero-art {
   width: 42%;
@@ -301,8 +340,8 @@
 }
 .stat-note,
 .stat-link {
-  font-size: 11px;
-  color: #a6afa8;
+  font-size: 12px;
+  color: #64748b;
   margin-left: auto;
   align-self: flex-end;
   white-space: nowrap;
@@ -310,15 +349,16 @@
 .stat-link {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 0;
-  color: #7a967e;
+  color: #2563eb;
+  font-weight: 500;
 }
 /* minmax(0, 1fr) 允许目录列缩到内容宽度以下，避免长章节名把页面横向撑开。 */
 .workbench-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 268px;
-  gap: 27px;
+  gap: 22px;
 }
 .section-heading {
   display: flex;
@@ -327,52 +367,54 @@
   gap: 12px;
 }
 .section-heading h2 {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 9px;
 }
 .section-heading p {
   font-size: 13px;
-  color: #98a29b;
-  margin-top: 5px;
+  color: #64748b;
+  margin-top: 4px;
 }
 .pill {
   display: inline-flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 999px;
   font-size: 11px;
-  background: #eef2eb;
-  color: #86917c;
-  padding: 2px 7px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 2px 9px;
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 500;
   white-space: nowrap;
 }
 .text-button {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   font-size: 12px;
-  color: #6d8a76;
+  font-weight: 500;
+  color: #2563eb;
   padding: 4px 0;
   white-space: nowrap;
 }
 .text-button:hover:not(:disabled) {
-  color: #1c6252;
+  color: #1d4ed8;
 }
 .search-box {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  margin: 18px 0 16px;
-  border: 1px solid var(--border);
-  border-radius: 7px;
+  margin: 14px 0 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 10px;
   background: #fff;
   padding: 0 12px;
-  color: #a7b0a9;
+  color: #94a3b8;
 }
 .search-box input {
   border: 0;
@@ -382,14 +424,15 @@
   outline: none;
 }
 .search-box:focus-within {
-  border-color: #82ad9c;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .search-box kbd {
-  border: 1px solid #e4e9e4;
-  border-radius: 3px;
-  padding: 0 5px;
-  color: #b4bdb5;
-  font-size: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: #94a3b8;
+  font-size: 11px;
 }
 /* 章节卡片单独使用双列网格，展开“全部章节”只增加卡片，不改布局规则。 */
 .chapter-grid {
@@ -398,8 +441,8 @@
   gap: 14px;
 }
 .chapter-card {
-  border: 1px solid var(--border);
-  border-radius: 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   background: #fff;
   padding: 16px 17px 0;
   transition:
@@ -407,8 +450,8 @@
     box-shadow 0.2s;
 }
 .chapter-card:hover {
-  border-color: #b0c5b5;
-  box-shadow: 0 5px 20px #244b3907;
+  border-color: #93c5fd;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.07);
 }
 .chapter-card-top {
   display: flex;
@@ -416,79 +459,92 @@
   align-items: center;
 }
 .chapter-number {
-  width: 29px;
-  height: 29px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 600;
   letter-spacing: 0.5px;
 }
 .chapter-color-0 {
-  background: #edf3eb;
-  color: #85a07f;
+  background: #eff6ff;
+  color: #2563eb;
 }
 .chapter-color-1 {
-  background: #efedf7;
-  color: #a197bd;
+  background: #eef2ff;
+  color: #4f46e5;
 }
 .chapter-color-2 {
-  background: #f7f0e6;
-  color: #bba17d;
+  background: #ecfeff;
+  color: #0891b2;
 }
 .chapter-color-3 {
-  background: #eaf2f5;
-  color: #83a5b1;
+  background: #f0fdf4;
+  color: #059669;
 }
 .chapter-pages {
-  font-size: 8px;
-  letter-spacing: 0.5px;
-  color: #a3ada6;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: #94a3b8;
 }
 .chapter-card h3 {
   font-size: 15px;
   font-weight: 600;
+  color: #0f172a;
   margin-top: 11px;
   overflow-wrap: anywhere;
 }
 .chapter-card > p {
   font-size: 12px;
-  color: #9ba59d;
-  line-height: 1.8;
-  margin: 6px 0 14px;
-  height: 32px;
+  color: #64748b;
+  line-height: 1.7;
+  margin: 6px 0 12px;
+  height: 38px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 .chapter-card-bottom {
-  border-top: 1px solid #f0f3ef;
-  padding: 9px 0;
+  border-top: 1px solid #f1f5f9;
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #a0aba1;
-  font-size: 11px;
-  gap: 4px;
+  color: #64748b;
+  font-size: 12px;
+  gap: 8px;
 }
 .muted-dot {
   padding: 0 4px;
-  color: #c5cdc5;
+  color: #cbd5e1;
 }
-.chapter-card-bottom a {
-  padding: 4px;
-  color: #78927b;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #f4f7f1;
+.chapter-card-bottom a.chapter-mini-link {
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  background: #f1f5f9;
+  white-space: nowrap;
 }
-.chapter-card-bottom a:hover {
-  background: #e1eddf;
+.chapter-card-bottom a.chapter-mini-link:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.chapter-card-bottom a.chapter-mini-link.primary-link {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.chapter-card-bottom a.chapter-mini-link.primary-link:hover {
+  background: #dbeafe;
 }
 .catalog-footer {
   display: flex;
@@ -496,43 +552,45 @@
   align-items: center;
   margin-top: 15px;
   font-size: 12px;
-  color: #a6afa5;
+  color: #64748b;
   gap: 8px;
 }
 /* 工作台右侧的学习闭环和最近记录；中等屏幕时会移动到目录下方。 */
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 .path-card {
-  border-radius: 11px;
-  border: 1px solid #e4e9dd;
-  background: #f1f4eb;
-  padding: 22px 20px 0;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 18px 18px 4px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 .path-card h2 {
-  font-size: 16px;
+  font-size: 15px;
+  color: #0f172a;
 }
 .path-card > .section-heading > svg {
-  color: #8ba080;
+  color: #2563eb;
 }
 .muted {
-  font-size: 13px;
-  color: #8f9e87;
-  margin-top: 5px;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
 }
 .learning-steps {
   position: relative;
-  margin: 16px 0 15px;
+  margin: 14px 0 10px;
 }
 .learning-steps:before {
   content: "";
   position: absolute;
   left: 14px;
   top: 22px;
-  bottom: 25px;
-  border-left: 1px dashed #d4deca;
+  bottom: 24px;
+  border-left: 1px dashed #cbd5e1;
 }
 .learning-steps a {
   position: relative;
@@ -541,19 +599,26 @@
   align-items: center;
   gap: 11px;
   text-align: left;
-  padding: 11px 0;
+  padding: 10px 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.learning-steps a:hover {
+  background: #f8fafc;
 }
 .step-number {
-  width: 29px;
-  height: 29px;
-  border: 1px solid #dce5d3;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #bfdbfe;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 9px;
-  color: #8a9c7e;
-  background: #f7f9f2;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2563eb;
+  background: #eff6ff;
   z-index: 1;
+  flex-shrink: 0;
 }
 .learning-steps strong {
   font-size: 13px;

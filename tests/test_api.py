@@ -223,11 +223,18 @@ class APITests(unittest.TestCase):
 
     def test_openapi_contract(self):
         spec = self.client.get('/openapi.json').json()
-        expected = {'/api/health', '/api/course', '/api/chapters', '/api/chapters/{chapter_id}',
-                    '/api/sources/{chunk_id}', '/api/course/source', '/api/qa', '/api/summary',
-                    '/api/quiz', '/api/history', '/api/history/{record_id}'}
+        expected = {
+            '/api/health', '/api/kbs', '/api/kbs/{kb_id}',
+            '/api/kbs/{kb_id}/documents', '/api/kbs/{kb_id}/documents/{doc_id}',
+            '/api/kbs/{kb_id}/documents/{doc_id}/source',
+            '/api/kbs/{kb_id}/documents/{doc_id}/page/{page_num}',
+            '/api/kbs/{kb_id}/chunks',
+            '/api/course', '/api/chapters', '/api/chapters/{chapter_id}',
+            '/api/sources/{chunk_id}', '/api/course/source', '/api/qa', '/api/summary',
+            '/api/quiz', '/api/quiz/from-qa', '/api/history', '/api/history/{record_id}',
+        }
         self.assertEqual(set(spec['paths']), expected)
-        self.assertEqual(len([m for p in spec['paths'].values() for m in p if m in {'get', 'post', 'delete'}]), 13)
+        self.assertEqual(len([m for p in spec['paths'].values() for m in p if m in {'get', 'post', 'patch', 'delete'}]), 23)
         for path in ('/api/qa', '/api/summary', '/api/quiz'):
             self.assertIn('$ref', spec['paths'][path]['post']['responses']['200']['content']['application/json']['schema'])
         static = json.loads((Path(__file__).resolve().parents[1] / 'docs/openapi.json').read_text('utf-8'))
@@ -265,7 +272,7 @@ class HybridDefaultAPITests(unittest.TestCase):
                         self.assertFalse(response.json()['insufficient_evidence'])
                         self.assertTrue(response.json()['citations'])
                         gate = response.json()['debug']['evidence_gate']
-                        self.assertEqual(gate['gate_version'], 'rank-bm25-returned-evidence-v1')
+                        self.assertEqual(gate['gate_version'], 'hybrid-vector-bm25-gate-v2')
                         self.assertTrue(gate['passed'])
             with patch('backend.services.retrieval.fetch_embeddings', side_effect=AssertionError('network')):
                 response = client.post('/api/qa', json={

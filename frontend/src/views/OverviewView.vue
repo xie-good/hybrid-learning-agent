@@ -7,6 +7,7 @@ import { useWorkspace } from "../composables/useWorkspace.js";
 import { dateLabel, titleWithoutNumber } from "../lib/presentation.js";
 
 const {
+  courseInfo,
   isLearningReady,
   isInitializing,
   chapters,
@@ -34,15 +35,18 @@ const visibleChapters = computed(() =>
 </script>
 
 <template>
-  <!-- 课程介绍、真实统计、课程目录和学习闭环入口组成工作台，不包含公共页标题。 -->
+  <!-- 顶部紧凑概览卡：浅蓝白主题，信息精炼，把首屏视觉重心留给章节目录。 -->
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-tag"><span></span> 从知识到理解，从这里开始</div>
-      <h2>把零散的知识，<br />连成自己的<span>体系。</span></h2>
+      <div class="hero-top-line">
+        <span class="hero-tag"><span></span> 混合检索伴读工作台</span>
+        <span class="hero-ready-badge" :class="{ pending: !isLearningReady }">
+          {{ isLearningReady ? "BM25 + 向量混合就绪" : "等待加载资料" }}
+        </span>
+      </div>
+      <h2>{{ courseInfo?.name || "课程学习资料" }}</h2>
       <p>
-        以 Hello-Agents 为起点，让总结、提问与练习<br
-          class="desktop-break"
-        />串联每一次探索，每一步都有教材可循。
+        支持 PDF、Word 与 Markdown 文档切块，结合关键词与语义双路检索，实现原文伴读、章节总结与自测闭环。
       </p>
       <div class="hero-actions">
         <a
@@ -52,37 +56,13 @@ const visibleChapters = computed(() =>
           :tabindex="!isLearningReady ? -1 : undefined"
           @click.exact.prevent="isLearningReady && navigate('summary')"
         >
-          开始章节学习 <AppIcon name="arrow" :size="17" /></a
+          开始章节学习 <AppIcon name="arrow" :size="16" /></a
         ><a class="hero-secondary" href="#qa" @click.exact.prevent="navigate('qa')">
-          向教材提个问题 <AppIcon name="arrow" :size="16" />
+          进入伴读问答 <AppIcon name="arrow" :size="15" />
+        </a><a class="hero-secondary" href="#knowledge" @click.exact.prevent="navigate('knowledge')">
+          管理知识库 <AppIcon name="upload" :size="15" />
         </a>
       </div>
-    </div>
-    <!-- 封面插画由 CSS 绘制，仅作装饰，因此对辅助阅读工具隐藏。 -->
-    <div class="hero-art" aria-hidden="true">
-      <div class="orbit orbit-one"></div>
-      <div class="orbit orbit-two"></div>
-      <div class="art-dot dot-one"></div>
-      <div class="art-dot dot-two"></div>
-      <div class="art-dot dot-three"></div>
-      <div class="floating-label label-knowledge">
-        <AppIcon name="layers" :size="15" /> 知识连接
-      </div>
-      <div class="book-object">
-        <span class="book-spine"></span
-        ><span class="book-top"
-          >智能体<br />入门<span class="book-rule"></span
-          ><small>探索智能体的世界</small
-          ><AppIcon name="spark" :size="40" /><span class="book-bottom"
-            >理解指南</span
-          ></span
-        >
-      </div>
-      <div class="floating-label label-evidence">
-        <span class="evidence-check"><AppIcon name="check" :size="12" /></span>
-        每一步，皆有依据
-      </div>
-      <span class="art-caption">在语境中学习</span>
     </div>
   </section>
 
@@ -195,13 +175,25 @@ const visibleChapters = computed(() =>
               >{{ chapter.sections.length }} 个小节
               <span class="muted-dot">·</span>
               {{ chapter.chunk_count ?? "—" }} 个文本块</span
-            ><a
-              href="#summary"
-              :aria-label="`学习${chapter.title}`"
-              @click.exact.prevent="navigate('summary', chapter.chapter_id)"
             >
-              <AppIcon name="arrow" :size="17" />
-            </a>
+            <div class="chapter-card-links">
+              <a
+                href="#qa"
+                class="chapter-mini-link"
+                :aria-label="`伴读提问${chapter.title}`"
+                @click.exact.prevent="navigate('qa', chapter.chapter_id)"
+              >
+                提问
+              </a>
+              <a
+                href="#summary"
+                class="chapter-mini-link primary-link"
+                :aria-label="`学习${chapter.title}`"
+                @click.exact.prevent="navigate('summary', chapter.chapter_id)"
+              >
+                总结 <AppIcon name="arrow" :size="14" />
+              </a>
+            </div>
           </div>
         </article>
       </div>

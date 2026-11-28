@@ -1,11 +1,12 @@
 <script setup>
-// 顶栏只显示当前页面和真实服务状态，并为手机提供导航开关，不处理页面业务。
+// 顶栏精简展示当前工作区标题、激活知识库与服务状态，并提供移动端菜单开关。
 import AppIcon from "../AppIcon.vue";
 import { useWorkspace } from "../../composables/useWorkspace.js";
 
 const {
   isSidebarOpen,
   activePageConfig,
+  courseInfo,
   serviceHealth,
   isInitializing,
 } = useWorkspace();
@@ -21,22 +22,23 @@ const {
         @click="isSidebarOpen = !isSidebarOpen"
       >
         <AppIcon name="menu" /></button
-      ><span>学习空间</span><AppIcon name="chevron" :size="13" /><strong>{{
-        activePageConfig.title
-      }}</strong>
+      ><strong>{{ activePageConfig.title }}</strong>
     </div>
     <div class="topbar-right">
+      <span class="topbar-kb-pill">
+        <AppIcon name="book" :size="14" />
+        {{ courseInfo?.name || "Hello-Agents" }}
+      </span>
       <span class="service-status" :class="{ offline: serviceHealth?.status !== 'ok' }"
         ><i></i
         >{{
           isInitializing
             ? "正在连接…"
             : serviceHealth?.status === "ok"
-              ? "服务已连接"
-              : "服务待就绪"
+              ? "已连接"
+              : "待就绪"
         }}</span
-      ><span class="topbar-divider"></span
-      ><span class="avatar avatar-small">学</span>
+      >
     </div>
   </header>
 </template>

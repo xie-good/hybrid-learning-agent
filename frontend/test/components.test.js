@@ -37,10 +37,11 @@ function renderElement(node, context) {
   return new Function("Vue", code)(Vue)(context, []);
 }
 
-test("根组件只组装五个页面，缓存切页状态，不再实现业务函数", () => {
+test("根组件组装六个页面，缓存切页状态，不再实现业务函数", () => {
   const app = read("App.vue");
   for (const name of [
     "OverviewView",
+    "KnowledgeView",
     "QuestionView",
     "SummaryView",
     "QuizView",
@@ -88,51 +89,84 @@ test("每个 Vue 组件均能独立解析和编译，且保留中文职责说明
   }
 });
 
-test("问答页只保留证据数设置，不展示检索模式选择或实验提示", () => {
+test("问答页提供原文伴读与证据数调节，默认固定走混合检索不提供模式切换", () => {
   const { descriptor } = parse(read("views/QuestionView.vue"));
-  assert.doesNotMatch(descriptor.template.content, /<select\b|type="radio"|实验/);
   assert.match(descriptor.template.content, /v-model.number="topK"/);
-  assert.equal(retrievalLabels.hybrid, "混合检索");
-  assert.equal(retrievalLabels.vector, "向量检索");
+  assert.match(descriptor.template.content, /class="reader-pane"/);
+  assert.doesNotMatch(descriptor.template.content, /class="mode-switch"/);
+  assert.equal(retrievalLabels.hybrid, "BM25 + 向量混合检索 (RRF)");
+  assert.equal(retrievalLabels.vector, "向量语义检索");
 });
 
 test("问答每次发送均采用最新健康响应的默认检索方式，缺省为混合检索", async () => {
   const { descriptor } = parse(read("views/QuestionView.vue"));
-  const script = descriptor.scriptSetup.content.replace(/^import .*;\r?$/gm, "");
+  const script = descriptor.scriptSetup.content.replace(/^import[\s\S]*?from\s+["'][^"']+["'];\r?$/gm, "");
   const requests = [];
   let pending;
   const workspace = {
     serviceHealth: ref(null),
+    courseInfo: ref(null),
+    chapters: ref([]),
+    isLearningReady: ref(true),
+    activeTask: ref(""),
+    selectedKbId: ref("hello_agents"),
     selectedChapterId: ref("ch01"),
     selectedSectionId: ref(""),
+    historyResult: ref({ items: [], total: 0 }),
     historyClearCount: ref(0),
     errorMessage: ref(""),
+    noticeMessage: ref(""),
     historyOffset: ref(0),
     buildLearningScope: () => ({ chapter_id: "ch01", section_id: null }),
     currentSessionId: "test-session",
     loadHistory: async () => {},
+    startNewConversation: async () => {},
+    navigate: () => {},
     runTask: (_, action) => {
       pending = action();
     },
   };
-  const request = async (url, options) => {
-    requests.push({ url, body: options.body });
-    return {};
+  const request = async (url, options = {}) => {
+    if (url === "/qa") {
+      requests.push({ url, body: options.body });
+    }
+    return { items: [] };
   };
   // 执行真实页面脚本，只替换工作区和 HTTP 边界，不复制问答逻辑。
   const setup = new Function(
+    "computed",
+    "nextTick",
+    "onMounted",
     "ref",
     "watch",
     "useWorkspace",
     "request",
+    "dateLabel",
+    "modeLabel",
+    "parseAnswerBlocks",
+    "retrievalLabels",
     `${script}\nreturn { question, topK, ask };`,
   );
   const effects = effectScope();
   try {
-    const page = effects.run(() => setup(ref, watch, () => workspace, request));
-    page.question.value = "  智能体是什么？  ";
+    const page = effects.run(() =>
+      setup(
+        Vue.computed,
+        Vue.nextTick,
+        () => {},
+        ref,
+        watch,
+        () => workspace,
+        request,
+        () => "",
+        () => "",
+        () => [],
+        retrievalLabels,
+      ),
+    );
     page.topK.value = 7;
     for (const mode of [null, "hybrid", "vector", "hybrid"]) {
+      page.question.value = "  智能体是什么？  ";
       workspace.serviceHealth.value = mode && {
         default_retrieval_mode: mode,
         retrieval_modes: ["bm25", "vector", "hybrid"],
@@ -158,8 +192,8 @@ test("问答每次发送均采用最新健康响应的默认检索方式，缺�
 
 test("页内跳页入口使用真实链接，修饰键先于默认事件拦截处理", () => {
   for (const [name, count] of [
-    ["OverviewView", 7],
-    ["SummaryView", 1],
+    ["OverviewView", 9],
+    ["SummaryView", 2],
     ["HistoryView", 1],
   ]) {
     const links = templateElements(`views/${name}.vue`).filter((node) =>
@@ -264,6 +298,7 @@ test("单条删除必须再次确认，取消或改选记录不会发送删除�
   let pending;
   let reloads = 0;
   const workspace = {
+    activeTask: ref(""),
     noticeMessage: ref(""),
     historyResult: ref({ items: [{ id: "record/b" }], total: 11 }),
     historyOffset: ref(10),
@@ -271,12 +306,15 @@ test("单条删除必须再次确认，取消或改选记录不会发送删除�
     loadHistory: async () => { reloads += 1; },
     runTask: (_, action) => { pending = action(); },
   };
-  const setup = new Function("ref", "onActivated", "useWorkspace", "request",
+  const setup = new Function(
+    "ref", "onActivated", "useWorkspace", "request", "dateLabel", "modeLabel", "parseAnswerBlocks",
     `${script}\nreturn { pendingDeleteHistoryId, requestDelete };`,
   );
-  const page = setup(ref, () => {}, () => workspace, async (url, options) => {
-    requests.push({ url, ...options });
-  });
+  const page = setup(
+    ref, () => {}, () => workspace,
+    async (url, options) => { requests.push({ url, ...options }); },
+    () => "", () => "", () => [],
+  );
   page.requestDelete("record/a");
   assert.equal(page.pendingDeleteHistoryId.value, "record/a");
   assert.deepEqual(requests, []);
@@ -330,8 +368,11 @@ test("练习提交与待复习重答保留原有计分、自评和清空行为",
     isLearningReady: ref(true),
     activeTask: ref(""),
     errorMessage: ref(""),
+    noticeMessage: ref(""),
+    selectedKbId: ref("hello_agents"),
     selectedChapterId: ref("ch01"),
     selectedSectionId: ref(""),
+    currentSessionId: "test-session",
     buildLearningScope: () => ({ chapter_id: "ch01", section_id: null }),
     runTask: async (_, action) => action(),
   };

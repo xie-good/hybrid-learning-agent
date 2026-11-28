@@ -70,7 +70,7 @@ test("导航同步地址并收起抽屉；总结和练习自动选择首章", as
   assert.equal(workspace.selectedChapterId.value, "ch01");
   location.hash = "#unknown";
   workspace.syncPageFromHash();
-  assert.equal(workspace.currentPageId.value, "overview");
+  assert.equal(workspace.currentPageId.value, "qa");
 });
 
 test("可用状态取决于章节和后端三项实际能力", () => {
@@ -116,7 +116,7 @@ test("初始化先检查知识库，再加载课程目录和同一会话的历�
   assert.equal(calls[0], "/api/health");
   assert.match(calls.at(-1), new RegExp(workspace.currentSessionId));
   assert.equal(workspace.courseInfo.value.name, "测试课程");
-  assert.equal(workspace.selectedChapterId.value, "ch01");
+  assert.equal(workspace.selectedChapterId.value, "");
   assert.equal(workspace.isInitializing.value, false);
   assert.equal(workspace.isLearningReady.value, true);
 });
