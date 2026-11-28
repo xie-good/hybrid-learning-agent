@@ -10,9 +10,11 @@ import { gradeChoices, request } from "../lib/api.js";
 import { modeLabel } from "../lib/presentation.js";
 
 const {
+  serviceHealth,
   isLearningReady,
   activeTask,
   errorMessage,
+  selectedKbId,
   selectedChapterId,
   selectedSectionId,
   buildLearningScope,
@@ -30,8 +32,8 @@ const multipleChoiceScore = computed(() =>
   gradeChoices(quizResult.value?.questions || [], answersByQuestionId.value),
 );
 
-// 范围改变时丢弃旧题组，避免选择了新章节却还展示上一章的练习。
-watch([selectedChapterId, selectedSectionId], () => {
+// 范围或知识库改变时丢弃旧题组，避免选择了新章节却还展示上一章的练习。
+watch([selectedKbId, selectedChapterId, selectedSectionId], () => {
   quizResult.value = null;
 });
 
@@ -45,16 +47,22 @@ function generateQuiz() {
     return;
   }
   quizResult.value = null;
+  const scopeParams = buildLearningScope();
   const quizRequest = {
-    ...buildLearningScope(),
+    chapter_id: scopeParams.chapter_id,
+    section_id: scopeParams.section_id,
     count: questionCount.value,
     difficulty: quizDifficulty.value,
     question_types: [...selectedQuestionTypes.value],
   };
+  if (selectedKbId?.value && selectedKbId.value !== "hello_agents") {
+    quizRequest.kb_id = selectedKbId.value;
+  }
   runTask("quiz", async () => {
     quizResult.value = await request("/quiz", {
       method: "POST",
       body: quizRequest,
+      timeout: 120000,
     });
     resetQuiz();
   });
@@ -104,11 +112,10 @@ const reviewQuestionCount = computed(
 
 <template>
   <LearningLayout page-id="quiz" :has-result="!!quizResult">
-    <!-- 题型、题量与难度只属于本页面，不让根组件承担练习配置。 -->
-    <form class="panel" @submit.prevent="generateQuiz">
-      <div class="panel-title"><AppIcon name="quiz" /> 配置本次练习</div>
-      <div class="form-grid">
-        <label
+    <!-- 题型、题量与难度采用紧凑横向配置栏，节省首屏空间。 -->
+    <form class="panel quiz-config-panel" @submit.prevent="generateQuiz">
+      <div class="quiz-config-row">
+        <label class="quiz-field"
           >题目数量<input
             v-model.number="questionCount"
             type="number"
@@ -119,7 +126,7 @@ const reviewQuestionCount = computed(
             max="10"
             required
             :disabled="!!activeTask" /></label
-        ><label
+        ><label class="quiz-field"
           >难度要求<select
             v-model="quizDifficulty"
             name="quiz-difficulty"
@@ -131,26 +138,32 @@ const reviewQuestionCount = computed(
             <option value="hard">进阶</option>
           </select></label
         >
+        <fieldset class="question-types-pills" :disabled="!!activeTask">
+          <legend>选择题型</legend>
+          <div class="type-pill-row">
+            <label
+              class="type-pill"
+              :class="{ active: selectedQuestionTypes.includes('short_answer') }"
+              ><input v-model="selectedQuestionTypes" type="checkbox" value="short_answer" />
+              简答题</label
+            ><label
+              class="type-pill"
+              :class="{ active: selectedQuestionTypes.includes('multiple_choice') }"
+              ><input v-model="selectedQuestionTypes" type="checkbox" value="multiple_choice" />
+              单选题</label
+            >
+          </div>
+        </fieldset>
+        <button class="button primary quiz-submit-btn" :disabled="!isLearningReady || !selectedChapterId || !!activeTask">
+          <span v-if="activeTask === 'quiz'" class="spinner"></span
+          ><AppIcon v-else name="spark" :size="16" />{{
+            activeTask === "quiz" ? "正在生成练习…" : "生成练习"
+          }}
+        </button>
       </div>
-      <fieldset class="question-types" :disabled="!!activeTask">
-        <legend>选择题型</legend>
-        <label
-          ><input v-model="selectedQuestionTypes" type="checkbox" value="short_answer" />
-          简答题</label
-        ><label
-          ><input v-model="selectedQuestionTypes" type="checkbox" value="multiple_choice" />
-          单选题</label
-        >
-      </fieldset>
-      <p class="field-note">
-        本地摘录模式为教材阅读自测，难度要求不代表经评测的难度等级。
+      <p v-if="serviceHealth?.generation_mode === 'extractive'" class="field-note">
+        当前为本地原文摘录模式，难度要求仅作标签展示。
       </p>
-      <button class="button primary" :disabled="!isLearningReady || !selectedChapterId || !!activeTask">
-        <span v-if="activeTask === 'quiz'" class="spinner"></span
-        ><AppIcon v-else name="spark" :size="17" />{{
-          activeTask === "quiz" ? "正在生成练习…" : "生成练习"
-        }}
-      </button>
     </form>
 
     <!-- 结果与答案的可见性由本轮 isQuizSubmitted 状态控制，提交前不显示解析。 -->

@@ -1,25 +1,26 @@
-/* 全局基础：主题变量、标签默认值、公共按钮与键盘焦点。 */
-/* 样式阅读顺序：全局基础 → 导航/顶栏 → 工作台 → 学习表单/结果 → 历史 → 响应式。
-   下方 --green、--dark 等变量统一控制主题色；改配色优先改这里，避免到处替换色值。 */
+/* 全局基础：现代无衬线字体、清透浅蓝配色变量、公共输入与焦点可访问性规则。 */
 :root {
   color-scheme: light;
-  font-family: "Songti SC", "SimSun", "NSimSun", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", serif;
-  color: #273b38;
-  background: #f5f7f6;
+  font-family: "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1e293b;
+  background: #f5f8fc;
   font-synthesis: none;
   font-size: 15px;
   line-height: 1.6;
   font-weight: 400;
-  --green: #21675b;
-  --dark: #173d39;
-  --muted: #89928f;
-  --border: #e7ece9;
+  --green: #2563eb;
+  --dark: #1d4ed8;
+  --muted: #64748b;
+  --border: #e5ecf6;
+  --surface: #ffffff;
+  --tint: #eff6ff;
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
+  background: #f5f8fc;
 }
 button,
 input,
@@ -40,13 +41,13 @@ a {
 }
 button {
   cursor: pointer;
+  border: 0;
+  background: none;
+  color: inherit;
 }
 button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-}
-button {
-  color: inherit;
 }
 a {
   color: inherit;
@@ -56,7 +57,7 @@ svg {
   flex-shrink: 0;
   vertical-align: middle;
 }
-/* 只在键盘等需要定位焦点时显示轮廓，让鼠标操作不显拥挤，也保留键盘可访问性。 */
+/* 保留清晰的键盘焦点轮廓，兼顾鼠标简洁性与无障碍操作。 */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -69,6 +70,7 @@ summary:focus-visible {
 h1,
 h2,
 h3,
+h4,
 p {
   margin: 0;
 }
@@ -94,83 +96,120 @@ a[aria-disabled="true"] {
 .citation-number {
   font-variant-numeric: tabular-nums;
 }
-button {
-  border: 0;
-  background: none;
-}
 input,
 textarea,
 select {
   width: 100%;
   min-width: 0;
   background: #fff;
-  border: 1px solid #dfe7e2;
-  border-radius: 8px;
-  padding: 11px 13px;
-  color: #304740;
-  transition: border-color 0.15s;
+  border: 1px solid #d8e2f0;
+  border-radius: 10px;
+  padding: 10px 13px;
+  color: #1e293b;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #69ad9e;
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 input::placeholder,
 textarea::placeholder {
-  color: #9aa5a0;
-}
-input[type="checkbox"],
-input[type="radio"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--green);
-  padding: 0;
-  flex-shrink: 0;
-}
-input[type="range"] {
-  padding: 10px 0;
-  accent-color: var(--green);
+  color: #94a3b8;
 }
 textarea {
   resize: vertical;
-  line-height: 1.9;
-}
-select {
-  cursor: pointer;
-}
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  font-size: 14px;
-  font-weight: 500;
+  line-height: 1.65;
 }
 fieldset {
   border: 0;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
-summary {
-  cursor: pointer;
-  list-style: none;
-}
-summary::-webkit-details-marker {
-  display: none;
-}
-/* 这些内容对辅助阅读工具可读，但视觉上隐藏；跳转链接在获得焦点时重新显示。 */
-.sr-only,
-.skip-link:not(:focus) {
+.sr-only {
   position: absolute;
-  clip: rect(0, 0, 0, 0);
   width: 1px;
   height: 1px;
   overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.skip-link {
+  position: fixed;
+  left: -9999px;
+  top: 12px;
+  z-index: 60;
+  background: var(--dark);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
 }
 .skip-link:focus {
-  position: fixed;
-  z-index: 100;
-  top: 8px;
-  left: 8px;
-  background: white;
-  padding: 12px;
+  left: 16px;
+}
+.muted {
+  color: var(--muted);
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.text-button:hover:not(:disabled) {
+  background: var(--tint);
+}
+.danger {
+  color: #dc2626;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.prose {
+  white-space: pre-wrap;
+  line-height: 1.75;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+}
+.empty-state h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 12px 0 8px;
+}
+.empty-state p {
+  font-size: 14px;
+  margin-bottom: 18px;
 }

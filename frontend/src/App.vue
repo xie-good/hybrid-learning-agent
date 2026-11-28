@@ -1,10 +1,11 @@
 <script setup>
-// 根组件只负责工作区生命周期、公共外壳和页面装配，不包含五个页面的业务函数。
+// 根组件只负责工作区生命周期、精简公共外壳和六页装配，保持单向数据流。
 import { onMounted, onUnmounted, provide } from "vue";
 import AppIcon from "./components/AppIcon.vue";
 import AppSidebar from "./components/layout/AppSidebar.vue";
 import AppTopbar from "./components/layout/AppTopbar.vue";
 import OverviewView from "./views/OverviewView.vue";
+import KnowledgeView from "./views/KnowledgeView.vue";
 import QuestionView from "./views/QuestionView.vue";
 import SummaryView from "./views/SummaryView.vue";
 import QuizView from "./views/QuizView.vue";
@@ -16,9 +17,7 @@ const workspace = createWorkspace();
 provide(workspaceKey, workspace);
 const {
   currentPageId,
-  activePageConfig,
   isSidebarOpen,
-  courseInfo,
   serviceHealth,
   isInitializing,
   activeTask,
@@ -28,6 +27,7 @@ const {
 } = workspace;
 const pageComponents = {
   overview: OverviewView,
+  knowledge: KnowledgeView,
   qa: QuestionView,
   summary: SummaryView,
   quiz: QuizView,
@@ -44,7 +44,7 @@ onUnmounted(() =>
 </script>
 
 <template>
-  <!-- 公共导航与手机遮罩始终保留，切换页面只替换 main 中的 View。 -->
+  <!-- 公共侧栏与顶栏始终保留，主区域直接展示当前功能工作区，去除冗余多层标题。 -->
   <a class="skip-link" href="#main">跳转到主要内容</a>
   <button
     v-if="isSidebarOpen"
@@ -55,23 +55,12 @@ onUnmounted(() =>
   <AppSidebar />
   <div class="app-shell">
     <AppTopbar />
-    <main id="main" class="main-content" tabindex="-1">
-      <div class="page-heading">
-        <div>
-          <div class="eyebrow">
-            {{ currentPageId === "overview" ? "学习相连" : "探索 · 理解 · 记忆" }}
-          </div>
-          <h1>
-            {{ activePageConfig.title
-            }}<span v-if="currentPageId === 'overview'" class="heading-dot">.</span>
-          </h1>
-          <p>{{ activePageConfig.subtitle }}</p>
-        </div>
-        <span class="heading-badge"
-          ><AppIcon name="book" :size="16" />
-          {{ courseInfo?.name || "Hello-Agents 课程" }}</span
-        >
-      </div>
+    <main
+      id="main"
+      class="main-content"
+      :class="{ 'wide-stage': currentPageId === 'qa' }"
+      tabindex="-1"
+    >
       <div v-if="errorMessage" class="message error" role="alert">
         <AppIcon name="info" /><span>{{ errorMessage }}</span
         ><button
@@ -88,24 +77,16 @@ onUnmounted(() =>
         <AppIcon name="check" />{{ noticeMessage }}
       </div>
       <div
-        v-if="!isInitializing && serviceHealth && serviceHealth.status !== 'ok'"
+        v-if="!isInitializing && serviceHealth && serviceHealth.status !== 'ok' && currentPageId !== 'knowledge'"
         class="message warning"
         role="status"
       >
-        服务部分能力尚未就绪：请检查知识库、检索、生成及历史存储配置。
+        当前知识库部分能力尚未就绪，可前往「知识库」上传文档或检查后端配置。
       </div>
 
-      <!-- 缓存已访问页面：离开再回来时，搜索词、提问内容和本轮作答仍保留。
-           章/节变化时，由各 View 的 watch 主动清除失效结果，而非依赖卸载重置。 -->
       <KeepAlive>
         <component :is="pageComponents[currentPageId]" :key="currentPageId" />
       </KeepAlive>
-
-      <footer class="page-footer">
-        <span
-          ><span class="footer-mark">知序</span> 让知识有序，让学习发生。</span
-        ><span>教材为源 · 理解为本</span>
-      </footer>
     </main>
   </div>
 </template>

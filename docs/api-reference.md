@@ -1,188 +1,105 @@
 # 课程学习助手 API v1 接口文档
 
-更新：2026-11-05。契约来源为后端 Pydantic 模型与路由；静态机器文档见 [openapi.json](F:/桌面/毕设/docs/openapi.json)。默认 API 根地址为 `http://127.0.0.1:8000`。在线 Swagger：`/docs`，ReDoc：`/redoc`，OpenAPI：`/openapi.json`。初次阅读先看[项目运行流程](F:/桌面/毕设/docs/project-runtime-flow.md)。
+更新：2026-11-28。契约来源为后端 Pydantic 模型与路由；静态机器文档见 [openapi.json](F:/桌面/毕设/docs/openapi.json)。默认 API 根地址为 `http://127.0.0.1:8000`。在线 Swagger：`/docs`，ReDoc：`/redoc`，OpenAPI：`/openapi.json`。初次阅读先看 [项目运行流程](F:/桌面/毕设/docs/project-runtime-flow.md)。
 
 ## 1. 当前实现与运行模式
 
-- 13 个 HTTP 操作覆盖课程、章/节、原文/PDF、问答、总结、练习和当前会话历史；业务不再使用 501 占位。
-- 默认 `hybrid + extractive`：BM25 与真实 Embedding 向量召回经 RRF 融合，并对实际返回证据执行充分性门控；回答、总结与阅读练习依据实际教材原文形成，响应明确标记 `generation_mode=extractive`，不冒充模型推理。
-- `GENERATION_MODE=llm` 接入配置的 Chat Completions 兼容服务。缺少配置返回 503；超时 504；上游错误或引用/结构验证失败 502。测试使用模拟上游，不等于真实云服务已验收。
-- `vector`/`hybrid` 要求真实 Embedding 服务配置和匹配数据版本的离线向量索引；未就绪返回 503。`hybrid` 使用 BM25、向量及 RRF；本次没有将 Reranker 模型列为已实现功能。
-- 数据仍限第 1—12 章。图片/OCR和跨页代码重建不在当前语料处理能力内，引用携带 `review_flags`。
-- 历史只保存问答结果；总结与练习不写入问答历史。Vue 将会话 UUID 保存在当前标签页的 `sessionStorage`，刷新后复用并重新查询问答历史；总结、题组、作答和自评只在页面内存中保留，不随刷新恢复。UUID 不是账号登录体系。
+- 共 **23 个 HTTP 操作（19 条路径）**，覆盖状态检查、多知识库与文档管理、PDF 按页纯白渲染、目录与原文来源、混合检索问答、章节总结、章节练习、随堂出题巩固及会话历史。
+- 默认 `hybrid` 混合检索：`rank-bm25==0.2.2`（`BM25Okapi`）+ `numpy` 向量余弦召回，经 RRF（`k=60`）融合；内置词法与向量双保险门控（`VECTOR_MIN_SCORE=0.54`），并对指向当前资料的概览/总结类提问自动均匀抽样放行（`hit_type="overview"`）。
+- `GENERATION_MODE` 支持 `extractive`（本地原文摘录）与 `llm`（Chat Completions 兼容大模型）；缺配置返回 `503`，超时返回 `504`，上游异常或引用校验失败返回 `502`。
+- 多知识库支持预置课程 `hello_agents`（第 1—12 章）以及用户自定义知识库；上传文档严格限制为 **PDF (`.pdf`)、Word (`.docx`)、Markdown (`.md`)**。
+- 问答历史按 `session_id`（UUID）持久化在 SQLite 中，前端存于标签页 `sessionStorage`；总结与练习不写入问答历史。
 
 ## 2. 公共约定
 
-- JSON 使用 UTF-8；请求头 `Content-Type: application/json`。
-- 所有响应附 `X-Request-ID`。可传入 1—64 位字母/数字/点/下划线/短横线组成的值，其余自动生成。
-- JSON 请求禁止额外字段。字符串去除首尾空白后校验；题量和 top_k 要求整数。
-- `chapter_id` 格式 `ch01`；`section_id` 格式 `ch01-s001`。格式正确但不存在的范围返回 404；章/节冲突返回 422。
-- `session_id` 为 UUID。问答省略该值时创建新会话，前端应保存响应值并在后续请求中复用；历史接口必须携带。
-- `latency_ms` 为服务端检索/生成及响应组装耗时，不包括浏览器网络时间，问答不包括 SQLite 插入阶段。
-- `dataset_version` 绑定清洗规则和文本块版本；PDF 页码从 1 开始。
-- 后端代码的默认 CORS 白名单仍为 `http://127.0.0.1:8501` 和 `http://localhost:8501`；这不是当前 Vue 访问地址。Vue 开发/预览使用同源 `/api` 代理，通常无需改该项；浏览器直连不同源后端时，按实际前端来源配置 `CORS_ORIGINS`。
-
-### 统一错误结构
+- JSON 统一使用 UTF-8，请求头 `Content-Type: application/json`；文档上传使用 `multipart/form-data`。
+- 所有响应附带 `X-Request-ID`；参数校验或业务失败返回统一错误结构：
 
 ```json
 {
   "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "请求参数校验失败。",
-    "details": [{"field": "body.question", "message": "String should have at least 1 character", "type": "string_too_short"}]
+    "code": "invalid_page_num",
+    "message": "页码必须大于等于 1。",
+    "details": []
   },
   "request_id": "example-request-id"
 }
 ```
 
-`details` 仅在参数错误时出现，不回显整个请求、密钥或异常堆栈。状态码：200 成功、204 删除成功无响应体、206 PDF 范围内容、404 资源不存在或不属于当前会话、409 原 PDF 与数据版本冲突、422 参数错误、500 内部异常、502 模型返回错误、503 数据/索引/配置/存储未就绪、504 模型超时。
+常见状态码：`200` 成功、`201` 创建成功、`204` 删除成功无响应体、`404` 资源不存在、`409` 版本/重名冲突、`422` 参数或文件格式校验失败、`502` 上游模型错误、`503` 知识库/索引/配置未就绪、`504` 模型超时。
 
-## 3. 接口总表
+## 3. 接口总表（23 个操作）
 
-| 方法 | 路径 | 作用 |
-|---|---|---|
-| GET | `/api/health` | 服务与语料、生成配置、历史存储状态 |
-| GET | `/api/course` | 固定课程、来源和版本 |
-| GET | `/api/chapters` | 已入库章/节目录 |
-| GET | `/api/chapters/{chapter_id}` | 章节详情与覆盖范围 |
-| GET | `/api/sources/{chunk_id}` | 一条原文及章节、页码 |
-| GET | `/api/course/source` | 固定原 PDF；支持页码定位与 Range |
-| POST | `/api/qa` | 课程问答与历史写入 |
-| POST | `/api/summary` | 指定章/节总结 |
-| POST | `/api/quiz` | 练习题、答案、解析与引用 |
-| GET | `/api/history` | 当前会话历史分页 |
-| GET | `/api/history/{record_id}` | 当前会话单条记录 |
-| DELETE | `/api/history/{record_id}` | 删除当前会话单条记录 |
-| DELETE | `/api/history` | 清空当前会话记录 |
+| 分组 | 方法 | 路径 | 作用 |
+|---|---|---|---|
+| 状态 | GET | `/api/health` | 服务、预置语料、检索模式、生成配置与历史存储状态 |
+| 知识库管理 | GET | `/api/kbs` | 列出预置课程与全部自定义知识库 |
+| 知识库管理 | POST | `/api/kbs` | 新建自定义知识库（`name`、`description`） |
+| 知识库管理 | DELETE | `/api/kbs/{kb_id}` | 删除指定自定义知识库（预置不可删） |
+| 知识库管理 | GET | `/api/kbs/{kb_id}/documents` | 查看指定知识库内的文档列表与页数/切片数 |
+| 知识库管理 | POST | `/api/kbs/{kb_id}/documents` | 上传 `.pdf`/`.docx`/`.md` 文档并解析构建索引 |
+| 知识库管理 | DELETE | `/api/kbs/{kb_id}/documents/{doc_id}` | 移除文档并重建该知识库索引 |
+| 知识库管理 | GET | `/api/kbs/{kb_id}/documents/{doc_id}/source` | 在线内联预览或下载原始文档 |
+| 知识库管理 | GET | `/api/kbs/{kb_id}/documents/{doc_id}/page/{page_num}` | 用 `pypdfium2` 把 PDF 指定页渲染为纯白底 PNG 图片 |
+| 知识库管理 | GET | `/api/kbs/{kb_id}/chunks` | 分页浏览知识库切分后的文本块（支持 `chapter_id`、`limit`、`offset`） |
+| 课程与来源 | GET | `/api/course` | 当前知识库基本信息与数据版本（支持 `?kb_id=`） |
+| 课程与来源 | GET | `/api/chapters` | 当前知识库已入库章/节目录（支持 `?kb_id=`） |
+| 课程与来源 | GET | `/api/chapters/{chapter_id}` | 指定章节详情与页码覆盖范围 |
+| 课程与来源 | GET | `/api/sources/{chunk_id}` | 按文本块 ID 核对原文、章节与物理页码 |
+| 课程与来源 | GET | `/api/course/source` | 返回预置教材原 PDF（支持 Range） |
+| 问答 | POST | `/api/qa` | 多轮指代补全、混合检索证据、生成回答并写入历史 |
+| 学习辅助 | POST | `/api/summary` | 生成指定章/节的代表性总结、要点与覆盖统计 |
+| 学习辅助 | POST | `/api/quiz` | 按章/节、题量、题型和难度生成自测题 |
+| 学习辅助 | POST | `/api/quiz/from-qa` | 基于某次问答命中的原文切片生成随堂巩固练习 |
+| 会话历史 | GET | `/api/history` | 当前会话问答历史（倒序分页，支持 `kb_id` 过滤） |
+| 会话历史 | GET | `/api/history/{record_id}` | 查询当前会话单条历史详情 |
+| 会话历史 | DELETE | `/api/history/{record_id}` | 删除当前会话单条历史 |
+| 会话历史 | DELETE | `/api/history` | 清空当前会话全部历史 |
 
-## 4. 状态、目录与来源
+## 4. 核心数据结构说明
 
-### GET /api/health
-
-存活检查始终返回 200。`status=ok|degraded`；字段包括 `stage`、`knowledge_base_ready`、`dataset_version`、`chunk_count`、`retrieval_modes`、`default_retrieval_mode`、`retrieval_ready`、`generation_mode`、`generation_ready`、`history_ready` 和 `reason`。缺少或损坏语料、默认检索模式不可用、模型配置不全或历史存储失败时为 degraded。`generation_ready` 只说明本地模式可用或模型配置齐全，不执行远程探活；向量可用状态同样不承诺外部服务连通。
-
-### GET /api/course
-
-返回 `course_id`、`name`、`description`、`source_file`、`dataset_version`、`chapter_count`、`chunk_count` 及覆盖/来源可用信息。不接受用户指定课程或任意文件路径。
-
-### GET /api/chapters 与 GET /api/chapters/{chapter_id}
-
-目录返回 `{course_id,dataset_version,chapters:[...]}`。章节包含 `chapter_id,title,page_start,page_end,sections`；小节至少包含 `section_id,title,page_start`，并提供可计算的覆盖信息。章节详情直接返回一个章节对象。按节检索可直接传 `section_id`；如果同时传 `chapter_id`，二者必须一致。
-
-### Citation：统一原文引用结构
+### Citation（统一原文引用与混合检索命中明细）
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| citation_id | integer | 当前响应内 1 起算编号，对应正文 `[1]` |
-| chunk_id | string | 稳定文本块标识，可查询来源接口 |
-| text | string | 教材清洗后的原文，不是模型生成内容 |
-| source_file | string | 来源文件名 |
-| chapter_id / chapter_title | string | 章节标识和名称 |
-| section_id / section_title | string/null | 小节标识和名称 |
-| page_start / page_end | integer | 原 PDF 物理页范围 |
-| source_url | string/null | 固定 PDF 接口加 `#page=N` 的相对链接 |
-| score | number/null | 检索分数，不是答案正确率 |
-| review_flags | string[] | 图表、低文本量等覆盖提示 |
+| `citation_id` | integer | 响应内 1 起算编号，对应正文 `[1]` |
+| `chunk_id` | string | 稳定文本块标识 |
+| `text` | string | 清洗后的文档原文片段 |
+| `source_file` | string | 来源文件名 |
+| `chapter_id` / `chapter_title` | string | 所属章节或文档标识与标题 |
+| `section_id` / `section_title` | string | 所属小节标识与标题 |
+| `page_start` / `page_end` | integer | 原文档物理起止页码（从 1 开始） |
+| `score` | float | 最终排序得分（混合模式下为 RRF 分数） |
+| `hit_type` | string \| null | 命中来源：`both`（双路共同命中）、`bm25`、`vector`、`overview`（全文概览抽样） |
+| `bm25_rank` | integer \| null | BM25 词法召回排名 |
+| `vec_score` | float \| null | 向量语义余弦相似度 |
+| `rrf_score` | float \| null | RRF 融合得分 |
 
-`GET /api/sources/{chunk_id}` 返回一个 Citation。`GET /api/course/source` 返回 `application/pdf`；只服务环境配置或报告登记且通过来源 SHA256 校验的 PDF。文件不存在或来源不匹配时返回错误，不读取请求携带的路径。API 直连定位例为 `http://127.0.0.1:8000/api/course/source#page=10`；当前 Vue 页面使用同源 `/api/course/source#page=10`。`#page` 由浏览器 PDF 阅读器处理；打开的是完整原 PDF，不是仅保留知识内容的裁剪文件。
+### POST /api/qa 请求与响应要点
 
-## 5. POST /api/qa
+请求体：
 
 ```json
 {
-  "question": "什么是智能体？",
-  "chapter_id": "ch01",
+  "kb_id": "hello_agents",
+  "question": "ReAct 的核心流程是什么？",
+  "chapter_id": null,
   "section_id": null,
-  "session_id": "6a69df9b-695b-4f6c-ae41-e582408791ee",
+  "session_id": "d7d96af0-8afb-4d73-8bf2-213031cd9fea",
   "retrieval_mode": "hybrid",
   "top_k": 5,
   "debug": false
 }
 ```
 
-| 字段 | 必填 | 默认/范围 |
-|---|---|---|
-| question | 是 | 去除首尾空白后 1—2000 字符 |
-| chapter_id | 否 | null，全课程；也可按 section_id 定位章节 |
-| section_id | 否 | null，不限定小节 |
-| session_id | 否 | 服务端生成 UUID |
-| retrieval_mode | 否 | 服务端 `DEFAULT_RETRIEVAL_MODE`，出厂 hybrid；允许评测显式指定 bm25/vector/hybrid |
-| top_k | 否 | 5，1—10 |
-| debug | 否 | false |
+- `kb_id` 可选，默认预置课程 `hello_agents`。
+- 响应包含 `answer`、`citations`、`insufficient_evidence`、`retrieval_mode`、`generation_mode`、`rewritten_question`（多轮指代补全后的问题）、`follow_up_questions`（推荐追问列表）、`history_id`、`session_id`、`latency_ms`、`dataset_version`、`request_id`。
 
-返回字段：`answer,citations,retrieval_mode,generation_mode,insufficient_evidence,scope,dataset_version,latency_ms,request_id,session_id,history_id,debug`。
+### POST /api/quiz/from-qa（随堂出题巩固）
 
-`scope` 为 `{chapter_id,section_id}`。没有词项命中时仍返回 200，但 `insufficient_evidence=true,citations=[]`，说明证据不足，不调用模型凭空补全；BM25 得分不证明语义充分性，实际回答质量仍需独立评测。普通响应 `debug=null`；调试模式提供实际检索阶段信息，不表示配置了尚未启用的模型精排。
+请求体传入 `kb_id`、`question`、`answer`、`chunk_ids`（问答命中的文本块 ID 列表）与 `count`（默认 2 题），返回与 `/api/quiz` 一致的 `QuizResponse` 结构，供问答页内嵌 `InlineQuizCard` 即时作答。
 
-响应中的 `[N]` 必须映射到本次 citations 的编号。编号校验只是结构约束，不等于自动验证所有事实支持关系。
+### GET /api/kbs/{kb_id}/documents/{doc_id}/page/{page_num}
 
-## 6. POST /api/summary
-
-请求：`{"chapter_id":"ch01","section_id":null}`。`chapter_id` 必填，`section_id` 可选。
-
-返回：`summary,key_points,citations,coverage,generation_mode,scope,dataset_version,latency_ms,request_id`。`coverage` 记录总小节/块数、实际选取数、覆盖的小节和代表性采样说明；总结不把少量证据声称为整章逐字覆盖。模型模式与摘录模式均显式标识。
-
-## 7. POST /api/quiz
-
-```json
-{
-  "chapter_id": "ch01",
-  "section_id": null,
-  "count": 5,
-  "question_types": ["short_answer", "multiple_choice"],
-  "difficulty": "medium"
-}
-```
-
-- `count` 默认 5，范围 1—10。
-- `question_types` 默认 `["short_answer"]`；允许 `short_answer` 和 `multiple_choice`，列表不可为空、不可重复，题量不可小于所选题型数量。
-- `difficulty` 为 `easy|medium|hard`，默认 medium。默认摘录模式生成原文阅读理解/填空题；难度是题目组织参数，不代表经过教学测量的难度等级。
-- 返回 `questions,citations,generation_mode,scope,dataset_version,latency_ms,request_id`。
-- 每题包含 `question_id,type,question,options,answer,explanation,citation_ids`。单选选项为 `[{key,text},...]`，answer 为正确选项 key；简答 options 为空列表，answer 为参考答案。
-- Vue 页面在全部作答并提交前不渲染答案、解析和教材引用；提交后才展示反馈。后端同时返回答案供本地自测，该交互不是服务端答案保密机制。
-- 所选章/节的可用原文不足以生成请求题量时返回 422；不会静默少出题或编造内容。
-
-## 8. 会话历史
-
-所有历史操作必须附 `?session_id=UUID`。
-
-- 列表：`GET /api/history?session_id=UUID&limit=20&offset=0`。limit 1—100，offset ≥0，按创建时间倒序；返回 `{items,total,limit,offset}`。
-- 单条：`GET /api/history/{record_id}?session_id=UUID`。
-- 删除一条：`DELETE /api/history/{record_id}?session_id=UUID`，成功 204 无响应体。
-- 清空当前会话：`DELETE /api/history?session_id=UUID`，返回 `{"deleted":数量}`。
-
-历史对象包含 `id,session_id,question,answer,citations,retrieval_mode,generation_mode,scope,dataset_version,insufficient_evidence,created_at,latency_ms,request_id`。`created_at` 是 UTC ISO 时间。持久化使用 SQLite；重启后同一 UUID 可查询，其他 UUID 查询/删除该记录返回 404。历史内容不自动拼入下次模型提示词。
-
-## 9. 配置与启动
-
-完整变量见[配置示例](F:/桌面/毕设/.env.example)。现有配置按需合并，保留已有值；默认数据库为 `F:/桌面/毕设/data/runtime/history.sqlite3`。模型密钥仅服务端读取，Vite 只加载 `BACKEND_URL` 作为代理目标；Vue 的 `request()` 默认超时 90000 毫秒，不读取 `BACKEND_TIMEOUT` 环境变量。
-
-后端模型 HTTP 客户端访问 localhost、127.0.0.0/8、::1 时使用直连；远程模型目标仍遵循部署环境的代理配置。浏览器通过原生 `fetch` 访问同源 `/api`，由 Vite 或生产 Web 服务转发，不使用 Python HTTP 客户端。
-
-```powershell
-Set-Location 'F:/桌面/毕设'
-& 'F:/桌面/毕设/.venv/Scripts/python.exe' -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
-# 另一个终端：
-Set-Location 'F:/桌面/毕设/frontend'
-npm ci
-npm run dev
-```
-
-浏览器访问 [http://127.0.0.1:5173](http://127.0.0.1:5173)。前端封装、方法映射、页面状态和错误处理见[前端接入文档](F:/桌面/毕设/docs/frontend-api.md)。离线预处理和索引构建不暴露为网络写入接口；没有上传、账号或管理员 API。
-
-## 10. 测试
-
-```powershell
-Set-Location 'F:/桌面/毕设'
-& 'F:/桌面/毕设/.venv/Scripts/python.exe' -B -m unittest discover -s tests -v
-```
-
-后端测试使用真实合成 PDF、隔离 SQLite、FastAPI TestClient 和模型模拟传输，检查参数、来源、范围、引用、模型错误/超时、会话隔离、删除和持久化等行为。Vue 测试与构建单独执行：
-
-```powershell
-Set-Location 'F:/桌面/毕设/frontend'
-npm test
-npm run build
-```
-
-前端测试使用 Node 内置测试运行器，不再执行旧 Python 前端测试。单元/组件测试与构建成功不等于真实浏览器和真实模型的全过程验收；具体运行结果以对应验证记录为准。
+- 将 PDF 指定物理页（`page_num >= 1`）按 `scale=1.6` 实时渲染为纯白底 `image/png` 返回。
+- 若非 PDF 文档返回 `422`（`not_a_pdf`）；页码越界返回 `404`（`page_not_found`）。

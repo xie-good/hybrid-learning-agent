@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "课程学习助手",
-    "description": "预置课程学习 API：目录、来源、问答、总结、练习和会话历史。默认混合检索 + 原文摘录；可配置外部模型。",
+    "description": "基于混合检索的学习助手 API：支持自定义文档上传、BM25 与向量混合检索、多轮问答、章节总结与练习自测。",
     "version": "1.0.0"
   },
   "paths": {
@@ -12,7 +12,27 @@
           "状态"
         ],
         "summary": "服务、语料与配置就绪状态",
+        "description": "检查当前知识库、检索索引、模型配置和历史数据库是否就绪。",
         "operationId": "health_api_health_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20,6 +40,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -35,7 +65,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -45,7 +75,1089 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs": {
+      "get": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "列出预置课程与用户自定义知识库",
+        "description": "返回所有知识库的列表与索引就绪状态。",
+        "operationId": "list_kbs_api_kbs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeBaseListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "新建自定义学习知识库",
+        "description": "创建一个新的自定义知识库。",
+        "operationId": "create_kb_api_kbs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeBaseCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeBaseInfo"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs/{kb_id}": {
+      "delete": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "删除自定义知识库",
+        "description": "删除指定的自定义知识库及其索引文件。",
+        "operationId": "delete_kb_api_kbs__kb_id__delete",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs/{kb_id}/documents": {
+      "get": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "查看知识库内的文档列表",
+        "description": "查看某个知识库下已经上传的所有文档。",
+        "operationId": "list_kb_documents_api_kbs__kb_id__documents_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "上传文档并构建混合检索索引",
+        "description": "接收上传的学习文档，完成解析、切块并重建 BM25 与向量索引。",
+        "operationId": "upload_kb_document_api_kbs__kb_id__documents_post",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_kb_document_api_kbs__kb_id__documents_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs/{kb_id}/documents/{doc_id}": {
+      "delete": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "移除知识库中的指定文档并更新索引",
+        "description": "从自定义知识库中移除一份文档并重新构建索引。",
+        "operationId": "delete_kb_document_api_kbs__kb_id__documents__doc_id__delete",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          },
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDeleteResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs/{kb_id}/documents/{doc_id}/source": {
+      "get": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "在线查看上传的原始文档",
+        "description": "返回原始文件以便在浏览器中预览或下载。",
+        "operationId": "view_kb_document_source_api_kbs__kb_id__documents__doc_id__source_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          },
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs/{kb_id}/documents/{doc_id}/page/{page_num}": {
+      "get": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "把 PDF 指定页渲染为纯白底 PNG 图片",
+        "description": "按页把 PDF 渲染成清晰图片，供前端无黑边伴读预览。",
+        "operationId": "render_pdf_page_api_kbs__kb_id__documents__doc_id__page__page_num__get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          },
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          },
+          {
+            "name": "page_num",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Num"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/kbs/{kb_id}/chunks": {
+      "get": {
+        "tags": [
+          "知识库管理"
+        ],
+        "summary": "分页浏览知识库切分后的文本块",
+        "description": "分页返回切分后的文本块，方便核对文档解析结果。",
+        "operationId": "list_kb_chunks_api_kbs__kb_id__chunks_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$",
+              "title": "Kb Id"
+            }
+          },
+          {
+            "name": "chapter_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Chapter Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChunkPreviewListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -102,8 +1214,28 @@
         "tags": [
           "课程与来源"
         ],
-        "summary": "固定课程与数据版本",
+        "summary": "当前知识库基本信息与数据版本",
+        "description": "返回指定知识库的名称、章节数和文本块数量。",
         "operationId": "course_api_course_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -111,6 +1243,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -126,7 +1268,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -136,7 +1278,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -193,8 +1335,28 @@
         "tags": [
           "课程与来源"
         ],
-        "summary": "已入库的章、节目录",
+        "summary": "已入库的章、节或文档目录",
+        "description": "返回指定知识库的章节与小节列表。",
         "operationId": "chapters_api_chapters_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -202,6 +1364,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChapterList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -217,7 +1389,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -227,7 +1399,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -285,6 +1457,7 @@
           "课程与来源"
         ],
         "summary": "章节详情与覆盖范围",
+        "description": "返回单个章节或文档的详细信息。",
         "operationId": "chapter_api_chapters__chapter_id__get",
         "parameters": [
           {
@@ -295,6 +1468,23 @@
               "type": "string",
               "title": "Chapter Id"
             }
+          },
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
+            }
           }
         ],
         "responses": {
@@ -304,6 +1494,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChapterInfo"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -319,7 +1519,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -329,7 +1529,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -387,6 +1587,7 @@
           "课程与来源"
         ],
         "summary": "核对原文、章节与物理页码",
+        "description": "根据文本块编号返回完整的原文及来源位置。",
         "operationId": "source_api_sources__chunk_id__get",
         "parameters": [
           {
@@ -397,6 +1598,23 @@
               "type": "string",
               "title": "Chunk Id"
             }
+          },
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
+            }
           }
         ],
         "responses": {
@@ -406,6 +1624,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Citation"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -421,7 +1649,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -431,7 +1659,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -488,13 +1716,43 @@
         "tags": [
           "课程与来源"
         ],
-        "summary": "预置原 PDF（固定来源）",
+        "summary": "原 PDF（支持 #page=N 定位）",
+        "description": "返回知识库对应的原始 PDF 文件。",
         "operationId": "course_source_api_course_source_get",
+        "parameters": [
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "原 PDF，可使用 #page=N 定位",
             "content": {
               "application/pdf": {}
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
           "404": {
@@ -508,7 +1766,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -518,7 +1776,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -575,7 +1833,8 @@
         "tags": [
           "问答"
         ],
-        "summary": "检索证据、回答问题并保存会话历史",
+        "summary": "多轮指代补全、混合检索证据并生成深度回答",
+        "description": "执行一次问答：先结合历史补全指代，再用混合检索找证据，最后生成带引用的回答。",
         "operationId": "question_answer_api_qa_post",
         "requestBody": {
           "content": {
@@ -598,6 +1857,16 @@
               }
             }
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -609,7 +1878,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -619,7 +1888,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -677,6 +1946,7 @@
           "学习辅助"
         ],
         "summary": "生成指定章或节的有来源总结",
+        "description": "围绕指定章节或文档生成带出处引用的重点总结。",
         "operationId": "chapter_summary_api_summary_post",
         "requestBody": {
           "content": {
@@ -699,6 +1969,16 @@
               }
             }
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -710,7 +1990,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -720,7 +2000,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -778,6 +2058,7 @@
           "学习辅助"
         ],
         "summary": "生成带答案、解析和引用的练习",
+        "description": "围绕指定章节或文档生成单选与简答自测题。",
         "operationId": "chapter_quiz_api_quiz_post",
         "requestBody": {
           "content": {
@@ -800,6 +2081,16 @@
               }
             }
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -811,7 +2102,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -821,7 +2112,119 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "模型上游或输出校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "数据、索引、模型配置或存储未就绪",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "模型超时",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz/from-qa": {
+      "post": {
+        "tags": [
+          "学习辅助"
+        ],
+        "summary": "基于问答命中的原文切片生成随堂巩固练习",
+        "description": "直接使用问答命中的原文切片出题，形成提问后的即时巩固。",
+        "operationId": "qa_follow_up_quiz_api_quiz_from_qa_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizFromQARequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "资源不存在或不属于该会话",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "原文件冲突或重复上传",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -879,6 +2282,7 @@
           "会话历史"
         ],
         "summary": "当前会话问答历史（倒序分页）",
+        "description": "分页获取当前会话的问答记录。",
         "operationId": "history_api_history_get",
         "parameters": [
           {
@@ -889,6 +2293,23 @@
               "type": "string",
               "format": "uuid",
               "title": "Session Id"
+            }
+          },
+          {
+            "name": "kb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kb Id"
             }
           },
           {
@@ -926,6 +2347,16 @@
               }
             }
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -937,7 +2368,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -947,7 +2378,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -1003,6 +2434,7 @@
           "会话历史"
         ],
         "summary": "清空当前会话历史",
+        "description": "清空当前会话的全部问答历史。",
         "operationId": "clear_history_api_history_delete",
         "parameters": [
           {
@@ -1027,6 +2459,16 @@
               }
             }
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -1038,7 +2480,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -1048,7 +2490,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -1106,6 +2548,7 @@
           "会话历史"
         ],
         "summary": "当前会话的单条问答",
+        "description": "获取当前会话中的单条问答详情。",
         "operationId": "history_item_api_history__record_id__get",
         "parameters": [
           {
@@ -1140,6 +2583,16 @@
               }
             }
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -1151,7 +2604,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -1161,7 +2614,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -1217,6 +2670,7 @@
           "会话历史"
         ],
         "summary": "删除当前会话的一条问答",
+        "description": "删除当前会话中的单条问答。",
         "operationId": "delete_history_item_api_history__record_id__delete",
         "parameters": [
           {
@@ -1244,6 +2698,16 @@
           "204": {
             "description": "Successful Response"
           },
+          "403": {
+            "description": "受保护的内置资源不可修改",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "资源不存在或不属于该会话",
             "content": {
@@ -1255,7 +2719,7 @@
             }
           },
           "409": {
-            "description": "原 PDF 与数据版本冲突",
+            "description": "原文件冲突或重复上传",
             "content": {
               "application/json": {
                 "schema": {
@@ -1265,7 +2729,7 @@
             }
           },
           "422": {
-            "description": "参数错误",
+            "description": "参数或文件解析错误",
             "content": {
               "application/json": {
                 "schema": {
@@ -1320,6 +2784,20 @@
   },
   "components": {
     "schemas": {
+      "Body_upload_kb_document_api_kbs__kb_id__documents_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_kb_document_api_kbs__kb_id__documents_post"
+      },
       "ChapterInfo": {
         "properties": {
           "chapter_id": {
@@ -1354,7 +2832,8 @@
           "page_start",
           "page_end"
         ],
-        "title": "ChapterInfo"
+        "title": "ChapterInfo",
+        "description": "章节或文档目录信息。"
       },
       "ChapterList": {
         "properties": {
@@ -1380,20 +2859,33 @@
           "dataset_version",
           "chapters"
         ],
-        "title": "ChapterList"
+        "title": "ChapterList",
+        "description": "知识库目录列表响应。"
       },
       "ChapterRequest": {
         "properties": {
+          "kb_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kb Id"
+          },
           "chapter_id": {
             "type": "string",
-            "pattern": "^ch\\d{2}$",
+            "pattern": "^ch\\d{2,3}$",
             "title": "Chapter Id"
           },
           "section_id": {
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "^ch\\d{2}-s\\d{3}$"
+                "pattern": "^ch\\d{2,3}-s\\d{3}$"
               },
               {
                 "type": "null"
@@ -1408,7 +2900,40 @@
           "chapter_id"
         ],
         "title": "ChapterRequest",
-        "description": "总结和出题共同使用的章节范围。"
+        "description": "章节总结和章节自测共用的范围参数。"
+      },
+      "ChunkPreviewListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "ChunkPreviewListResponse",
+        "description": "分页预览文档切片的响应。"
       },
       "Citation": {
         "properties": {
@@ -1491,6 +3016,50 @@
             ],
             "title": "Score"
           },
+          "hit_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Type"
+          },
+          "bm25_rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bm25 Rank"
+          },
+          "vec_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vec Score"
+          },
+          "rrf_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rrf Score"
+          },
           "review_flags": {
             "items": {
               "type": "string"
@@ -1510,7 +3079,8 @@
           "source_file",
           "chapter_title"
         ],
-        "title": "Citation"
+        "title": "Citation",
+        "description": "返回给前端展示的带编号原文引用。"
       },
       "CourseResponse": {
         "properties": {
@@ -1554,7 +3124,8 @@
           "chapter_count",
           "chunk_count"
         ],
-        "title": "CourseResponse"
+        "title": "CourseResponse",
+        "description": "知识库概要信息响应。"
       },
       "DeletedResponse": {
         "properties": {
@@ -1567,7 +3138,124 @@
         "required": [
           "deleted"
         ],
-        "title": "DeletedResponse"
+        "title": "DeletedResponse",
+        "description": "批量删除结果响应。"
+      },
+      "DocumentDeleteResponse": {
+        "properties": {
+          "deleted_doc_id": {
+            "type": "string",
+            "title": "Deleted Doc Id"
+          },
+          "kb": {
+            "$ref": "#/components/schemas/KnowledgeBaseInfo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deleted_doc_id",
+          "kb"
+        ],
+        "title": "DocumentDeleteResponse",
+        "description": "删除文档成功后的响应。"
+      },
+      "DocumentInfo": {
+        "properties": {
+          "doc_id": {
+            "type": "string",
+            "title": "Doc Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "chapter_id": {
+            "type": "string",
+            "title": "Chapter Id"
+          },
+          "chapter_title": {
+            "type": "string",
+            "title": "Chapter Title"
+          },
+          "page_count": {
+            "type": "integer",
+            "title": "Page Count"
+          },
+          "chunk_count": {
+            "type": "integer",
+            "title": "Chunk Count"
+          },
+          "uploaded_at": {
+            "type": "string",
+            "title": "Uploaded At"
+          },
+          "builtin": {
+            "type": "boolean",
+            "title": "Builtin",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "doc_id",
+          "filename",
+          "media_type",
+          "size_bytes",
+          "chapter_id",
+          "chapter_title",
+          "page_count",
+          "chunk_count",
+          "uploaded_at"
+        ],
+        "title": "DocumentInfo",
+        "description": "已上传文档的元信息。"
+      },
+      "DocumentListResponse": {
+        "properties": {
+          "kb_id": {
+            "type": "string",
+            "title": "Kb Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentInfo"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kb_id",
+          "items"
+        ],
+        "title": "DocumentListResponse",
+        "description": "知识库下文档列表响应。"
+      },
+      "DocumentUploadResponse": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentInfo"
+          },
+          "kb": {
+            "$ref": "#/components/schemas/KnowledgeBaseInfo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "kb"
+        ],
+        "title": "DocumentUploadResponse",
+        "description": "上传文档成功后的响应。"
       },
       "ErrorBody": {
         "properties": {
@@ -1600,7 +3288,8 @@
           "code",
           "message"
         ],
-        "title": "ErrorBody"
+        "title": "ErrorBody",
+        "description": "统一错误体结构。"
       },
       "ErrorResponse": {
         "properties": {
@@ -1617,7 +3306,8 @@
           "error",
           "request_id"
         ],
-        "title": "ErrorResponse"
+        "title": "ErrorResponse",
+        "description": "统一错误响应外壳。"
       },
       "HealthResponse": {
         "properties": {
@@ -1713,7 +3403,8 @@
           "generation_ready",
           "history_ready"
         ],
-        "title": "HealthResponse"
+        "title": "HealthResponse",
+        "description": "健康检查响应。"
       },
       "HistoryItem": {
         "properties": {
@@ -1726,13 +3417,36 @@
             "format": "uuid",
             "title": "Session Id"
           },
+          "kb_id": {
+            "type": "string",
+            "title": "Kb Id",
+            "default": "hello_agents"
+          },
           "question": {
             "type": "string",
             "title": "Question"
           },
+          "rewritten_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rewritten Question"
+          },
           "answer": {
             "type": "string",
             "title": "Answer"
+          },
+          "follow_up_questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Follow Up Questions"
           },
           "citations": {
             "items": {
@@ -1798,7 +3512,8 @@
           "latency_ms",
           "request_id"
         ],
-        "title": "HistoryItem"
+        "title": "HistoryItem",
+        "description": "单条问答历史记录。"
       },
       "HistoryResponse": {
         "properties": {
@@ -1829,7 +3544,125 @@
           "limit",
           "offset"
         ],
-        "title": "HistoryResponse"
+        "title": "HistoryResponse",
+        "description": "分页历史记录响应。"
+      },
+      "KnowledgeBaseCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 400,
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "KnowledgeBaseCreateRequest",
+        "description": "新建自定义知识库的请求参数。"
+      },
+      "KnowledgeBaseInfo": {
+        "properties": {
+          "kb_id": {
+            "type": "string",
+            "title": "Kb Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "builtin": {
+            "type": "boolean",
+            "title": "Builtin",
+            "default": false
+          },
+          "ready": {
+            "type": "boolean",
+            "title": "Ready",
+            "default": false
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "dataset_version": {
+            "type": "string",
+            "title": "Dataset Version",
+            "default": ""
+          },
+          "document_count": {
+            "type": "integer",
+            "title": "Document Count",
+            "default": 0
+          },
+          "chapter_count": {
+            "type": "integer",
+            "title": "Chapter Count",
+            "default": 0
+          },
+          "chunk_count": {
+            "type": "integer",
+            "title": "Chunk Count",
+            "default": 0
+          },
+          "retrieval_modes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Retrieval Modes"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "kb_id",
+          "name"
+        ],
+        "title": "KnowledgeBaseInfo",
+        "description": "知识库概览信息。"
+      },
+      "KnowledgeBaseListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeBaseInfo"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "KnowledgeBaseListResponse",
+        "description": "所有可用知识库列表响应。"
       },
       "QAResponse": {
         "properties": {
@@ -1849,9 +3682,32 @@
           "scope": {
             "$ref": "#/components/schemas/Scope"
           },
+          "kb_id": {
+            "type": "string",
+            "title": "Kb Id",
+            "default": "hello_agents"
+          },
           "answer": {
             "type": "string",
             "title": "Answer"
+          },
+          "rewritten_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rewritten Question"
+          },
+          "follow_up_questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Follow Up Questions"
           },
           "citations": {
             "items": {
@@ -1917,7 +3773,8 @@
           "session_id",
           "history_id"
         ],
-        "title": "QAResponse"
+        "title": "QAResponse",
+        "description": "问答接口的响应结构。"
       },
       "QuestionRequest": {
         "properties": {
@@ -1927,11 +3784,23 @@
             "minLength": 1,
             "title": "Question"
           },
+          "kb_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kb Id"
+          },
           "chapter_id": {
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "^ch\\d{2}$"
+                "pattern": "^ch\\d{2,3}$"
               },
               {
                 "type": "null"
@@ -1943,7 +3812,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "^ch\\d{2}-s\\d{3}$"
+                "pattern": "^ch\\d{2,3}-s\\d{3}$"
               },
               {
                 "type": "null"
@@ -1962,7 +3831,7 @@
               }
             ],
             "title": "Session Id",
-            "description": "省略时创建会话；客户端须保存响应中的 UUID"
+            "description": "省略时创建新会话；前端需保存返回的 UUID"
           },
           "retrieval_mode": {
             "anyOf": [
@@ -1979,7 +3848,7 @@
               }
             ],
             "title": "Retrieval Mode",
-            "description": "省略时使用服务端默认模式，默认 hybrid"
+            "description": "省略时使用服务端默认检索方式"
           },
           "top_k": {
             "type": "integer",
@@ -2000,7 +3869,69 @@
           "question"
         ],
         "title": "QuestionRequest",
-        "description": "问答输入：chapter_id为空表示在预置课程全文范围内检索。"
+        "description": "问答请求参数：不传章节编号时表示在整个知识库范围内检索。"
+      },
+      "QuizFromQARequest": {
+        "properties": {
+          "kb_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kb Id"
+          },
+          "chunk_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Chunk Ids"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "default": 3
+          },
+          "question_types": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "short_answer",
+                "multiple_choice"
+              ]
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Question Types"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ],
+            "title": "Difficulty",
+            "default": "medium"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "chunk_ids"
+        ],
+        "title": "QuizFromQARequest",
+        "description": "根据问答中检索到的原文切片直接出题巩固。"
       },
       "QuizOption": {
         "properties": {
@@ -2018,7 +3949,8 @@
           "key",
           "text"
         ],
-        "title": "QuizOption"
+        "title": "QuizOption",
+        "description": "单选题的单个选项。"
       },
       "QuizQuestion": {
         "properties": {
@@ -2071,20 +4003,33 @@
           "explanation",
           "citation_ids"
         ],
-        "title": "QuizQuestion"
+        "title": "QuizQuestion",
+        "description": "单道练习题的数据结构。"
       },
       "QuizRequest": {
         "properties": {
+          "kb_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{1,47}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kb Id"
+          },
           "chapter_id": {
             "type": "string",
-            "pattern": "^ch\\d{2}$",
+            "pattern": "^ch\\d{2,3}$",
             "title": "Chapter Id"
           },
           "section_id": {
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "^ch\\d{2}-s\\d{3}$"
+                "pattern": "^ch\\d{2,3}-s\\d{3}$"
               },
               {
                 "type": "null"
@@ -2128,7 +4073,8 @@
         "required": [
           "chapter_id"
         ],
-        "title": "QuizRequest"
+        "title": "QuizRequest",
+        "description": "按章节生成练习题的请求参数。"
       },
       "QuizResponse": {
         "properties": {
@@ -2147,6 +4093,11 @@
           },
           "scope": {
             "$ref": "#/components/schemas/Scope"
+          },
+          "kb_id": {
+            "type": "string",
+            "title": "Kb Id",
+            "default": "hello_agents"
           },
           "questions": {
             "items": {
@@ -2181,7 +4132,8 @@
           "citations",
           "generation_mode"
         ],
-        "title": "QuizResponse"
+        "title": "QuizResponse",
+        "description": "练习生成接口的响应结构。"
       },
       "Scope": {
         "properties": {
@@ -2209,7 +4161,8 @@
           }
         },
         "type": "object",
-        "title": "Scope"
+        "title": "Scope",
+        "description": "本次请求限定的章节与小节范围。"
       },
       "SectionInfo": {
         "properties": {
@@ -2233,7 +4186,8 @@
           "title",
           "page_start"
         ],
-        "title": "SectionInfo"
+        "title": "SectionInfo",
+        "description": "小节目录信息。"
       },
       "SummaryResponse": {
         "properties": {
@@ -2252,6 +4206,11 @@
           },
           "scope": {
             "$ref": "#/components/schemas/Scope"
+          },
+          "kb_id": {
+            "type": "string",
+            "title": "Kb Id",
+            "default": "hello_agents"
           },
           "summary": {
             "type": "string",
@@ -2297,13 +4256,17 @@
           "coverage",
           "generation_mode"
         ],
-        "title": "SummaryResponse"
+        "title": "SummaryResponse",
+        "description": "章节总结接口的响应结构。"
       }
     }
   },
   "tags": [
     {
       "name": "状态"
+    },
+    {
+      "name": "知识库管理"
     },
     {
       "name": "课程与来源"

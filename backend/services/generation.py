@@ -33,6 +33,11 @@ class _StrictModel(BaseModel):
 class _Answer(_StrictModel):
     answer: str = Field(min_length=1, max_length=20_000)
     insufficient_evidence: bool
+    follow_up_questions: list[str] = Field(default_factory=list, max_length=5)
+
+
+class _Rewrite(_StrictModel):
+    rewritten_question: str = Field(min_length=1, max_length=2000)
 
 
 def normalized_text(text: str) -> str:
@@ -106,50 +111,163 @@ class GenerationService:
     def mode(self) -> str:
         return self.settings.generation_mode
 
-    def answer(self, question: str, citations: list[dict]) -> dict:
+    def rewrite_query(self, question: str, history: list[dict]) -> str:
+        """结合近期对话把追问里的指代词（如“它”“这个方法”）补全成完整检索问句。"""
+        if self.mode != 'llm' or not history:
+            return question
+
+        recent_dialogue_turns: list[dict] = []
+        for turn_item in history[-4:]:
+            past_question = turn_item.get('question')
+            if not past_question:
+                continue
+            recent_dialogue_turns.append({
+                'question': past_question,
+                'answer_summary': normalized_text(turn_item.get('answer', ''))[:280],
+            })
+
+        if not recent_dialogue_turns:
+            return question
+
+        try:
+            data = self.complete_json(
+                'rewrite',
+                {'question': question, 'recent_history': recent_dialogue_turns},
+                '返回 {"rewritten_question": "补全主语与指代后的独立中文检索问句"}。'
+                '若当前问题存在“它/这个/上述/区别/缺点/怎么用”等指代或省略主语，结合 recent_history 补全核心实体与主题；'
+                '若当前问题已足够完整或开启了全新话题，则尽量保持原问题不变。不要编造未在历史中出现的新概念。',
+            )
+            parsed = _Rewrite.model_validate(data)
+            rewritten_text = parsed.rewritten_question.strip()
+            if rewritten_text:
+                return rewritten_text
+            return question
+        except (AppError, ValidationError):
+            # 改写失败时不中断问答，直接退回用户原始问题继续检索。
+            return question
+
+    def answer(
+        self,
+        question: str,
+        citations: list[dict],
+        *,
+        history: list[dict] | None = None,
+        expanded_contexts: dict[str, str] | None = None,
+    ) -> dict:
+        """根据检索到的证据生成回答；大模型模式下支持结合多轮历史做结构化教学讲解。"""
         evidence_map(citations)
-        usable = [item for item in citations if item['text'].strip()]
-        if not usable:
+        valid_citations: list[dict] = []
+        for citation_item in citations:
+            if citation_item['text'].strip():
+                valid_citations.append(citation_item)
+
+        if not valid_citations:
             return self._insufficient()
+
         if self.mode == 'extractive':
-            terms = _query_terms(question)
-            ranked = sorted(usable, key=lambda c: sum(t in c['text'].lower() for t in terms), reverse=True)
-            relevant = [item for item in ranked if any(term in item['text'].lower() for term in terms)]
-            if not relevant:
+            query_terms = _query_terms(question)
+            scored_citations = sorted(
+                valid_citations,
+                key=lambda c: sum(term in c['text'].lower() for term in query_terms),
+                reverse=True,
+            )
+            matched_citations: list[dict] = []
+            for citation_item in scored_citations:
+                lower_text = citation_item['text'].lower()
+                if any(term in lower_text for term in query_terms):
+                    matched_citations.append(citation_item)
+
+            if not matched_citations:
                 return self._insufficient()
-            lines = ['原文摘录（extractive）：以下内容直接取自教材相关片段，未调用大模型作推断。']
-            for item in relevant[:5]:
-                excerpt = representative_excerpt(item['text'], question)
-                lines.append(f"- {excerpt} [{item['citation_id']}]")
-            return {'answer': '\n\n'.join(lines), 'generation_mode': 'extractive', 'insufficient_evidence': False}
+
+            output_lines = ['原文摘录（extractive）：以下内容直接取自教材相关片段，未调用大模型作推断。']
+            for citation_item in matched_citations[:5]:
+                excerpt = representative_excerpt(citation_item['text'], question, limit=480)
+                output_lines.append(f"- {excerpt} [{citation_item['citation_id']}]")
+            return {
+                'answer': '\n\n'.join(output_lines),
+                'generation_mode': 'extractive',
+                'insufficient_evidence': False,
+                'follow_up_questions': [],
+            }
+
+        request_payload: dict[str, Any] = {
+            'question': question,
+            'evidence': self.context(valid_citations, expanded_contexts=expanded_contexts),
+        }
+        if history:
+            recent_turns: list[dict] = []
+            for turn_item in history[-4:]:
+                if turn_item.get('question'):
+                    recent_turns.append({
+                        'question': turn_item.get('question', ''),
+                        'answer_summary': normalized_text(turn_item.get('answer', ''))[:400],
+                    })
+            if recent_turns:
+                request_payload['conversation_history'] = recent_turns
+
         data = self.complete_json(
             'answer',
-            {'question': question, 'evidence': self.context(usable)},
-            '返回 {"answer": "带 [N] 引用的中文回答", "insufficient_evidence": false}。'
-            '若原文不足则 insufficient_evidence=true，answer 简述证据不足。',
+            request_payload,
+            '返回 {"answer": "带 [N] 引用的结构化中文教学回答", "insufficient_evidence": false, '
+            '"follow_up_questions": ["基于当前资料的延伸追问1", "延伸追问2"]}。'
+            '请作为耐心的课程学习助教，结合 evidence 与 conversation_history（如有）作答，'
+            '避免一句带过：优先按「### 核心结论」「### 详细解析」「### 示例与细节（若原文涉及）」「### 常见误区或关联提示」组织分段内容；'
+            '每条来自资料的事实均须标出 [1]、[2] 等现有 citation_id，conversation_history 仅用于保持多轮连贯性，不能替代本轮证据。'
+            '若原文不足以回答核心问题则 insufficient_evidence=true，answer 简述证据不足。',
         )
         try:
-            result = _Answer.model_validate(data)
+            parsed_answer = _Answer.model_validate(data)
         except ValidationError:
             raise AppError(502, 'invalid_model_output', '模型回答格式校验失败，请重试。') from None
-        if result.insufficient_evidence:
+
+        if parsed_answer.insufficient_evidence:
             return self._insufficient()
-        validate_cited_text(result.answer, usable)
-        return {'answer': result.answer.strip(), 'generation_mode': 'llm', 'insufficient_evidence': False}
+
+        validate_cited_text(parsed_answer.answer, valid_citations)
+        follow_up_list: list[str] = []
+        for follow_up in parsed_answer.follow_up_questions:
+            cleaned_follow_up = follow_up.strip()
+            if cleaned_follow_up:
+                follow_up_list.append(cleaned_follow_up)
+            if len(follow_up_list) >= 3:
+                break
+
+        return {
+            'answer': parsed_answer.answer.strip(),
+            'generation_mode': 'llm',
+            'insufficient_evidence': False,
+            'follow_up_questions': follow_up_list,
+        }
 
     def _insufficient(self) -> dict:
-        return {'answer': INSUFFICIENT_ANSWER, 'generation_mode': self.mode, 'insufficient_evidence': True}
+        return {
+            'answer': INSUFFICIENT_ANSWER,
+            'generation_mode': self.mode,
+            'insufficient_evidence': True,
+            'follow_up_questions': [],
+        }
 
     @staticmethod
-    def context(citations: list[dict]) -> list[dict]:
-        return [{
-            'citation_id': item['citation_id'],
-            'chapter_title': item.get('chapter_title', ''),
-            'section_title': item.get('section_title'),
-            'page_start': item.get('page_start'),
-            'page_end': item.get('page_end'),
-            'text': item['text'],
-        } for item in citations]
+    def context(citations: list[dict], *, expanded_contexts: dict[str, str] | None = None) -> list[dict]:
+        """整理传给大模型的参考证据列表，并在有相邻段落时附带上下文背景。"""
+        evidence_list: list[dict] = []
+        for citation_item in citations:
+            evidence_entry = {
+                'citation_id': citation_item['citation_id'],
+                'chapter_title': citation_item.get('chapter_title', ''),
+                'section_title': citation_item.get('section_title'),
+                'page_start': citation_item.get('page_start'),
+                'page_end': citation_item.get('page_end'),
+                'text': citation_item['text'],
+            }
+            if expanded_contexts:
+                chunk_id = citation_item.get('chunk_id', '')
+                neighbor_text = expanded_contexts.get(chunk_id)
+                if neighbor_text:
+                    evidence_entry['surrounding_context'] = neighbor_text
+            evidence_list.append(evidence_entry)
+        return evidence_list
 
     def complete_json(self, task: str, payload: dict, output_contract: str) -> dict[str, Any]:
         """仅执行一次受限的上游调用，不自动重试，也不静默降级。"""

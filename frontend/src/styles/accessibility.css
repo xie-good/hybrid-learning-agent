@@ -31,17 +31,18 @@
 }
 .coverage-stats > div {
   padding: 10px 13px;
-  background: #eef3e8;
-  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 .coverage-stats dt {
-  font-size: 10px;
-  color: #8b9c7f;
+  font-size: 11px;
+  color: #64748b;
 }
 .coverage-stats dd {
   margin: 4px 0 0;
   font-size: 18px;
-  color: #58794c;
+  color: #1d4ed8;
 }
 @media (max-width: 760px) {
   .sidebar {

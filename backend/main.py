@@ -17,6 +17,7 @@ from backend.errors import AppError, validation_error_message
 from backend.services.corpus import CorpusRepository
 from backend.services.retrieval import RetrievalService
 from backend.services.generation import GenerationService
+from backend.services.knowledge_base import KnowledgeBaseManager
 from backend.services.learning import LearningService
 from backend.storage.history import HistoryStore
 
@@ -39,6 +40,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.settings = config
         app.state.corpus = CorpusRepository(config)
         app.state.retrieval = RetrievalService(app.state.corpus, config)
+        app.state.kb_manager = KnowledgeBaseManager(config, app.state.corpus, app.state.retrieval)
         app.state.generation = GenerationService(config)
         app.state.learning = LearningService(app.state.corpus, app.state.generation)
         try:
@@ -50,13 +52,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=APP_NAME, version='1.0.0', lifespan=lifespan,
-        description='预置课程学习 API：目录、来源、问答、总结、练习和会话历史。默认混合检索 + 原文摘录；可配置外部模型。',
-        openapi_tags=[{'name': name} for name in ('状态', '课程与来源', '问答', '学习辅助', '会话历史')],
+        description='基于混合检索的学习助手 API：支持自定义文档上传、BM25 与向量混合检索、多轮问答、章节总结与练习自测。',
+        openapi_tags=[{'name': name} for name in ('状态', '知识库管理', '课程与来源', '问答', '学习辅助', '会话历史')],
     )
     app.state.settings = config
     app.include_router(router)
     app.add_middleware(CORSMiddleware, allow_origins=list(config.cors_origins),
-                       allow_methods=['GET', 'POST', 'DELETE', 'OPTIONS'],
+                       allow_methods=['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
                        allow_headers=['Content-Type', 'X-Request-ID'],
                        expose_headers=['X-Request-ID'])
 

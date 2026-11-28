@@ -339,13 +339,44 @@ class RetrievalTests(CorpusFixtureTest):
         chunks = [{'chunk_id': str(i), 'text': text} for i, text in enumerate(
             ('alpha', 'beta', 'gamma', 'delta', 'unrelated', 'different'))]
         service._bm25 = BM25Index(chunks)
-        ranked = [(chunk['chunk_id'], 0.99) for chunk in chunks]
+        # 关键词分散且向量相似度低于阈值时，应当拒答。
+        ranked = [(chunk['chunk_id'], 0.30) for chunk in chunks]
         for mode in ('hybrid', 'vector'):
             with self.subTest(mode=mode):
                 gate = service._evidence_gate('alpha beta gamma delta', ranked, mode, 5)
                 self.assertFalse(gate['passed'])
+                self.assertEqual(gate['passed_by'], 'none')
                 self.assertEqual(gate['coverage'], 1.0)
                 self.assertEqual(gate['best_chunk_coverage'], 0.25)
+
+    def test_dense_gate_accepts_high_vector_score_without_keyword_overlap(self):
+        """同义提问即使字面不重合，只要向量相似度达标也应放行。"""
+        service = RetrievalService(self.repo, self.settings)
+        chunks = [{'chunk_id': 'c1', 'text': '智能体能够感知环境并自主决策'}]
+        service._bm25 = BM25Index(chunks)
+        gate_vec = service._evidence_gate('AI助手如何自动做事', [('c1', 0.72)], 'vector', 5)
+        self.assertTrue(gate_vec['passed'])
+        self.assertEqual(gate_vec['passed_by'], 'vector')
+        self.assertEqual(gate_vec['evidence_chunk_id'], 'c1')
+
+        gate_hyb = service._evidence_gate(
+            'AI助手如何自动做事', [('c1', 0.016)], 'hybrid', 5, vec_score_map={'c1': 0.72}
+        )
+        self.assertTrue(gate_hyb['passed'])
+        self.assertEqual(gate_hyb['passed_by'], 'vector')
+
+    def test_overview_question_returns_representative_chunks(self):
+        """问当前资料的整体框架/主要内容时应均匀抽样放行，课程外问题仍拒答。"""
+        service = RetrievalService(self.repo, self.settings)
+        res_ok = service.search('这份资料的核心概念和整体框架是什么？', mode='bm25', top_k=3, debug=True)
+        self.assertFalse(res_ok['insufficient_evidence'])
+        self.assertGreater(len(res_ok['citations']), 0)
+        self.assertEqual(res_ok['citations'][0]['hit_type'], 'overview')
+        self.assertEqual(res_ok['debug']['evidence_gate']['passed_by'], 'overview')
+
+        res_bad = service.search('《红楼梦》的主要内容和人物关系是什么？', mode='bm25', top_k=3, debug=True)
+        self.assertTrue(res_bad['insufficient_evidence'])
+        self.assertEqual(res_bad['citations'], [])
 
     def test_dense_gate_accepts_cohesive_evidence_below_lexical_best(self):
         service = RetrievalService(self.repo, self.settings)
@@ -588,11 +619,16 @@ class IndexTests(EmbeddingFixtureTest):
     def dense_handler(self, request):
         payload = json.loads(request.content)
         def vector(text):
-            if 'memory' in text.lower():
-                return [0, 1]
+            low = text.lower()
+            # 课程外无关问题给单独维度，使其与教材片段仅有极低正相似度。
+            if ('zzzxqv' in low or 'the what how' in low
+                    or 'teleportation' in low or 'university' in low):
+                return [0.1, 0.1, 0.1, 0.98]
+            if 'memory' in low:
+                return [0, 1, 0, 0]
             if 'BM25' in text or 'Retrieval' in text:
-                return [1, 0]
-            return [1, 1]
+                return [1, 0, 0, 0]
+            return [0.2, 0.2, 0.96, 0]
         return httpx.Response(200, json={'data': [
             {'index': index, 'embedding': vector(text)}
             for index, text in reversed(list(enumerate(payload['input'])))]})
@@ -644,7 +680,7 @@ class IndexTests(EmbeddingFixtureTest):
                     self.assertEqual(result['citations'], [])
                     gate = result['debug']['evidence_gate']
                     self.assertFalse(gate['passed'])
-                    self.assertEqual(gate['gate_version'], 'rank-bm25-returned-evidence-v1')
+                    self.assertEqual(gate['gate_version'], 'hybrid-vector-bm25-gate-v2')
 
     def test_dense_modes_pass_supported_questions_using_lexical_not_fused_scores(self):
         self.use_transport(self.dense_handler)

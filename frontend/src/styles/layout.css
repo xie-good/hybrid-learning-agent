@@ -1,12 +1,11 @@
-/* 公共布局：侧栏、顶栏、主体留白及页面标题，对应根组件与布局组件。 */
-/* 桌面侧栏固定在窗口左侧；.app-shell 的左外边距需要与它的宽度配套。 */
+/* 公共布局：精简侧栏导航、顶栏、工作区主舞台，风格清晰克制。 */
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
-  width: 234px;
-  background: #fff;
+  width: 224px;
+  background: #ffffff;
   border-right: 1px solid var(--border);
-  padding: 32px 19px 0;
+  padding: 20px 14px 16px;
   display: flex;
   flex-direction: column;
   z-index: 30;
@@ -14,155 +13,162 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 0 10px;
-  font-size: 25px;
-  font-weight: 750;
-  letter-spacing: 3px;
-  line-height: 1.15;
+  gap: 10px;
+  padding: 4px 8px 14px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #0f172a;
 }
 .brand-mark {
-  width: 42px;
-  height: 43px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
-  background: var(--dark);
-  color: #e6efcf;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
 }
 .brand-en {
   display: block;
-  font-size: 13px;
-  letter-spacing: 1.25px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
   font-weight: 500;
-  color: #899991;
-  margin-top: 8px;
+  color: #64748b;
+  margin-top: 2px;
 }
 .workspace-label {
-  padding: 40px 14px 15px;
-  font-size: 13px;
-  color: #9ba7a1;
-  letter-spacing: 1px;
-}
-.workspace-label span {
-  float: right;
-  font-size: 13px;
-  letter-spacing: 1px;
-  line-height: 18px;
+  padding: 10px 10px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
 }
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 13px;
-  padding: 13px 16px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #7c8984;
-  transition: background 0.15s;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  transition: background 0.15s, color 0.15s;
 }
 .nav-item:hover {
-  background: #f5f8f6;
-  color: #21675b;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 .nav-item.active {
-  color: #205f52;
-  background: #eaf3ee;
-  font-weight: 650;
+  color: #1d4ed8;
+  background: #eff6ff;
+  font-weight: 600;
 }
 .nav-dot {
-  width: 5px;
-  height: 5px;
-  background: #287766;
+  width: 6px;
+  height: 6px;
+  background: #2563eb;
   border-radius: 50%;
   margin-left: auto;
 }
-.sidebar-course {
-  margin: 31px 10px 0;
-  padding-top: 23px;
+.nav-group {
+  margin-top: 8px;
   border-top: 1px solid var(--border);
+  padding-top: 10px;
 }
-.tiny-label {
-  font-size: 13px;
-  color: #8f9f96;
-  letter-spacing: 1.2px;
-}
-.sidebar-course-title {
+.nav-group > summary {
+  list-style: none;
   display: flex;
-  gap: 11px;
   align-items: center;
-  font-size: 14px;
-  font-weight: 650;
-  margin-top: 16px;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
 }
-.mini-book {
-  height: 38px;
-  width: 32px;
-  border-radius: 5px;
-  background: #eaf0e7;
-  display: grid;
-  place-items: center;
-  color: #718a64;
+.nav-group > summary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
 }
-.sidebar-course-title small {
-  display: block;
-  font-size: 12px;
-  color: #94a099;
-  font-weight: 400;
+.nav-group > summary::-webkit-details-marker {
+  display: none;
+}
+.nav-group-chevron {
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+.nav-group[open] .nav-group-chevron {
+  transform: rotate(90deg);
+}
+.nav-group-items {
+  padding-left: 8px;
   margin-top: 4px;
 }
-.course-version {
-  display: block;
+.tiny-label {
   font-size: 12px;
-  color: #a0aaa5;
-  margin: 13px 0 0 43px;
+  color: #64748b;
 }
 .sidebar-bottom {
   margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.study-note {
-  color: #74917f;
-  padding: 36px 15px 27px;
+.sidebar-kb-box {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
 }
-.study-note p {
-  color: #8b9b92;
-  font-size: 14px;
-  line-height: 1.9;
-  margin-top: 10px;
+.sidebar-kb-label {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+.sidebar-kb-select {
+  padding: 6px 8px;
+  font-size: 13px;
+  border-radius: 8px;
+  background: #fff;
 }
 .session-user {
   display: flex;
   align-items: center;
   gap: 10px;
-  border-top: 1px solid var(--border);
-  padding: 19px 8px;
-  font-size: 14px;
+  padding: 6px 6px 2px;
+  font-size: 13px;
   font-weight: 600;
+  color: #334155;
 }
 .avatar {
-  width: 35px;
-  height: 35px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
-  background: #eff0e8;
-  border: 1px solid #e0e4d7;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
   border-radius: 50%;
-  color: #7b8368;
+  color: #2563eb;
   font-size: 13px;
+  font-weight: 600;
   flex-shrink: 0;
 }
 .session-user small {
   display: block;
   font-size: 11px;
-  color: #a4ada8;
+  color: #94a3b8;
   font-weight: 400;
-  margin-top: 2px;
 }
 .online-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #6d9b7e;
+  background: #10b981;
   display: inline-block;
 }
 .session-user > .online-dot {
@@ -170,112 +176,84 @@
 }
 /* 主体为侧栏让出空间；小屏幕断点会取消这个外边距，改成抽屉导航。 */
 .app-shell {
-  margin-left: 234px;
+  margin-left: 224px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-/* 所有页面共用的面包屑、连接状态与页标题区域。 */
 .topbar {
-  height: 73px;
-  background: #ffffffd9;
+  height: 58px;
+  background: rgba(255, 255, 255, 0.88);
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 15px;
-  font-size: 13px;
-  color: #9ca69f;
+  gap: 10px;
+  color: #64748b;
+  font-size: 14px;
 }
 .breadcrumb strong {
-  font-weight: 500;
-  color: #55675e;
+  color: #0f172a;
+  font-weight: 600;
 }
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 23px;
+  gap: 12px;
+}
+.topbar-kb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1d4ed8;
 }
 .service-status {
-  font-size: 12px;
-  color: #668572;
-  display: flex;
-  gap: 7px;
+  display: inline-flex;
   align-items: center;
+  gap: 7px;
+  color: #059669;
+  font-size: 12px;
+  font-weight: 500;
 }
 .service-status i {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #71a98a;
-  box-shadow: 0 0 0 4px #eff7f1;
+  background: #10b981;
 }
 .service-status.offline {
-  color: #a28b62;
+  color: #dc2626;
 }
 .service-status.offline i {
-  background: #ba965b;
-  box-shadow: 0 0 0 4px #f9f4e9;
-}
-.topbar-divider {
-  height: 19px;
-  width: 1px;
-  background: #e6ebe7;
-}
-.avatar-small {
-  width: 29px;
-  height: 29px;
-  font-size: 12px;
+  background: #ef4444;
 }
 .main-content {
-  max-width: 1640px;
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 35px 40px 0;
-  outline: none;
+  padding: 20px 28px 28px;
+}
+.main-content.wide-stage {
+  max-width: 1520px;
+  padding: 14px 20px 20px;
 }
 .main-content:focus-visible {
   outline: 3px solid #69ad9e;
   outline-offset: -3px;
-}
-.page-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 27px;
-}
-.eyebrow {
-  font-size: 13px;
-  letter-spacing: 1.9px;
-  color: #8e9f95;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-h1 {
-  font-size: 31px;
-  font-weight: 650;
-  letter-spacing: 1px;
-  line-height: 1.5;
-}
-.heading-dot {
-  color: #87a78a;
-  margin-left: 5px;
-}
-.page-heading p {
-  color: #8d9992;
-  font-size: 14px;
-  margin-top: 6px;
-}
-.heading-badge {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  border: 1px solid #e1e7df;
-  border-radius: 6px;
-  padding: 7px 11px;
-  background: #fcfdfb;
-  color: #83917c;
 }

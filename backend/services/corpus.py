@@ -44,6 +44,7 @@ class CorpusRepository:
         self._report: dict = {}
         self._chunks: list[dict] = []
         self._by_id: dict[str, dict] = {}
+        self._index_by_id: dict[str, int] = {}
         self._chapters: dict[str, dict] = {}
         self._sections: dict[str, tuple[str, dict]] = {}
         self._source_cache: tuple | None = None
@@ -72,6 +73,7 @@ class CorpusRepository:
                 section['chunk_count'] = section_counts[section['section_id']]
         # 完整校验结束后才发布快照，避免失败时暴露部分语料。
         self._report, self._chunks, self._by_id = report, chunks, chunks_by_id
+        self._index_by_id = {chunk['chunk_id']: idx for idx, chunk in enumerate(chunks)}
         self._chapters, self._sections = chapters, sections
 
     @staticmethod
@@ -277,6 +279,21 @@ class CorpusRepository:
         return deepcopy([chunk for chunk in self._chunks
                          if (chapter_id is None or chunk['chapter_id'] == chapter_id)
                          and (section_id is None or chunk['section_id'] == section_id)])
+
+    def neighbor_chunks(self, chunk_id: str, window: int = 1) -> list[dict]:
+        """获取同章节下相邻的前后文本块，用于补全长回答所需的上下文。"""
+        if not self._ready or chunk_id not in self._index_by_id or window <= 0:
+            return []
+        idx = self._index_by_id[chunk_id]
+        anchor = self._chunks[idx]
+        neighbors = []
+        for pos in range(max(0, idx - window), min(len(self._chunks), idx + window + 1)):
+            if pos == idx:
+                continue
+            candidate = self._chunks[pos]
+            if candidate['chapter_id'] == anchor['chapter_id']:
+                neighbors.append(deepcopy(candidate))
+        return neighbors
 
     def evidence(self, chunk_id: str) -> dict:
         self.require_ready()

@@ -16,6 +16,7 @@ import unicodedata
 from urllib.parse import urlsplit
 
 import httpx
+import numpy as np
 from rank_bm25 import BM25Okapi
 
 from backend.config import Settings, should_trust_env
@@ -27,9 +28,21 @@ INDEX_FORMAT_VERSION = 1
 BM25_ALGORITHM = 'rank_bm25.BM25Okapi'
 BM25_BACKEND_VERSION = version('rank-bm25')
 EVIDENCE_GATE_VERSION = 'rank-bm25-cohesive-evidence-v2'
-RANKED_EVIDENCE_GATE_VERSION = 'rank-bm25-returned-evidence-v1'
+RANKED_EVIDENCE_GATE_VERSION = 'hybrid-vector-bm25-gate-v2'
 EVIDENCE_MIN_CHUNK_COVERAGE = 0.5
 EVIDENCE_MIN_NORMALIZED_SCORE = 0.7
+# 向量/混合模式下，返回片段的最高余弦相似度达到该阈值即视为语义达标。
+VECTOR_MIN_SCORE = 0.54
+# 明确指向当前文档或章节的指代词，用来识别“总结当前资料”类提问。
+DOC_REF_WORDS = (
+    '这份资料', '这份文档', '这篇文档', '这篇文章', '当前资料', '当前文档',
+    '本资料', '本文档', '这本教材', '本教材', '这章', '本章', '这节', '本节',
+)
+# 常见的概览或总结意图词。
+OVERVIEW_WORDS = (
+    '整体框架', '核心概念', '主要内容', '核心内容', '讲了什么', '讲的是什么',
+    '总结', '概括', '梳理', '大纲', '导读', '脉络', '概述',
+)
 TOKEN_PATTERN = re.compile(r'[A-Za-z_][A-Za-z0-9_]*(?:[.:-][A-Za-z0-9_]+)*|\d+(?:\.\d+)*|[\u3400-\u9fff]+')
 CAMEL_PATTERN = re.compile(r'[A-Z]+(?=[A-Z][a-z]|\b)|[A-Z]?[a-z]+|[0-9]+')
 STOP_WORDS = frozenset({'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
@@ -68,6 +81,52 @@ def tokenize(text: str) -> list[str]:
 def evidence_query_tokens(question: str) -> set[str]:
     """移除问句套话，保留用于判断证据覆盖度的实义词元。"""
     return set(tokenize(QUESTION_PHRASES.sub(' ', question)))
+
+
+def is_overview_question(question: str) -> bool:
+    """判断问题是否是在问当前资料的整体框架、主要内容或总结。"""
+    text = question.strip()
+    has_overview = False
+    for word in OVERVIEW_WORDS:
+        if word in text:
+            has_overview = True
+            break
+    if not has_overview:
+        return False
+
+    # 情况 1：明确提到了“这份资料/这篇文档/本章”等当前资料指代词。
+    for ref in DOC_REF_WORDS:
+        if ref in text:
+            return True
+
+    # 情况 2：很短的直接总结指令，例如“总结一下”“主要内容是什么”。
+    if len(text) <= 14:
+        return True
+
+    return False
+
+
+def pick_overview_chunks(chunks: list[dict], count: int) -> list[tuple[str, float]]:
+    """从当前范围的片段里均匀挑选代表片段，用于回答整体概览类问题。"""
+    total = len(chunks)
+    if total == 0:
+        return []
+    if total <= count:
+        result = []
+        for item in chunks:
+            result.append((item['chunk_id'], 1.0))
+        return result
+
+    picked = []
+    used = set()
+    step = (total - 1) / (count - 1) if count > 1 else 0
+    for i in range(count):
+        idx = int(round(i * step))
+        chunk_id = chunks[idx]['chunk_id']
+        if chunk_id not in used:
+            used.add(chunk_id)
+            picked.append((chunk_id, 1.0))
+    return picked
 
 
 class BM25Index:
@@ -200,6 +259,8 @@ class RetrievalService:
         self.repo, self.settings = repo, settings
         self._bm25: BM25Index | None = None
         self._vectors: dict[str, list[float]] = {}
+        self._vec_matrix = None
+        self._vec_row_map: dict[str, int] = {}
         self._vector_dimension = 0
         self._vector_reason = '未找到与课程版本一致的向量索引，请运行离线索引构建。'
         if repo.status()['ready']:
@@ -245,6 +306,11 @@ class RetrievalService:
             vectors = [normalized_vector(vector, expected_dimension=dense['dimension'])
                        for vector in dense['vectors']]
             self._vectors = dict(zip(self._bm25.ids, vectors))
+            # 把所有向量转成 numpy 二维数组，检索时一次矩阵乘法就能算完相似度。
+            self._vec_matrix = np.array(vectors, dtype=np.float32)
+            self._vec_row_map = {}
+            for row_num, chunk_id in enumerate(self._bm25.ids):
+                self._vec_row_map[chunk_id] = row_num
             self._vector_dimension = dense['dimension']
         except (OSError, KeyError, ValueError, TypeError):
             self._vector_reason = '向量索引缺失、校验失败或与当前模型/语料版本不匹配，请重新构建索引。'
@@ -255,22 +321,84 @@ class RetrievalService:
         return ['bm25', 'vector', 'hybrid'] if self._vectors else ['bm25']
 
     def _evidence_gate(self, question: str, ranked: list[tuple[str, float]], mode: str,
-                       top_k: int) -> dict:
-        """BM25 保持原门控；稠密模式须在实际返回窗口内找到共同支撑片段。"""
+                       top_k: int, vec_score_map: dict[str, float] | None = None) -> dict:
+        """判断检索结果是否足够回答问题。
+
+        - bm25 模式：看关键词是否在单个片段里足够集中。
+        - vector / hybrid 模式：关键词达标，或向量相似度达标，满足其一即可放行。
+        """
         if mode == 'bm25':
             return self._bm25_evidence_gate(question, ranked, top_k)
-        # RRF/余弦分数不能除以 BM25 IDF，未返回的 BM25 侧证据也不能放行。
-        returned_ids = {chunk_id for chunk_id, _ in ranked[:top_k]}
-        lexical_ranked = self._bm25.rank(tokenize(question), returned_ids)
-        evidence_id = None
-        for candidate in lexical_ranked:
-            if self._bm25_evidence_gate(question, [candidate], 1)['passed']:
-                evidence_id = candidate[0]
-                # 只在门控内部选择见证，不改变引用的原始排序或分数。
-                lexical_ranked = [candidate] + [item for item in lexical_ranked if item[0] != evidence_id]
+
+        # 只检查实际会返回给用户的前 top_k 条结果。
+        top_items = ranked[:top_k]
+        top_ids = set()
+        for chunk_id, _ in top_items:
+            top_ids.add(chunk_id)
+
+        # 第一步：检查词法（BM25）是否达标。
+        word_ranked = self._bm25.rank(tokenize(question), top_ids)
+        hit_id = None
+        for item in word_ranked:
+            check = self._bm25_evidence_gate(question, [item], 1)
+            if check['passed']:
+                hit_id = item[0]
+                # 把达标的那条放到最前面，只用于统计门控指标，不改变外部排序。
+                other_items = []
+                for other in word_ranked:
+                    if other[0] != hit_id:
+                        other_items.append(other)
+                word_ranked = [item] + other_items
                 break
-        gate = self._bm25_evidence_gate(question, lexical_ranked, top_k)
-        gate.update(gate_version=RANKED_EVIDENCE_GATE_VERSION, evidence_chunk_id=evidence_id)
+
+        gate = self._bm25_evidence_gate(question, word_ranked, top_k)
+        bm25_ok = gate['passed']
+
+        # 第二步：检查向量相似度是否达标。
+        top_vec_score = 0.0
+        top_vec_id = None
+        for chunk_id, score in top_items:
+            if vec_score_map is not None:
+                v_score = vec_score_map.get(chunk_id, 0.0)
+            elif mode == 'vector':
+                v_score = score
+            else:
+                v_score = 0.0
+
+            if v_score > top_vec_score:
+                top_vec_score = v_score
+                top_vec_id = chunk_id
+
+        vec_ok = top_vec_score >= VECTOR_MIN_SCORE
+
+        # 第三步：合并两种判断，只要有一种达标就放行。
+        if bm25_ok and vec_ok:
+            passed_by = 'both'
+        elif bm25_ok:
+            passed_by = 'bm25'
+        elif vec_ok:
+            passed_by = 'vector'
+        else:
+            passed_by = 'none'
+
+        final_ok = bm25_ok or vec_ok
+        if final_ok:
+            reason = '检索结果在关键词或语义相似度上满足证据要求。'
+        else:
+            reason = '关键词覆盖不足且语义相似度偏低，尚不能形成可靠证据。'
+
+        gate['passed'] = final_ok
+        gate['reason'] = reason
+        gate['gate_version'] = RANKED_EVIDENCE_GATE_VERSION
+        if hit_id is not None:
+            gate['evidence_chunk_id'] = hit_id
+        elif vec_ok:
+            gate['evidence_chunk_id'] = top_vec_id
+        else:
+            gate['evidence_chunk_id'] = None
+        gate['top_vec_score'] = round(top_vec_score, 6)
+        gate['vector_min_score'] = VECTOR_MIN_SCORE
+        gate['passed_by'] = passed_by
         return gate
 
     def _bm25_evidence_gate(self, question: str, ranked: list[tuple[str, float]],
@@ -308,17 +436,38 @@ class RetrievalService:
             raise AppError(503, 'vector_index_not_ready', self._vector_reason)
         if not allowed_ids:
             return []
-        query_vector = fetch_embeddings(self.settings, [question])[0]
-        if len(query_vector) != self._vector_dimension:
+
+        # 请求向量服务，把用户问题转成向量。
+        query_vec = fetch_embeddings(self.settings, [question])[0]
+        if len(query_vec) != self._vector_dimension:
             raise AppError(502, 'embedding_dimension_mismatch', '查询向量维数与离线索引不一致，请重建索引。')
-        vector_ranked = []
+
+        # 收集当前检索范围内每个片段的编号和行号。
+        id_list = []
+        row_list = []
         for chunk_id in allowed_ids:
-            #向量×块
-            score = sum(query_value * chunk_value
-                        for query_value, chunk_value in zip(query_vector, self._vectors[chunk_id]))
+            if chunk_id in self._vec_row_map:
+                id_list.append(chunk_id)
+                row_list.append(self._vec_row_map[chunk_id])
+
+        if not id_list:
+            return []
+
+        # 用 numpy 一次算出所有候选片段的余弦相似度。
+        q_arr = np.array(query_vec, dtype=np.float32)
+        sub_matrix = self._vec_matrix[row_list]
+        raw_scores = sub_matrix @ q_arr
+
+        result_list = []
+        for i in range(len(id_list)):
+            score = float(raw_scores[i])
             if score > 0:
-                vector_ranked.append((chunk_id, min(score, 1.0)))
-        return sorted(vector_ranked, key=lambda pair: (-pair[1], pair[0]))
+                if score > 1.0:
+                    score = 1.0
+                result_list.append((id_list[i], score))
+
+        result_list.sort(key=lambda item: (-item[1], item[0]))
+        return result_list
 
     @staticmethod
     def _fuse_rankings(bm25_ranked: list[tuple[str, float]],
@@ -349,13 +498,52 @@ class RetrievalService:
             ranked = self._fuse_rankings(bm25_ranked, vector_ranked, top_k)
         else:
             ranked = bm25_ranked if mode == 'bm25' else vector_ranked
-        gate = self._evidence_gate(question, ranked, mode, top_k)
+        bm25_rank_map = {}
+        for pos, (chunk_id, _) in enumerate(bm25_ranked, start=1):
+            bm25_rank_map[chunk_id] = pos
+        vec_score_map = {}
+        for chunk_id, score in vector_ranked:
+            vec_score_map[chunk_id] = score
+        gate = self._evidence_gate(question, ranked, mode, top_k, vec_score_map=vec_score_map)
+        used_overview = False
         if not gate['passed']:
-            ranked = []
+            # 如果是问当前资料的整体框架/主要内容，均匀抽取代表片段放行，避免误拒答。
+            if is_overview_question(question) and scoped_chunks:
+                ranked = pick_overview_chunks(scoped_chunks, top_k)
+                used_overview = True
+                gate['passed'] = True
+                gate['passed_by'] = 'overview'
+                gate['reason'] = '识别为当前资料的概览总结提问，已均匀选取代表性原文片段。'
+                gate['evidence_chunk_id'] = ranked[0][0]
+            else:
+                ranked = []
         citations = []
         for number, (chunk_id, score) in enumerate(ranked[:top_k], 1):
             citation = self.repo.evidence(chunk_id)
-            citation.update(citation_id=number, score=round(score, 8))
+            b_rank = bm25_rank_map.get(chunk_id)
+            v_score = vec_score_map.get(chunk_id)
+            if used_overview:
+                hit_type = 'overview'
+                rrf_val = None
+            elif mode == 'hybrid':
+                if b_rank is not None and v_score is not None:
+                    hit_type = 'both'
+                elif b_rank is not None:
+                    hit_type = 'bm25'
+                else:
+                    hit_type = 'vector'
+                rrf_val = round(score, 6)
+            else:
+                hit_type = mode
+                rrf_val = None
+            citation.update(
+                citation_id=number,
+                score=round(score, 8),
+                hit_type=hit_type,
+                bm25_rank=b_rank,
+                vec_score=round(v_score, 4) if v_score is not None else None,
+                rrf_score=rrf_val,
+            )
             citations.append(citation)
         details = None
         if debug:
@@ -367,3 +555,27 @@ class RetrievalService:
                         'dataset_version': self.repo.dataset_version, 'evidence_gate': gate}
         return {'citations': citations, 'retrieval_mode': mode,
                 'insufficient_evidence': not bool(citations), 'debug': details}
+
+
+def build_expanded_contexts(repository, citations: list[dict], *, max_citations: int = 3) -> dict[str, str]:
+    """为最相关的几条引用补充前后相邻文本块，避免长回答因片段过短而信息不足。"""
+    if not hasattr(repository, 'neighbor_chunks') or not citations:
+        return {}
+
+    expanded_map: dict[str, str] = {}
+    for citation_item in citations[:max_citations]:
+        chunk_id = citation_item.get('chunk_id')
+        if not chunk_id:
+            continue
+
+        current_text = (citation_item.get('text') or '').strip()
+        neighbor_list = repository.neighbor_chunks(chunk_id, window=1)
+        neighbor_texts: list[str] = []
+        for neighbor_item in neighbor_list:
+            neighbor_text = (neighbor_item.get('text') or '').strip()
+            if neighbor_text and neighbor_text != current_text:
+                neighbor_texts.append(neighbor_text[:500])
+
+        if neighbor_texts:
+            expanded_map[chunk_id] = '\n...\n'.join(neighbor_texts)
+    return expanded_map

@@ -68,11 +68,12 @@ class LearningService:
         self.repo = repo
         self.generator = generator
 
-    def summary(self, chapter_id: str, section_id: str | None = None) -> dict:
-        chunks = self.repo.scoped_chunks(chapter_id, section_id)
+    def summary(self, chapter_id: str, section_id: str | None = None, *, repo=None) -> dict:
+        active_repo = repo or self.repo
+        chunks = active_repo.scoped_chunks(chapter_id, section_id)
         groups = self._groups(chunks)
         selected = [max(group, key=self._summary_priority) for group in groups.values()]
-        citations = self._citations(selected)
+        citations = self._citations(selected, repo=active_repo)
         section_ids = list(dict.fromkeys(
             chunk['section_id'] for chunk in selected if chunk.get('section_id')
         ))
@@ -132,7 +133,8 @@ class LearningService:
         return result
 
     def quiz(self, chapter_id: str, section_id: str | None = None, count: int = 5,
-             question_types: list[str] | None = None, difficulty: str = 'medium') -> dict:
+             question_types: list[str] | None = None, difficulty: str = 'medium', *, repo=None) -> dict:
+        active_repo = repo or self.repo
         question_types = question_types if question_types is not None else ['short_answer']
         if (type(count) is not int or not 1 <= count <= 20 or not question_types
                 or len(question_types) != len(set(question_types))
@@ -141,13 +143,56 @@ class LearningService:
             raise AppError(422, 'invalid_quiz_request', '题量、题型或难度标签无效。')
         if count < len(question_types):
             raise AppError(422, 'invalid_quiz_request', '题量应不少于所选题型数量。')
-        chunks = self.repo.scoped_chunks(chapter_id, section_id)
+        chunks = active_repo.scoped_chunks(chapter_id, section_id)
         if self.generator.mode == 'llm':
-            return self._llm_quiz(chunks, count, question_types, difficulty)
+            return self._llm_quiz(chunks, count, question_types, difficulty, repo=active_repo)
         chosen = self._select_quiz_material(chunks, count, question_types)
         selected = list({chunk['chunk_id']: chunk for chunk, _, _, _ in chosen}.values())
-        citations = self._citations(selected)
+        citations = self._citations(selected, repo=active_repo)
         questions = self._extractive_questions(chosen, citations, difficulty)
+        return {'questions': questions, 'citations': citations, 'generation_mode': 'extractive'}
+
+    def quiz_from_chunks(self, chunk_ids: list[str], *, count: int = 3,
+                         question_types: list[str] | None = None,
+                         difficulty: str = 'medium', repo=None) -> dict:
+        """基于问答命中的指定文本块生成随堂巩固练习，串联问与练的闭环。"""
+        active_repository = repo or self.repo
+        selected_types = question_types if question_types is not None else ['multiple_choice', 'short_answer']
+        if len(selected_types) > count:
+            selected_types = selected_types[:count]
+
+        if (
+            type(count) is not int
+            or not 1 <= count <= 10
+            or not selected_types
+            or len(selected_types) != len(set(selected_types))
+            or not set(selected_types) <= {'short_answer', 'multiple_choice'}
+            or difficulty not in {'easy', 'medium', 'hard'}
+        ):
+            raise AppError(422, 'invalid_quiz_request', '随堂练习参数无效。')
+
+        selected_chunks: list[dict] = []
+        seen_chunk_ids: set[str] = set()
+        for single_chunk_id in chunk_ids:
+            if single_chunk_id in seen_chunk_ids:
+                continue
+            seen_chunk_ids.add(single_chunk_id)
+            chunk_evidence = active_repository.evidence(single_chunk_id)
+            selected_chunks.append(chunk_evidence)
+
+        if not selected_chunks:
+            raise AppError(422, 'insufficient_learning_material', '没有可用于生成随堂练习的资料片段。')
+
+        if self.generator.mode == 'llm':
+            return self._llm_quiz(selected_chunks, count, selected_types, difficulty, repo=active_repository)
+
+        chosen_items = self._select_quiz_material(selected_chunks, count, selected_types)
+        unique_chunks: dict[str, dict] = {}
+        for chunk_item, _, _, _ in chosen_items:
+            unique_chunks[chunk_item['chunk_id']] = chunk_item
+
+        citations = self._citations(list(unique_chunks.values()), repo=active_repository)
+        questions = self._extractive_questions(chosen_items, citations, difficulty)
         return {'questions': questions, 'citations': citations, 'generation_mode': 'extractive'}
 
     def _select_quiz_material(self, chunks: list[dict], count: int, question_types: list[str]) -> list[tuple]:
@@ -211,7 +256,8 @@ class LearningService:
             })
         return questions
 
-    def _llm_quiz(self, chunks: list[dict], count: int, question_types: list[str], difficulty: str) -> dict:
+    def _llm_quiz(self, chunks: list[dict], count: int, question_types: list[str], difficulty: str, *, repo=None) -> dict:
+        active_repo = repo or self.repo
         groups = list(self._groups(chunks).values())
         limit = min(len(chunks), max(count, len(groups)))
         selected = []
@@ -220,7 +266,7 @@ class LearningService:
                 if offset < len(group):
                     selected.append(group[offset])
         selected = selected[:limit]
-        citations = self._citations(selected)
+        citations = self._citations(selected, repo=active_repo)
         expected_types = [question_types[index % len(question_types)] for index in range(count)]
         raw = self.generator.complete_json(
             'quiz', {'count': count, 'expected_types': expected_types, 'difficulty_label': difficulty,
@@ -296,8 +342,9 @@ class LearningService:
             raise AppError(422, 'insufficient_learning_material', '所选范围尚无可用的教材正文。')
         return groups
 
-    def _citations(self, chunks: list[dict]) -> list[dict]:
-        return [{**self.repo.evidence(chunk['chunk_id']), 'citation_id': index}
+    def _citations(self, chunks: list[dict], *, repo=None) -> list[dict]:
+        active_repo = repo or self.repo
+        return [{**active_repo.evidence(chunk['chunk_id']), 'citation_id': index}
                 for index, chunk in enumerate(chunks, start=1)]
 
     @staticmethod

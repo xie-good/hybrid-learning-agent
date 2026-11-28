@@ -144,7 +144,7 @@ class RetrievalEvaluationTests(unittest.TestCase):
         self.assertEqual(report['retrieval_mode'], 'hybrid')
         self.assertEqual(report['case_count'], 3)
         self.assertEqual(report['reproducibility']['evidence_gate_version'],
-                         'rank-bm25-returned-evidence-v1')
+                         'hybrid-vector-bm25-gate-v2')
         self.assertEqual(report['reproducibility']['evidence_min_chunk_coverage'], 0.5)
         self.assertEqual(report['reproducibility']['evidence_min_normalized_score'], 0.7)
 

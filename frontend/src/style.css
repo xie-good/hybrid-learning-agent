@@ -4,6 +4,7 @@
 @import "./styles/base.css";
 @import "./styles/layout.css";
 @import "./styles/views/overview.css";
+@import "./styles/views/knowledge.css";
 @import "./styles/footer.css";
 @import "./styles/components/learning.css";
 @import "./styles/views/quiz.css";
