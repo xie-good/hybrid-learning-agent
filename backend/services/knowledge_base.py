@@ -39,7 +39,6 @@ def _guess_media_type(filename: str) -> str:
         '.pdf': 'application/pdf',
         '.md': 'text/markdown; charset=utf-8',
         '.markdown': 'text/markdown; charset=utf-8',
-        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     }
     return media_type_map.get(extension, 'application/octet-stream')
 
@@ -417,7 +416,7 @@ class KnowledgeBaseManager:
         safe_filename = _clean_upload_filename(filename)
         file_extension = Path(safe_filename).suffix.casefold()
         if file_extension not in SUPPORTED_EXTENSIONS:
-            raise AppError(422, 'unsupported_file_type', f'暂不支持 {file_extension or "未知"} 格式，仅支持 PDF、Word (.docx)、Markdown (.md)。')
+            raise AppError(422, 'unsupported_file_type', f'暂不支持 {file_extension or "未知"} 格式，仅支持 PDF (.pdf) 与 Markdown (.md)。')
 
         file_hash = hashlib.sha256(raw).hexdigest()
         with self._lock:

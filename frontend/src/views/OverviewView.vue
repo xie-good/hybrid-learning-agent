@@ -46,7 +46,7 @@ const visibleChapters = computed(() =>
       </div>
       <h2>{{ courseInfo?.name || "课程学习资料" }}</h2>
       <p>
-        支持 PDF、Word 与 Markdown 文档切块，结合关键词与语义双路检索，实现原文伴读、章节总结与自测闭环。
+        支持 PDF（自动转 Markdown 精洗）与 Markdown 文档切块，结合关键词与语义双路检索，实现原文伴读、章节总结与自测闭环。
       </p>
       <div class="hero-actions">
         <a

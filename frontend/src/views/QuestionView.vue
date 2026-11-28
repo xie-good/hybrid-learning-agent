@@ -162,7 +162,7 @@ function changeZoom(step) {
 
 function cleanDocTitle(name) {
   if (!name) return "";
-  return name.replace(/\.(pdf|docx|md|markdown)$/i, "").trim();
+  return name.replace(/\.(pdf|md|markdown)$/i, "").trim();
 }
 
 // 根据当前文档和真实章节标题动态生成推荐提问，避免写死空泛问题导致无命中。
@@ -597,7 +597,7 @@ function generateInlineQuiz(turnItem) {
 
         <div v-else-if="!isLearningReady" class="panel empty-state">
           <h3>当前知识库尚未上传文档</h3>
-          <p>前往「知识库」上传 PDF、Word (.docx) 或 Markdown (.md) 后，即可开始混合检索问答。</p>
+          <p>前往「知识库」上传 PDF (.pdf) 或 Markdown (.md) 后，即可开始混合检索问答。</p>
           <a class="button primary" href="#knowledge" @click.exact.prevent="navigate('knowledge')">
             上传学习文档 <AppIcon name="arrow" :size="16" />
           </a>

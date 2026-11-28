@@ -1,35 +1,17 @@
 """多知识库文档上传、多轮指代补全问答与随堂巩固测试。"""
-import io
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 from uuid import uuid4
-import zipfile
 
 from fastapi.testclient import TestClient
 import httpx
 
 from backend.main import create_app
+from pipeline.ingest_doc import _convert_pdf_to_clean_markdown, _extract_markdown_blocks, parse_uploaded_document
 from tests.corpus_fixture import make_corpus
-
-
-def _make_docx_bytes(heading: str, body: str) -> bytes:
-    """在内存中构造最小可用的 DOCX 文件，用于测试 Word 文档解析。"""
-    xml = (
-        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-        '<w:body>'
-        f'<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>{heading}</w:t></w:r></w:p>'
-        f'<w:p><w:r><w:t>{body}</w:t></w:r></w:p>'
-        '</w:body></w:document>'
-    )
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, 'w') as docx_zip:
-        docx_zip.writestr('[Content_Types].xml', '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>')
-        docx_zip.writestr('word/document.xml', xml)
-    return buffer.getvalue()
 
 
 class MultiKBAndContinuityTests(unittest.TestCase):
@@ -49,7 +31,7 @@ class MultiKBAndContinuityTests(unittest.TestCase):
         self.app = create_app(self.settings)
         self.client = self.enterContext(TestClient(self.app))
 
-    def test_custom_kb_upload_markdown_docx_and_followup_quiz(self):
+    def test_custom_kb_upload_markdown_and_reject_docx(self):
         # 1. 查看预置知识库并新建自定义知识库。
         kbs = self.client.get('/api/kbs').json()['items']
         self.assertEqual(kbs[0]['kb_id'], 'hello_agents')
@@ -60,7 +42,7 @@ class MultiKBAndContinuityTests(unittest.TestCase):
         self.assertEqual(created.status_code, 201, created.text)
         kb_id = created.json()['kb_id']
 
-        # 2. 上传 Markdown 与 DOCX 两份学习资料。
+        # 2. 上传两份 Markdown 学习资料，并验证 .docx 格式会被 422 拦截。
         markdown_bytes = (
             '# 进程与线程\n'
             '进程是资源分配的基本单位，线程是调度的基本单位。上下文切换会保存寄存器和程序计数器。\n\n'
@@ -74,15 +56,22 @@ class MultiKBAndContinuityTests(unittest.TestCase):
         self.assertEqual(upload_md.status_code, 201, upload_md.text)
         doc_md_id = upload_md.json()['document']['doc_id']
 
-        docx_bytes = _make_docx_bytes(
-            '虚拟内存分页机制',
-            '分页管理通过页表将逻辑地址转换为物理地址，缺页中断发生时操作系统从磁盘调入页面。',
-        )
-        upload_docx = self.client.post(
+        markdown_bytes_2 = (
+            '# 虚拟内存分页机制\n'
+            '分页管理通过页表将逻辑地址转换为物理地址，缺页中断发生时操作系统从磁盘调入页面。\n'
+        ).encode('utf-8')
+        upload_md_2 = self.client.post(
             f'/api/kbs/{kb_id}/documents',
-            files={'file': ('memory.docx', docx_bytes, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')},
+            files={'file': ('memory.md', markdown_bytes_2, 'text/markdown')},
         )
-        self.assertEqual(upload_docx.status_code, 201, upload_docx.text)
+        self.assertEqual(upload_md_2.status_code, 201, upload_md_2.text)
+
+        reject_docx = self.client.post(
+            f'/api/kbs/{kb_id}/documents',
+            files={'file': ('legacy.docx', b'fake-docx-content', 'application/octet-stream')},
+        )
+        self.assertEqual(reject_docx.status_code, 422)
+        self.assertEqual(reject_docx.json()['error']['code'], 'unsupported_file_type')
 
         # 3. 验证重复文件拦截、原文件浏览与切片分页。
         duplicate_resp = self.client.post(
@@ -269,6 +258,63 @@ class MultiKBAndContinuityTests(unittest.TestCase):
             self.assertEqual(qa_resp.status_code, 200, qa_resp.text)
             self.assertFalse(qa_resp.json()['insufficient_evidence'])
             self.assertIn('页表', qa_resp.json()['citations'][0]['text'])
+
+    def test_pdf_to_markdown_cleaning_skips_toc_and_exercises(self):
+        """验证 PDF 转 Markdown 精洗能跳过封面目录、剔除跨页习题并保留真实物理页码。"""
+        pages = [
+            {'page': 1, 'text': '封面标题\n作者：测试团队'},
+            {'page': 2, 'text': '目录\n第1章 智能体基础 ...... 3\n1.1 核心定义 ...... 3\n1.2 工具调用 ...... 4'},
+            {
+                'page': 3,
+                'text': (
+                    '第1章 智能体基础\n'
+                    '1.1 核心定义\n'
+                    '智能体通过感知环境并采取行动实现目标。\n'
+                    '课后习题\n'
+                    '1. 请简述智能体的四个组成要素？'
+                ),
+            },
+            {
+                'page': 4,
+                'text': (
+                    '2. 尝试用 Python 实现一个简单循环。\n'
+                    '1.2 工具调用\n'
+                    '工具调用允许模型访问外部检索器和计算器。'
+                ),
+            },
+        ]
+        cleaned_md = _convert_pdf_to_clean_markdown(pages, outline_chapters=[])
+        self.assertNotIn('封面标题', cleaned_md)
+        self.assertNotIn('目录', cleaned_md)
+        self.assertNotIn('课后习题', cleaned_md)
+        self.assertNotIn('简单循环', cleaned_md)
+        self.assertIn('<!-- page:3 -->', cleaned_md)
+        self.assertIn('<!-- page:4 -->', cleaned_md)
+        self.assertIn('# 第1章 智能体基础', cleaned_md)
+        self.assertIn('## 1.2 工具调用', cleaned_md)
+
+        blocks = _extract_markdown_blocks(cleaned_md, has_page_anchors=True)
+        self.assertEqual(len(blocks), 2)
+        self.assertEqual(blocks[0][0], '1.1 核心定义')
+        self.assertEqual(blocks[0][2], 3)
+        self.assertEqual(blocks[1][0], '1.2 工具调用')
+        self.assertEqual(blocks[1][2], 4)
+
+        with patch('pipeline.ingest_doc._extract_pdf_pages', return_value=(pages, [])):
+            chapter, chunks = parse_uploaded_document(
+                doc_id='doc_pdf1',
+                filename='agent-book.pdf',
+                raw=b'%PDF-1.4 mock',
+                chapter_id='ch01',
+                kb_id='kb_test',
+            )
+        self.assertEqual(chapter['page_start'], 3)
+        self.assertEqual(chapter['page_end'], 4)
+        self.assertEqual(len(chunks), 2)
+        self.assertEqual(chunks[0]['page_start'], 3)
+        self.assertTrue(chunks[0]['source_url'].endswith('#page=3'))
+        self.assertEqual(chunks[1]['page_start'], 4)
+        self.assertTrue(chunks[1]['source_url'].endswith('#page=4'))
 
 
 if __name__ == '__main__':

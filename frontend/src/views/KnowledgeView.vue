@@ -187,7 +187,7 @@ function changeChunkPage(pageDelta) {
     <div class="kb-top-bar">
       <div class="kb-top-title">
         <h2>知识库管理</h2>
-        <p>{{ activeKb?.description || "仅支持 PDF、Word (.docx) 与 Markdown (.md) 结构化切块及混合检索。" }}</p>
+        <p>{{ activeKb?.description || "仅支持 PDF (.pdf) 与 Markdown (.md) 精洗切块及混合检索。" }}</p>
       </div>
       <div class="kb-top-actions">
         <select
@@ -304,13 +304,13 @@ function changeChunkPage(pageDelta) {
         type="file"
         class="sr-only"
         multiple
-        accept=".pdf,.docx,.md,.markdown"
+        accept=".pdf,.md,.markdown"
         :disabled="!!activeTask"
         @change="onFileInputChange"
       />
       <div class="upload-icon-circle"><AppIcon name="upload" :size="24" /></div>
       <h3>{{ documentList.length ? "继续追加学习文档" : "拖拽文件到此处，或点击上传第一份文档" }}</h3>
-      <p>仅支持 PDF、Word (.docx)、Markdown (.md) 格式；上传后自动切块并建立 BM25 + 向量混合索引。</p>
+      <p>仅支持 PDF (.pdf) 与 Markdown (.md) 格式；PDF 自动转为 Markdown 精洗（跳过目录、过滤练习题）并建立 BM25 + 向量混合索引。</p>
       <button
         type="button"
         class="button primary"
