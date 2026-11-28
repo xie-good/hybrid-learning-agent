@@ -4,11 +4,11 @@
 
 ## 1. 当前实现与运行模式
 
-- 共 **23 个 HTTP 操作（19 条路径）**，覆盖状态检查、多知识库与文档管理、PDF 按页纯白渲染、目录与原文来源、混合检索问答、章节总结、章节练习、随堂出题巩固及会话历史。
+- 共 **21 个 HTTP 操作（17 条路径）**，覆盖状态检查、多知识库与文档管理、PDF 按页纯白渲染、目录与原文来源、混合检索问答、章节总结及会话历史。
 - 默认 `hybrid` 混合检索：`rank-bm25==0.2.2`（`BM25Okapi`）+ `numpy` 向量余弦召回，经 RRF（`k=60`）融合；内置词法与向量双保险门控（`VECTOR_MIN_SCORE=0.54`），并对指向当前资料的概览/总结类提问自动均匀抽样放行（`hit_type="overview"`）。
 - `GENERATION_MODE` 支持 `extractive`（本地原文摘录）与 `llm`（Chat Completions 兼容大模型）；缺配置返回 `503`，超时返回 `504`，上游异常或引用校验失败返回 `502`。
-- 多知识库支持预置课程 `hello_agents`（第 1—12 章）以及用户自定义知识库；上传文档严格限制为 **PDF (`.pdf`)、Word (`.docx`)、Markdown (`.md`)**。
-- 问答历史按 `session_id`（UUID）持久化在 SQLite 中，前端存于标签页 `sessionStorage`；总结与练习不写入问答历史。
+- 多知识库支持预置课程 `hello_agents`（第 1—12 章）以及用户自定义知识库；上传文档严格限制为 **PDF (`.pdf`)、Markdown (`.md`)**，其中 PDF 自动转为 Markdown 精洗（跳过封面目录与习题），增删文档时增量复用已有切片与向量缓存。
+- 问答历史按 `session_id`（UUID）持久化在 SQLite 中，前端存于标签页 `sessionStorage`；总结不写入问答历史。
 
 ## 2. 公共约定
 
@@ -28,7 +28,7 @@
 
 常见状态码：`200` 成功、`201` 创建成功、`204` 删除成功无响应体、`404` 资源不存在、`409` 版本/重名冲突、`422` 参数或文件格式校验失败、`502` 上游模型错误、`503` 知识库/索引/配置未就绪、`504` 模型超时。
 
-## 3. 接口总表（23 个操作）
+## 3. 接口总表（21 个操作）
 
 | 分组 | 方法 | 路径 | 作用 |
 |---|---|---|---|
@@ -37,8 +37,8 @@
 | 知识库管理 | POST | `/api/kbs` | 新建自定义知识库（`name`、`description`） |
 | 知识库管理 | DELETE | `/api/kbs/{kb_id}` | 删除指定自定义知识库（预置不可删） |
 | 知识库管理 | GET | `/api/kbs/{kb_id}/documents` | 查看指定知识库内的文档列表与页数/切片数 |
-| 知识库管理 | POST | `/api/kbs/{kb_id}/documents` | 上传 `.pdf`/`.docx`/`.md` 文档并解析构建索引 |
-| 知识库管理 | DELETE | `/api/kbs/{kb_id}/documents/{doc_id}` | 移除文档并重建该知识库索引 |
+| 知识库管理 | POST | `/api/kbs/{kb_id}/documents` | 上传 `.pdf`/`.md` 文档并增量构建索引 |
+| 知识库管理 | DELETE | `/api/kbs/{kb_id}/documents/{doc_id}` | 移除文档并增量更新该知识库索引（0 次重算剩余向量） |
 | 知识库管理 | GET | `/api/kbs/{kb_id}/documents/{doc_id}/source` | 在线内联预览或下载原始文档 |
 | 知识库管理 | GET | `/api/kbs/{kb_id}/documents/{doc_id}/page/{page_num}` | 用 `pypdfium2` 把 PDF 指定页渲染为纯白底 PNG 图片 |
 | 知识库管理 | GET | `/api/kbs/{kb_id}/chunks` | 分页浏览知识库切分后的文本块（支持 `chapter_id`、`limit`、`offset`） |
@@ -49,8 +49,6 @@
 | 课程与来源 | GET | `/api/course/source` | 返回预置教材原 PDF（支持 Range） |
 | 问答 | POST | `/api/qa` | 多轮指代补全、混合检索证据、生成回答并写入历史 |
 | 学习辅助 | POST | `/api/summary` | 生成指定章/节的代表性总结、要点与覆盖统计 |
-| 学习辅助 | POST | `/api/quiz` | 按章/节、题量、题型和难度生成自测题 |
-| 学习辅助 | POST | `/api/quiz/from-qa` | 基于某次问答命中的原文切片生成随堂巩固练习 |
 | 会话历史 | GET | `/api/history` | 当前会话问答历史（倒序分页，支持 `kb_id` 过滤） |
 | 会话历史 | GET | `/api/history/{record_id}` | 查询当前会话单条历史详情 |
 | 会话历史 | DELETE | `/api/history/{record_id}` | 删除当前会话单条历史 |
@@ -94,10 +92,6 @@
 
 - `kb_id` 可选，默认预置课程 `hello_agents`。
 - 响应包含 `answer`、`citations`、`insufficient_evidence`、`retrieval_mode`、`generation_mode`、`rewritten_question`（多轮指代补全后的问题）、`follow_up_questions`（推荐追问列表）、`history_id`、`session_id`、`latency_ms`、`dataset_version`、`request_id`。
-
-### POST /api/quiz/from-qa（随堂出题巩固）
-
-请求体传入 `kb_id`、`question`、`answer`、`chunk_ids`（问答命中的文本块 ID 列表）与 `count`（默认 2 题），返回与 `/api/quiz` 一致的 `QuizResponse` 结构，供问答页内嵌 `InlineQuizCard` 即时作答。
 
 ### GET /api/kbs/{kb_id}/documents/{doc_id}/page/{page_num}
 

@@ -7,7 +7,7 @@ import { parse, compileScript, compileTemplate } from "@vue/compiler-sfc";
 import { compile } from "@vue/compiler-dom";
 import * as Vue from "vue";
 import { effectScope, ref, watch } from "vue";
-import { retrievalLabels } from "../src/lib/presentation.js";
+import { pages, retrievalLabels } from "../src/lib/presentation.js";
 
 const source = fileURLToPath(new URL("../src/", import.meta.url));
 const read = (name) => readFileSync(path.join(source, name), "utf8");
@@ -37,25 +37,24 @@ function renderElement(node, context) {
   return new Function("Vue", code)(Vue)(context, []);
 }
 
-test("根组件组装六个页面，缓存切页状态，不再实现业务函数", () => {
+test("根组件组装五个页面，缓存切页状态，不再实现业务函数", () => {
   const app = read("App.vue");
   for (const name of [
     "OverviewView",
     "KnowledgeView",
     "QuestionView",
     "SummaryView",
-    "QuizView",
     "HistoryView",
   ])
     assert.ok(app.includes(`./views/${name}.vue`));
   assert.ok(app.includes("<KeepAlive>"));
   assert.doesNotMatch(
     app,
-    /function (ask|summarize|generateQuiz|submitQuiz|deleteRecord|clearHistory)\(/,
+    /function (ask|summarize|deleteRecord|clearHistory)\(/,
   );
   assert.doesNotMatch(
     read("composables/useWorkspace.js"),
-    /function (ask|summarize|generateQuiz|submitQuiz|resetQuiz)\(/,
+    /function (ask|summarize)\(/,
   );
 });
 
@@ -193,7 +192,7 @@ test("问答每次发送均采用最新健康响应的默认检索方式，缺�
 test("页内跳页入口使用真实链接，修饰键先于默认事件拦截处理", () => {
   for (const [name, count] of [
     ["OverviewView", 9],
-    ["SummaryView", 2],
+    ["SummaryView", 1],
     ["HistoryView", 1],
   ]) {
     const links = templateElements(`views/${name}.vue`).filter((node) =>
@@ -216,6 +215,14 @@ test("页内跳页入口使用真实链接，修饰键先于默认事件拦截�
       assert.ok(modifiers.indexOf("exact") < modifiers.indexOf("prevent"), name);
     }
   }
+});
+
+test("页面与入口移除练习功能，保留问答、总结和历史", () => {
+  assert.deepEqual(pages.map((page) => page.id), ["overview", "qa", "knowledge", "history", "summary"]);
+  for (const name of ["App.vue", "views/OverviewView.vue", "views/QuestionView.vue", "views/SummaryView.vue"])
+    assert.doesNotMatch(read(name), /quiz|练习|出题|自测|错题/i, name);
+  assert.ok(!readdirSync(path.join(source, "views")).includes("QuizView.vue"));
+  assert.ok(!readdirSync(path.join(source, "components")).includes("InlineQuizCard.vue"));
 });
 
 test("真实链接普通点击走现有导航，Ctrl/Cmd/Shift 点击保留浏览器默认行为", () => {
@@ -241,12 +248,11 @@ test("真实链接普通点击走现有导航，Ctrl/Cmd/Shift 点击保留浏�
   assert.deepEqual(navigations, ["qa"]);
 });
 
-test("学习表单显式命名并关闭自动填充，题量使用数字键盘", () => {
+test("学习表单显式命名并关闭自动填充", () => {
   for (const [name, tags, count] of [
     ["components/ScopeSelector.vue", ["select"], 2],
     ["views/OverviewView.vue", ["input"], 1],
     ["views/QuestionView.vue", ["textarea"], 1],
-    ["views/QuizView.vue", ["input", "select"], 3],
   ]) {
     const controls = templateElements(name).filter((node) =>
       tags.includes(node.tag) && !["checkbox", "radio"].includes(attribute(node, "type")),
@@ -263,8 +269,8 @@ test("学习表单显式命名并关闭自动填充，题量使用数字键盘",
   }
 });
 
-test("练习结果可被礼貌播报，连接与问题占位文案使用中文省略号", () => {
-  const result = templateElements("views/QuizView.vue").find((node) =>
+test("总结结果可被礼貌播报，连接与问题占位文案使用中文省略号", () => {
+  const result = templateElements("views/SummaryView.vue").find((node) =>
     attribute(node, "class")?.includes("result-panel"),
   );
   assert.equal(attribute(result, "aria-live"), "polite");
@@ -359,71 +365,4 @@ test("移动导航按钮名称与展开状态同步", () => {
   vnode = renderElement(button, context);
   assert.equal(vnode.props["aria-expanded"], true);
   assert.equal(vnode.props["aria-label"], "关闭导航");
-});
-
-test("练习提交与待复习重答保留原有计分、自评和清空行为", async () => {
-  const { descriptor } = parse(read("views/QuizView.vue"));
-  const script = descriptor.scriptSetup.content.replace(/^import .*;\r?$/gm, "");
-  const workspace = {
-    isLearningReady: ref(true),
-    activeTask: ref(""),
-    errorMessage: ref(""),
-    noticeMessage: ref(""),
-    selectedKbId: ref("hello_agents"),
-    selectedChapterId: ref("ch01"),
-    selectedSectionId: ref(""),
-    currentSessionId: "test-session",
-    buildLearningScope: () => ({ chapter_id: "ch01", section_id: null }),
-    runTask: async (_, action) => action(),
-  };
-  const { gradeChoices } = await import("../src/lib/api.js");
-  const setup = new Function(
-    "computed", "ref", "watch", "useWorkspace", "gradeChoices", "request",
-    `${script}\nreturn {
-      quizResult, answersByQuestionId, selfReviewsByQuestionId,
-      isQuizSubmitted, multipleChoiceScore, reviewQuestionCount,
-      submitQuiz, resetQuiz
-    };`,
-  );
-  const effects = effectScope();
-  try {
-    const quizPage = effects.run(() =>
-      setup(Vue.computed, ref, watch, () => workspace, gradeChoices, async () => {}),
-    );
-    quizPage.quizResult.value = {
-      questions: [
-        { question_id: "choice-correct", type: "multiple_choice", answer: "A" },
-        { question_id: "choice-wrong", type: "multiple_choice", answer: "B" },
-        { question_id: "short-review", type: "short_answer" },
-        { question_id: "short-mastered", type: "short_answer" },
-      ],
-      citations: [{ chunk_id: "evidence-1" }],
-    };
-    quizPage.submitQuiz();
-    assert.equal(quizPage.isQuizSubmitted.value, false);
-    assert.equal(workspace.errorMessage.value, "请完成全部题目后再提交。");
-    quizPage.answersByQuestionId.value = {
-      "choice-correct": "A", "choice-wrong": "A",
-      "short-review": "我的回答", "short-mastered": "已经理解",
-    };
-    quizPage.selfReviewsByQuestionId.value = {
-      "short-review": "待复习", "short-mastered": "已掌握",
-    };
-    quizPage.submitQuiz();
-    assert.equal(quizPage.isQuizSubmitted.value, true);
-    assert.equal(workspace.errorMessage.value, "");
-    assert.deepEqual(quizPage.multipleChoiceScore.value, { total: 2, correct: 1 });
-    assert.equal(quizPage.reviewQuestionCount.value, 2);
-    quizPage.resetQuiz(true);
-    assert.deepEqual(
-      quizPage.quizResult.value.questions.map((question) => question.question_id),
-      ["choice-wrong", "short-review"],
-    );
-    assert.deepEqual(quizPage.quizResult.value.citations, [{ chunk_id: "evidence-1" }]);
-    assert.deepEqual(quizPage.answersByQuestionId.value, {});
-    assert.deepEqual(quizPage.selfReviewsByQuestionId.value, {});
-    assert.equal(quizPage.isQuizSubmitted.value, false);
-  } finally {
-    effects.stop();
-  }
 });

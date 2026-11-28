@@ -127,26 +127,22 @@ class APITests(unittest.TestCase):
         malformed = self.client.post('/api/qa', content='{bad', headers={'Content-Type': 'application/json'})
         self.assertEqual(malformed.status_code, 422)
 
-    def test_summary_and_quiz(self):
+    def test_removed_exercise_endpoints_are_unavailable(self):
+        for endpoint in ('/api/quiz', '/api/quiz/from-qa'):
+            with self.subTest(endpoint=endpoint):
+                response = self.client.post(endpoint, json={'chapter_id': 'ch01'})
+                self.assertEqual(response.status_code, 404)
+        spec = self.client.get('/openapi.json').json()
+        self.assertFalse(any('quiz' in path for path in spec['paths']))
+        self.assertFalse(any('Quiz' in name for name in spec['components']['schemas']))
+
+    def test_summary(self):
         summary = self.client.post('/api/summary', json={'chapter_id': 'ch01'})
         self.assertEqual(summary.status_code, 200, summary.text)
         self.assertTrue(summary.json()['summary'])
         self.assertTrue(summary.json()['citations'])
         self.assertIn('coverage', summary.json())
-        quiz = self.client.post('/api/quiz', json={'chapter_id': 'ch01', 'count': 1})
-        self.assertEqual(quiz.status_code, 200, quiz.text)
-        self.assertEqual(len(quiz.json()['questions']), 1)
-        question = quiz.json()['questions'][0]
-        self.assertTrue(question['answer'])
-        self.assertTrue(question['citation_ids'])
-        for endpoint in ('summary', 'quiz'):
-            self.assertEqual(self.client.post('/api/' + endpoint, json={'chapter_id': 'ch99'}).status_code, 404)
-        for payload in ({'chapter_id': 'ch01', 'count': 11}, {'chapter_id': 'ch01', 'count': 0},
-                        {'chapter_id': 'ch01', 'question_types': []},
-                        {'chapter_id': 'ch01', 'question_types': ['short_answer', 'short_answer']},
-                        {'chapter_id': 'ch01', 'count': 1, 'question_types': ['short_answer', 'multiple_choice']},
-                        {'chapter_id': 'ch01', 'difficulty': 'expert'}):
-            self.assertEqual(self.client.post('/api/quiz', json=payload).status_code, 422)
+        self.assertEqual(self.client.post('/api/summary', json={'chapter_id': 'ch99'}).status_code, 404)
 
     def test_history_isolation_pagination_and_deletion(self):
         one = self.ask().json()
@@ -231,11 +227,11 @@ class APITests(unittest.TestCase):
             '/api/kbs/{kb_id}/chunks',
             '/api/course', '/api/chapters', '/api/chapters/{chapter_id}',
             '/api/sources/{chunk_id}', '/api/course/source', '/api/qa', '/api/summary',
-            '/api/quiz', '/api/quiz/from-qa', '/api/history', '/api/history/{record_id}',
+            '/api/history', '/api/history/{record_id}',
         }
         self.assertEqual(set(spec['paths']), expected)
-        self.assertEqual(len([m for p in spec['paths'].values() for m in p if m in {'get', 'post', 'patch', 'delete'}]), 23)
-        for path in ('/api/qa', '/api/summary', '/api/quiz'):
+        self.assertEqual(len([m for p in spec['paths'].values() for m in p if m in {'get', 'post', 'patch', 'delete'}]), 21)
+        for path in ('/api/qa', '/api/summary'):
             self.assertIn('$ref', spec['paths'][path]['post']['responses']['200']['content']['application/json']['schema'])
         static = json.loads((Path(__file__).resolve().parents[1] / 'docs/openapi.json').read_text('utf-8'))
         self.assertEqual(static['paths'], spec['paths'])

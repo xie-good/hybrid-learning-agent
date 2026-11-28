@@ -52,7 +52,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title=APP_NAME, version='1.0.0', lifespan=lifespan,
-        description='基于混合检索的学习助手 API：支持自定义文档上传、BM25 与向量混合检索、多轮问答、章节总结与练习自测。',
+        description='基于混合检索的学习助手 API：支持自定义文档上传、BM25 与向量混合检索、多轮问答、章节总结。',
         openapi_tags=[{'name': name} for name in ('状态', '知识库管理', '课程与来源', '问答', '学习辅助', '会话历史')],
     )
     app.state.settings = config

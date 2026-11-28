@@ -17,7 +17,6 @@ const expected = [
   "./styles/views/knowledge.css",
   "./styles/footer.css",
   "./styles/components/learning.css",
-  "./styles/views/quiz.css",
   "./styles/views/history.css",
   "./styles/motion.css",
   "./styles/responsive.css",
@@ -58,7 +57,7 @@ test("主区保留键盘焦点环，移动抽屉隔离滚动，基础排版沿�
   const base = read("styles/base.css");
   assert.match(base, /:root\s*\{[^}]*color-scheme:\s*light;/);
   assert.match(base, /h1,\s*h2,\s*h3\s*\{[^}]*text-wrap:\s*balance;/);
-  for (const selector of [".stat-card strong", ".pagination", ".quiz-question .tiny-label"])
+  for (const selector of [".stat-card strong", ".pagination"])
     assert.ok(base.includes(selector));
   assert.match(base, /font-variant-numeric:\s*tabular-nums;/);
   const mobile = read("styles/responsive.css") + read("styles/accessibility.css");

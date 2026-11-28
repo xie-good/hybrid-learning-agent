@@ -94,13 +94,6 @@ function summarize() {
         >
           <AppIcon name="chat" :size="15" /> 就本章继续提问
         </a>
-        <a
-          class="button primary"
-          href="#quiz"
-          @click.exact.prevent="navigate('quiz')"
-        >
-          练习巩固本章 <AppIcon name="arrow" :size="16" />
-        </a>
       </div>
     </section>
   </LearningLayout>

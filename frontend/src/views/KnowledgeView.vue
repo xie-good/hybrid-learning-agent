@@ -310,7 +310,7 @@ function changeChunkPage(pageDelta) {
       />
       <div class="upload-icon-circle"><AppIcon name="upload" :size="24" /></div>
       <h3>{{ documentList.length ? "继续追加学习文档" : "拖拽文件到此处，或点击上传第一份文档" }}</h3>
-      <p>仅支持 PDF (.pdf) 与 Markdown (.md) 格式；PDF 自动转为 Markdown 精洗（跳过目录、过滤练习题）并建立 BM25 + 向量混合索引。</p>
+      <p>仅支持 PDF (.pdf) 与 Markdown (.md) 格式；PDF 自动转为 Markdown 精洗（跳过目录、保留知识正文）并建立 BM25 + 向量混合索引。</p>
       <button
         type="button"
         class="button primary"

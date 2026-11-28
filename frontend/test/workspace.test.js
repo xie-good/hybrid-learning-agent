@@ -51,7 +51,7 @@ test("章/节范围共享，切换章节清空小节；全部课程发送 null",
   assert.deepEqual(workspace.buildLearningScope(), { chapter_id: "ch02", section_id: null });
 });
 
-test("导航同步地址并收起抽屉；总结和练习自动选择首章", async () => {
+test("导航同步地址并收起抽屉；总结自动选择首章", async () => {
   const workspace = create();
   workspace.chapters.value = chapters;
   workspace.isSidebarOpen.value = true;
@@ -63,7 +63,9 @@ test("导航同步地址并收起抽屉；总结和练习自动选择首章", as
   assert.equal(workspace.selectedChapterId.value, "ch01");
   assert.equal(workspace.isSidebarOpen.value, false);
   assert.equal(workspace.errorMessage.value, "");
-  location.hash = "#quiz";
+  workspace.navigate("qa");
+  await nextTick();
+  location.hash = "#summary";
   workspace.selectedChapterId.value = "";
   workspace.syncPageFromHash();
   await nextTick();
@@ -71,6 +73,19 @@ test("导航同步地址并收起抽屉；总结和练习自动选择首章", as
   location.hash = "#unknown";
   workspace.syncPageFromHash();
   assert.equal(workspace.currentPageId.value, "qa");
+});
+
+test("旧练习地址回到问答页，不自动选择章节", () => {
+  location.hash = "#quiz";
+  const workspace = create();
+  assert.equal(workspace.currentPageId.value, "qa");
+  workspace.chapters.value = chapters;
+  workspace.navigate("summary");
+  workspace.selectedChapterId.value = "";
+  location.hash = "#quiz";
+  workspace.syncPageFromHash();
+  assert.equal(workspace.currentPageId.value, "qa");
+  assert.equal(workspace.selectedChapterId.value, "");
 });
 
 test("可用状态取决于章节和后端三项实际能力", () => {
@@ -95,7 +110,7 @@ test("请求成功或失败都会释放 activeTask，并用公共区域展示错
     assert.equal(workspace.activeTask.value, "qa");
   });
   assert.equal(workspace.activeTask.value, "");
-  await workspace.runTask("quiz", async () => {
+  await workspace.runTask("summary", async () => {
     throw new Error("生成失败");
   });
   assert.equal(workspace.activeTask.value, "");

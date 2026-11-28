@@ -5,7 +5,7 @@ import ScopeSelector from "../ScopeSelector.vue";
 import { useWorkspace } from "../../composables/useWorkspace.js";
 import { pages } from "../../lib/presentation.js";
 
-// 共用学习页单栏容器（用于章节总结与练习自测），不承担具体业务状态。
+// 章节总结页单栏容器，不承担具体业务状态。
 const props = defineProps({ pageId: String, hasResult: Boolean });
 const { activeTask } = useWorkspace();
 const pageConfig = computed(() =>

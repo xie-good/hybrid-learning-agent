@@ -1,7 +1,6 @@
 import { afterEach, test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  gradeChoices,
   historyPath,
   request,
   sessionId,
@@ -96,17 +95,4 @@ test("历史翻页始终携带会话与页码", () => {
   assert.equal(path.searchParams.get("session_id"), "session-a");
   assert.equal(path.searchParams.get("offset"), "20");
   assert.equal(path.searchParams.get("limit"), "10");
-});
-
-test("只对单选题客观计分，简答题不自动判分", () => {
-  const questions = [
-    { question_id: "a", type: "multiple_choice", answer: "A" },
-    { question_id: "b", type: "multiple_choice", answer: "C" },
-    { question_id: "c", type: "short_answer", answer: "原文" },
-  ];
-  assert.deepEqual(gradeChoices(questions, { a: "A", b: "B", c: "原文" }), {
-    total: 2,
-    correct: 1,
-  });
-  assert.deepEqual(gradeChoices([], {}), { total: 0, correct: 0 });
 });

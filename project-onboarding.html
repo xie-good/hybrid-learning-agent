@@ -707,7 +707,7 @@
       <div>
         <h2>一句话看懂这个项目</h2>
         <p class="hero-desc">
-          这是一个围绕 <strong>Hello-Agents</strong> 教材的单课程学习助手：<strong>Vue 3</strong> 收集学习请求，<strong>FastAPI</strong> 调用教材检索（BM25 + Embedding + RRF 融合 + 证据门控）与学习服务，返回带页码出处的回答、总结或阅读自测，并用 <strong>SQLite</strong> 按会话 UUID 隔离保存问答历史。
+          这是一个围绕 <strong>Hello-Agents</strong> 教材的单课程学习助手：<strong>Vue 3</strong> 收集学习请求，<strong>FastAPI</strong> 调用教材检索（BM25 + Embedding + RRF 融合 + 证据门控）与学习服务，返回带页码出处的回答、总结，并用 <strong>SQLite</strong> 按会话 UUID 隔离保存问答历史。
         </p>
         <div class="badges">
           <span class="badge blue">FastAPI + Uvicorn</span>
@@ -728,7 +728,7 @@
         </div>
         <div class="stat-box">
           <div class="stat-val">5 个页面</div>
-          <div class="stat-lbl">工作台 · 问答 · 总结 · 自测 · 历史</div>
+          <div class="stat-lbl">工作台 · 问答 · 总结 · 历史</div>
         </div>
         <div class="stat-box">
           <div class="stat-val">14 项配置</div>
@@ -846,7 +846,7 @@
               <div class="flow-node" data-node="generation" onclick="selectNode('generation')">
                 <div class="n-tag">ANSWER</div>
                 <div class="n-title">generation / learning</div>
-                <div class="n-sub">摘录或 LLM · 总结/自测</div>
+                <div class="n-sub">摘录或 LLM · 总结</div>
               </div>
               <div class="flow-arrow">→</div>
               <div class="flow-node data" data-node="history" onclick="selectNode('history')">
@@ -940,8 +940,8 @@
           </tr>
           <tr>
             <td><strong>前端功能</strong></td>
-            <td>5 个 Vue 页面完成，支持课程搜索、章/节范围、问答、代表性总结、阅读自测与会话历史隔离。</td>
-            <td>完整正文阅读界面、长期学习进度、持久化错题复习闭环尚待实现。</td>
+            <td>5 个 Vue 页面完成，支持课程搜索、章/节范围、问答、代表性总结与会话历史隔离。</td>
+            <td>完整正文阅读界面、长期学习进度、跨会话学习回顾尚待实现。</td>
           </tr>
           <tr>
             <td><strong>评测数据集</strong></td>
@@ -1009,7 +1009,7 @@
         id: "step5",
         num: "STEP 05",
         title: "掌握前端工作台与状态",
-        goal: "看懂 useWorkspace 如何共享课程/章/节/会话 UUID，以及总结、自测、历史页面如何与后端交互。",
+        goal: "看懂 useWorkspace 如何共享课程/章/节/会话 UUID，以及总结、历史页面如何与后端交互。",
         files: [
           { path: "frontend/src/composables/useWorkspace.js", hint: "全局共享状态" },
           { path: "frontend/src/lib/api.js", hint: "fetch 与 90s 超时" },
@@ -1091,7 +1091,7 @@
         points: [
           "通过 Vite 同源 /api 代理访问后端（默认 http://127.0.0.1:8000）。",
           "浏览器 fetch 默认超时 90 秒，失败时抛出结构化错误提示。",
-          "同时包含会话 UUID 管理与自测客观题计分辅助函数。"
+          "同时包含会话 UUID 管理辅助函数。"
         ]
       },
       routes: {
@@ -1117,8 +1117,8 @@
         path: "backend/services/generation.py · backend/services/learning.py",
         points: [
           "generation.py：extractive 模式摘录教材原文；llm 模式调用兼容 Chat Completions 接口并校验引用编号。",
-          "learning.py：summary() 提取分节代表性原文返回要点与 coverage；quiz() 生成阅读自测题（提交前隐藏答案）。",
-          "总结与自测不写入问答历史表。"
+          "learning.py：summary() 提取分节代表性原文返回要点与 coverage。",
+          "总结不写入问答历史表。"
         ]
       },
       history: {
@@ -1146,7 +1146,7 @@
           { path: "backend/services/corpus.py", desc: "语料版本/哈希校验、目录与原文" },
           { path: "backend/services/retrieval.py", desc: "BM25、向量召回、RRF 融合与证据门控" },
           { path: "backend/services/generation.py", desc: "摘录/LLM 回答与引用编号校验" },
-          { path: "backend/services/learning.py", desc: "分节总结与阅读自测生成" },
+          { path: "backend/services/learning.py", desc: "分节总结生成" },
           { path: "backend/storage/history.py", desc: "SQLite 会话隔离问答历史" }
         ]
       },
@@ -1164,7 +1164,6 @@
           { path: "frontend/src/views/OverviewView.vue", desc: "工作台概览与课程搜索" },
           { path: "frontend/src/views/QuestionView.vue", desc: "问答页（推荐首个精读页面）" },
           { path: "frontend/src/views/SummaryView.vue", desc: "章节总结与要点覆盖" },
-          { path: "frontend/src/views/QuizView.vue", desc: "阅读自测（提交后判分/自评）" },
           { path: "frontend/src/views/HistoryView.vue", desc: "当前会话问答历史回顾" },
           { path: "frontend/src/components/", desc: "ScopeSelector、SourceList、AnswerContent 等" }
         ]
@@ -1221,7 +1220,6 @@
       { method: "GET", path: "/api/course/source", desc: "下载/读取完整原教材 PDF（校验 SHA256）" },
       { method: "POST", path: "/api/qa", desc: "核心问答：范围过滤 → 检索门控 → 摘录/LLM → 写历史" },
       { method: "POST", path: "/api/summary", desc: "按章/节生成代表性摘录总结与要点" },
-      { method: "POST", path: "/api/quiz", desc: "按范围/数量/题型/难度生成阅读自测题" },
       { method: "GET", path: "/api/history", desc: "分页查询当前 session_id 的问答历史" },
       { method: "GET", path: "/api/history/{record_id}", desc: "获取单条历史记录详情" },
       { method: "DELETE", path: "/api/history/{record_id}", desc: "删除当前会话的指定历史记录" },

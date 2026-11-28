@@ -9,7 +9,7 @@ import httpx
 from backend.config import Settings
 from backend.errors import AppError
 from backend.services.generation import (
-    GenerationService, INSUFFICIENT_ANSWER, normalized_text, reading_passages,
+    GenerationService, INSUFFICIENT_ANSWER, normalized_text,
     validate_cited_text,
 )
 from backend.services.learning import LearningService
@@ -288,75 +288,19 @@ class LearningTests(unittest.TestCase):
         self.assertEqual(repo.chunks, original)
 
     def test_unknown_scope_keeps_repository_404(self):
-        for call in [lambda: self.service.summary('ch99'), lambda: self.service.quiz('ch01', 'missing')]:
+        for call in [lambda: self.service.summary('ch99'), lambda: self.service.summary('ch01', 'missing')]:
             with self.assertRaises(AppError) as caught:
                 call()
             self.assertEqual(caught.exception.status_code, 404)
 
-    def test_default_short_answer_quiz_has_exact_count_and_grounding(self):
-        result = self.service.quiz('ch01')
-        self.assertEqual(len(result['questions']), 5)
-        self.assertEqual(result['generation_mode'], 'extractive')
-        sources = {c['citation_id']: normalized_text(c['text']) for c in result['citations']}
-        self.assertEqual(len({q['question_id'] for q in result['questions']}), 5)
-        for q in result['questions']:
-            self.assertEqual(q['type'], 'short_answer')
-            self.assertEqual(q['options'], [])
-            self.assertIn(q['answer'], sources[q['citation_ids'][0]])
-            self.assertIn('medium', q['question'])
-
-    def test_multiple_choice_options_restore_source_exactly(self):
-        result = self.service.quiz('ch01', count=5, question_types=['multiple_choice'], difficulty='hard')
-        sources = {c['citation_id']: normalized_text(c['text']) for c in result['citations']}
-        for q in result['questions']:
-            self.assertEqual([o['key'] for o in q['options']], list('ABCD'))
-            self.assertEqual(len({o['text'].casefold() for o in q['options']}), 4)
-            original = sources[q['citation_ids'][0]]
-            masked = q['question'].split('“', 1)[1].rsplit('”', 1)[0]
-            correct = next(o['text'] for o in q['options'] if o['key'] == q['answer'])
-            self.assertIn(masked.replace('______', correct, 1), original)
-            for option in q['options']:
-                self.assertIn(option['text'], original)
-                if option['key'] != q['answer']:
-                    self.assertNotIn(masked.replace('______', option['text'], 1), original)
-            self.assertIn('hard', q['question'])
-
-    def test_local_multiple_choice_excludes_alternative_source_restorations(self):
-        passage = '智能体通过感知环境中的信息，使用模型规划任务，并借助工具与外部系统进行交互。'
-        alternate = passage.replace('智能体', '工作流', 1)
-        text = passage + alternate + '人工智能与机器学习通过数据和训练执行检索任务。'
-        choice = self.service._cloze_terms(passage, text)
-        self.assertIsNotNone(choice)
-        target, distractors = choice
-        for distractor in distractors:
-            self.assertNotIn(passage.replace(target, distractor, 1), normalized_text(text))
-
-    def test_local_multiple_choice_distractors_are_case_insensitively_unique(self):
-        passage = 'AgentAlpha performs several useful planning and execution tasks for users.'
-        text = passage + ' Delta DELTA Epsilon Zeta represent identifiers in the same example.'
-        target, distractors = self.service._cloze_terms(passage, text)
-        self.assertEqual(len({word.casefold() for word in [target, *distractors]}), 4)
-
-    def test_mixed_quiz_preserves_requested_order_and_determinism(self):
-        first = self.service.quiz('ch01', count=4, question_types=['multiple_choice', 'short_answer'])
-        second = self.service.quiz('ch01', count=4, question_types=['multiple_choice', 'short_answer'])
-        self.assertEqual(first, second)
-        self.assertEqual([q['type'] for q in first['questions']], ['multiple_choice', 'short_answer'] * 2)
 
     def test_empty_or_insufficient_material_is_explicit(self):
         empty = LearningService(FakeRepo([]), GenerationService(settings()))
-        for call in [lambda: empty.summary('ch01'), lambda: empty.quiz('ch01'), lambda: self.service.quiz('ch01', count=20)]:
+        for call in [lambda: empty.summary('ch01')]:
             with self.assertRaises(AppError) as caught:
                 call()
             self.assertEqual(caught.exception.status_code, 422)
 
-    def test_invalid_quiz_requests_do_not_silently_change_count(self):
-        for kwargs in [{'count': 0}, {'count': 21}, {'count': True}, {'question_types': []},
-                       {'question_types': ['essay']}, {'difficulty': 'unmeasured'},
-                       {'count': 1, 'question_types': ['short_answer', 'multiple_choice']}]:
-            with self.subTest(kwargs=kwargs), self.assertRaises(AppError) as caught:
-                self.service.quiz('ch01', **kwargs)
-            self.assertEqual(caught.exception.status_code, 422)
 
     def test_llm_summary_validates_every_selected_section(self):
         data = {'summary': '智能体与检索的代表性概述。[1][2]', 'key_points': ['智能体使用工具。[1]', '检索保留证据。[2]']}
@@ -366,93 +310,6 @@ class LearningTests(unittest.TestCase):
         for bad in [dict(data, key_points=['不带引用']), {'summary': '智能体概述。[1]', 'key_points': ['智能体使用工具。[1]']}]:
             with self.subTest(data=bad), self.assertRaises(AppError) as caught:
                 LearningService(self.repo, llm_generator(bad)).summary('ch01')
-            self.assertEqual(caught.exception.status_code, 502)
-
-    @staticmethod
-    def llm_question(qtype='short_answer'):
-        quote = reading_passages(TEXT_A)[0]
-        return {
-            'type': qtype,
-            'question': '根据教材原文，哪个词可以补全句子“______通过感知环境中的信息”？',
-            'options': [] if qtype == 'short_answer' else [
-                {'key': 'A', 'text': '智能体'}, {'key': 'B', 'text': '计算机鼠标'},
-                {'key': 'C', 'text': '电子邮件'}, {'key': 'D', 'text': '分布式数据库'},
-            ],
-            'answer': quote if qtype == 'short_answer' else 'A',
-            'explanation': '根据引用的原文，智能体通过感知环境中的信息完成相关活动。[1]',
-            'citation_ids': [1], 'evidence_quote': quote,
-        }
-
-    def test_llm_quiz_valid_structured_short_and_multiple_choice(self):
-        for qtype in ['short_answer', 'multiple_choice']:
-            with self.subTest(qtype=qtype):
-                data = {'questions': [self.llm_question(qtype)]}
-                result = LearningService(self.repo, llm_generator(data)).quiz('ch01', count=1, question_types=[qtype])
-                q = result['questions'][0]
-                self.assertNotIn('evidence_quote', q)
-                self.assertTrue(q['question_id'].startswith('q_'))
-                self.assertIn('medium', q['question'])
-
-    def test_llm_quiz_samples_uneven_sections_in_round_robin_order(self):
-        chunks = [source(1, 's1'), source(2, 's1'), source(3, 's1'), source(4, None),
-                  source(5, 's2'), source(6, 's2'), source(7, 's3', '   ')]
-        original = copy.deepcopy(chunks)
-        order = ['chunk-1', 'chunk-4', 'chunk-5', 'chunk-2', 'chunk-6', 'chunk-3']
-        for count in (1, 4, 7):
-            with self.subTest(count=count):
-                questions = [dict(self.llm_question(), question=f'教材原文阅读第 {i + 1} 题，请概括智能体的活动。')
-                             for i in range(count)]
-                service = LearningService(FakeRepo(chunks), llm_generator({'questions': questions}))
-                result = service.quiz('ch01', count=count)
-                self.assertEqual([c['chunk_id'] for c in result['citations']], order[:max(count, 3)])
-                self.assertEqual(len(result['questions']), count)
-                self.assertEqual(chunks, original)
-
-    def test_llm_quiz_wrong_count_type_quote_answer_and_citations_fail(self):
-        original = self.llm_question()
-        bad_cases = [
-            {'questions': [original, original]},
-            {'questions': [dict(original, type='multiple_choice')]},
-            {'questions': [dict(original, evidence_quote='这段捏造的内容在真实教材中从未出现。')]},
-            {'questions': [dict(original, answer='没有任何教材证据支持的答案')]},
-            {'questions': [dict(original, citation_ids=[99])]},
-            {'questions': [dict(original, citation_ids=[1, 1])]},
-            {'questions': [dict(original, explanation='引用其他材料。[2]')]},
-            {'questions': [dict(original, citation_ids=['1'])]},
-        ]
-        for data in bad_cases:
-            with self.subTest(data=data), self.assertRaises(AppError) as caught:
-                LearningService(self.repo, llm_generator(data)).quiz('ch01', count=1)
-            self.assertEqual(caught.exception.status_code, 502)
-
-    def test_llm_quiz_whitespace_fields_are_rejected(self):
-        original = self.llm_question()
-        bad_cases = [dict(original, answer=' '), dict(original, question=' ' * 8),
-                     dict(original, evidence_quote=' ' * 12),
-                     dict(original, evidence_quote='  很短  ' + ' ' * 12)]
-        multiple_choice = self.llm_question('multiple_choice')
-        multiple_choice['options'][0]['text'] = ' '
-        bad_cases.append(multiple_choice)
-        for question in bad_cases:
-            with self.subTest(question=question), self.assertRaises(AppError) as caught:
-                LearningService(self.repo, llm_generator({'questions': [question]})).quiz(
-                    'ch01', count=1, question_types=[question['type']])
-            self.assertEqual(caught.exception.status_code, 502)
-
-    def test_llm_multiple_choice_rejects_ambiguous_options(self):
-        original = self.llm_question('multiple_choice')
-        bad_cases = [dict(original, answer='B'), dict(original, answer='E'),
-                     dict(original, answer='AB'), dict(original, answer='CD'),
-                     dict(original, options=original['options'][:3])]
-        duplicate = copy.deepcopy(original)
-        duplicate['options'][1]['text'] = duplicate['options'][0]['text']
-        bad_cases.append(duplicate)
-        ambiguous = copy.deepcopy(original)
-        ambiguous['options'][1]['text'] = '环境'
-        bad_cases.append(ambiguous)
-        for q in bad_cases:
-            with self.subTest(question=q), self.assertRaises(AppError) as caught:
-                LearningService(self.repo, llm_generator({'questions': [q]})).quiz('ch01', count=1, question_types=['multiple_choice'])
             self.assertEqual(caught.exception.status_code, 502)
 
 

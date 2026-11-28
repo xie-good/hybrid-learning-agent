@@ -1,4 +1,4 @@
-"""多知识库文档上传、多轮指代补全问答与随堂巩固测试。"""
+"""多知识库文档上传、多轮指代补全问答测试。"""
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -87,7 +87,7 @@ class MultiKBAndContinuityTests(unittest.TestCase):
         chunks_resp = self.client.get(f'/api/kbs/{kb_id}/chunks').json()
         self.assertGreaterEqual(chunks_resp['total'], 2)
 
-        # 4. 在自定义知识库上执行问答，并基于检索切片生成随堂巩固题。
+        # 4. 在自定义知识库上执行问答。
         session_id = str(uuid4())
         qa_resp = self.client.post('/api/qa', json={
             'kb_id': kb_id,
@@ -99,19 +99,6 @@ class MultiKBAndContinuityTests(unittest.TestCase):
         self.assertEqual(qa_body['kb_id'], kb_id)
         self.assertFalse(qa_body['insufficient_evidence'])
         self.assertTrue(qa_body['citations'])
-
-        cited_chunk_ids = []
-        for citation_item in qa_body['citations']:
-            cited_chunk_ids.append(citation_item['chunk_id'])
-
-        quiz_resp = self.client.post('/api/quiz/from-qa', json={
-            'kb_id': kb_id,
-            'chunk_ids': cited_chunk_ids,
-            'count': 1,
-            'question_types': ['short_answer'],
-        })
-        self.assertEqual(quiz_resp.status_code, 200, quiz_resp.text)
-        self.assertEqual(len(quiz_resp.json()['questions']), 1)
 
         # 5. 内置知识库不可删除；自定义文档与知识库可正常移除。
         self.assertEqual(self.client.delete('/api/kbs/hello_agents').status_code, 403)

@@ -694,26 +694,6 @@
 .follow-up-chip:hover:not(:disabled) {
   background: #dbeafe;
 }
-.turn-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-.inline-quiz-box {
-  margin-top: 14px;
-  padding: 14px;
-  border: 1px solid #dbeafe;
-  border-radius: 12px;
-  background: #f8fbff;
-}
-.inline-quiz-item {
-  margin-bottom: 14px;
-}
-.inline-q-title {
-  margin-bottom: 8px;
-  font-size: 14px;
-}
 .chat-composer-dock {
   position: sticky;
   bottom: 12px;

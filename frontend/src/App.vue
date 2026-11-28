@@ -1,5 +1,5 @@
 <script setup>
-// 根组件只负责工作区生命周期、精简公共外壳和六页装配，保持单向数据流。
+// 根组件只负责工作区生命周期、精简公共外壳和五页装配，保持单向数据流。
 import { onMounted, onUnmounted, provide } from "vue";
 import AppIcon from "./components/AppIcon.vue";
 import AppSidebar from "./components/layout/AppSidebar.vue";
@@ -8,7 +8,6 @@ import OverviewView from "./views/OverviewView.vue";
 import KnowledgeView from "./views/KnowledgeView.vue";
 import QuestionView from "./views/QuestionView.vue";
 import SummaryView from "./views/SummaryView.vue";
-import QuizView from "./views/QuizView.vue";
 import HistoryView from "./views/HistoryView.vue";
 import { createWorkspace, workspaceKey } from "./composables/useWorkspace.js";
 
@@ -30,7 +29,6 @@ const pageComponents = {
   knowledge: KnowledgeView,
   qa: QuestionView,
   summary: SummaryView,
-  quiz: QuizView,
   history: HistoryView,
 };
 

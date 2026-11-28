@@ -62,12 +62,6 @@ class BackendMessageTests(unittest.TestCase):
             ('/api/qa', {'question': '测试', 'chapter_id': 'ch01', 'section_id': 'ch02-s001'}),
             ('/api/qa', {'question': '测试', 'extra': 'private-token'}),
             ('/api/qa', []),
-            ('/api/quiz', {'chapter_id': 'ch01', 'question_types': 'short_answer'}),
-            ('/api/quiz', {'chapter_id': 'ch01', 'question_types': []}),
-            ('/api/quiz', {'chapter_id': 'ch01', 'question_types': ['short_answer'] * 3}),
-            ('/api/quiz', {'chapter_id': 'ch01', 'question_types': ['short_answer'] * 2}),
-            ('/api/quiz', {'chapter_id': 'ch01', 'count': 1,
-                           'question_types': ['short_answer', 'multiple_choice']}),
         ]
         with TestClient(create_app(self.settings)) as client:
             responses = [client.post(path, json=payload) for path, payload in cases]

@@ -3,7 +3,7 @@ import { createFreshSessionId, historyPath, request, sessionId } from "../lib/ap
 import { pages } from "../lib/presentation.js";
 
 // 只共享跨页面的数据：当前知识库、课程目录、学习范围、会话与历史。
-// 提问内容、总结结果、练习作答等局部交互状态由对应 View 自己管理。
+// 提问内容、总结结果等局部交互状态由对应 View 自己管理。
 export const workspaceKey = Symbol("learning-workspace");
 
 // App.vue 提供同一个工作区，子组件读取它；不创建全局单例，避免多次挂载互相污染。
@@ -94,10 +94,7 @@ export function createWorkspace() {
 
   function navigate(pageId, targetChapterId) {
     if (targetChapterId) selectedChapterId.value = targetChapterId;
-    if (
-      ["summary", "quiz"].includes(pageId) &&
-      !selectedChapterId.value
-    ) {
+    if (pageId === "summary" && !selectedChapterId.value) {
       selectedChapterId.value = chapters.value[0]?.chapter_id || "";
     }
     currentPageId.value = pageId;
@@ -114,7 +111,7 @@ export function createWorkspace() {
     isSidebarOpen.value = false;
   }
   watch(currentPageId, (pageId) => {
-    if (["summary", "quiz"].includes(pageId) && !selectedChapterId.value)
+    if (pageId === "summary" && !selectedChapterId.value)
       selectedChapterId.value = chapters.value[0]?.chapter_id || "";
   });
   // 这里只维护章/节从属关系，各页面自行监听范围变化并清除自己的旧结果。
@@ -225,8 +222,8 @@ export function createWorkspace() {
       ]);
       courseInfo.value = courseResponse;
       chapters.value = chapterListResponse.chapters;
-      // 问答页默认全库检索（chapter_id 为空），只在总结和练习页自动选首章。
-      if (["summary", "quiz"].includes(currentPageId.value) && !selectedChapterId.value) {
+      // 问答页默认全库检索（chapter_id 为空），只在总结页自动选首章。
+      if (currentPageId.value === "summary" && !selectedChapterId.value) {
         selectedChapterId.value =
           chapterListResponse.chapters[0]?.chapter_id || "";
       }

@@ -34,12 +34,11 @@ Set-Location 'F:/桌面/毕设'
 
 自定义知识库通过 `POST /api/kbs/{kb_id}/documents` 调用 `pipeline/ingest_doc.py` 完成在线解析与分块：
 
-- **支持格式**：严格限制为 **PDF (`.pdf`)、Word (`.docx`)、Markdown (`.md`)**，其余格式在接口层与解析层均拒绝并返回中文提示。
-- **结构切分**：
-  - PDF：逐页提取文本并保留物理页码，伴读预览时由后端 `pypdfium2` 按页实时渲染为纯白底 PNG。
-  - Word (`.docx`)：按标题样式与段落结构提取小节并切块。
-  - Markdown (`.md`)：按 `# / ## / ###` 标题层级拆分小节并保留代码块上下文。
-- **索引构建与落盘**：上传或删除文档后，`KnowledgeBaseManager` 会自动更新该知识库在 `data/runtime/custom_kbs/{kb_id}/` 下的 `chunks.jsonl`、BM25 索引及 Embedding 向量矩阵索引。
+- **支持格式**：严格限制为 **PDF (`.pdf`)、Markdown (`.md`, `.markdown`)**，其余格式（含 `.docx`）在接口层与解析层均拒绝并返回 `422` 中文提示。
+- **结构切分与精洗**：
+  - PDF：逐页提取文本后转为带 `<!-- page:N -->` 物理页码锚点的 Markdown，优先依据书签或正文首章跳过封面与目录页，复用 `clean_pdf.py` 的规则剔除独立习题、参考文献及讨论交流板块；伴读预览时由后端 `pypdfium2` 按页实时渲染为纯白底 PNG。
+  - Markdown (`.md`)：按 `# / ## / ###` 及中文章节标题拆分小节，保护代码块内部的 `#` 注释不被误判。
+- **增量索引构建与回滚保护**：上传或删除文档后，`KnowledgeBaseManager` 复用内存中已有文档切片与旧 `vector.index.json` 缓存（仅对新增切片调用 Embedding，删文档 0 次调用 Embedding），且先完成向量化再落盘更新 `data/runtime/custom_kbs/{kb_id}/`，防止上游异常破坏原知识库。
 
 ## 三、验证命令
 

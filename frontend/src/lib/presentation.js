@@ -1,4 +1,4 @@
-// 页面配置按“主工作区（4 项，课程目录置顶）+ 学习工具（2 项）”组织，保持导航精简清晰。
+// 页面配置按“主工作区（4 项，课程目录置顶）+ 学习工具（1 项）”组织，保持导航精简清晰。
 export const primaryPages = [
   {
     id: "overview",
@@ -32,12 +32,6 @@ export const toolPages = [
     title: "章节总结",
     icon: "book",
     subtitle: "提炼指定章节或文档的代表性要点与出处。",
-  },
-  {
-    id: "quiz",
-    title: "练习自测",
-    icon: "quiz",
-    subtitle: "按章节生成随堂测验，提交后自动批改单选并支持错题重练。",
   },
 ];
 

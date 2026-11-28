@@ -7,7 +7,6 @@ const paths = {
   grid: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
   chat: "M21 11a8 8 0 0 1-8 8H7l-5 3 2-6a8 8 0 1 1 17-5Z M8 10h8 M8 14h5",
   summary: "M6 3h9l4 4v14H6z M14 3v5h5 M9 12h7 M9 16h7",
-  quiz: "M9 4h6v4H9z M9 6H5v15h14V6h-4 M8 14l2 2 5-5",
   history: "M3 11a9 9 0 1 1 2 7 M3 4v7h7 M12 7v5l3 2",
   arrow: "M4 12h15 M13 6l6 6-6 6",
   chevron: "M9 5l7 7-7 7",

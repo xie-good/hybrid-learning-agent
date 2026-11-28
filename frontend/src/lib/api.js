@@ -80,16 +80,3 @@ export const historyPath = (currentSessionId, offset = 0, kbId = "") => {
   if (kbId) params.set("kb_id", kbId);
   return `/history?${params}`;
 };
-
-// 只对选项键完全匹配的单选题计分；简答题的含义需要人工判断，不参与自动评分。
-export function gradeChoices(questions, answers) {
-  const choices = questions.filter(
-    (question) => question.type === "multiple_choice",
-  );
-  return {
-    total: choices.length,
-    correct: choices.filter(
-      (question) => answers[question.question_id] === question.answer,
-    ).length,
-  };
-}

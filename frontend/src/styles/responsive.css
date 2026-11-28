@@ -540,9 +540,6 @@
   .key-points {
     font-size: 16px;
   }
-  .quiz-options label {
-    font-size: 14px;
-  }
   .history-toolbar {
     align-items: flex-start;
     flex-direction: column;
@@ -605,9 +602,6 @@
   }
   .question-footer .button {
     font-size: 13px;
-  }
-  .quiz-question .tiny-label {
-    font-size: 12px;
   }
 }
 /* 用户选择减少动态效果时，停用过渡并缩短动画；业务状态仍由文字提示。 */

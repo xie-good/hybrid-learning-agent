@@ -68,9 +68,8 @@ def smoke(base_url, frontend_url=None):
         assert pdf['prefix_hex'] == b'%PDF'.hex()
         summary = call('POST', '/api/summary', json={'chapter_id': chapter_id})
         assert summary['citations'] and summary['coverage']
-        quiz = call('POST', '/api/quiz', json={'chapter_id': chapter_id, 'count': 5,
-            'question_types': ['short_answer', 'multiple_choice'], 'difficulty': 'medium'})
-        assert len(quiz['questions']) == 5
+        for endpoint in ('/api/quiz', '/api/quiz/from-qa'):
+            call('POST', endpoint, expected=404, json={'chapter_id': chapter_id})
         params = {'session_id': session}
         assert call('GET', '/api/history', params=params)['total'] == 1
         item_path = '/api/history/' + qa['history_id']
@@ -83,7 +82,7 @@ def smoke(base_url, frontend_url=None):
         call('GET', '/docs')
         spec = call('GET', '/openapi.json')
         operation_count = sum(m in {'get', 'post', 'delete'} for p in spec['paths'].values() for m in p)
-        assert operation_count == 13
+        assert operation_count == 21
         if frontend_url:
             assert httpx.get(frontend_url + '/_stcore/health', timeout=5, trust_env=False).status_code == 200
             assert httpx.get(frontend_url, timeout=5, trust_env=False).status_code == 200

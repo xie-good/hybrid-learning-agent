@@ -14,8 +14,8 @@ from backend.schemas.models import (
     CourseResponse, DeletedResponse, DocumentDeleteResponse, DocumentListResponse,
     DocumentUploadResponse, ErrorResponse, HealthResponse, HistoryItem,
     HistoryResponse, KnowledgeBaseCreateRequest, KnowledgeBaseId, KnowledgeBaseInfo,
-    KnowledgeBaseListResponse, QAResponse, QuestionRequest, QuizFromQARequest,
-    QuizRequest, QuizResponse, SummaryResponse,
+    KnowledgeBaseListResponse, QAResponse, QuestionRequest,
+    SummaryResponse,
 )
 from backend.services.retrieval import build_expanded_contexts
 
@@ -320,41 +320,6 @@ def chapter_summary(summary_request: ChapterRequest, request: Request):
         request, started_at, summary_request.chapter_id, summary_request.section_id, repository=repository
     )
     return {**summary_result, **metadata, 'kb_id': active_kb_id}
-
-
-@router.post('/quiz', tags=['学习辅助'], response_model=QuizResponse, summary='生成带答案、解析和引用的练习')
-def chapter_quiz(quiz_request: QuizRequest, request: Request):
-    """围绕指定章节或文档生成单选与简答自测题。"""
-    started_at = perf_counter()
-    repository, _, active_kb_id = _resolve_knowledge_base(request, quiz_request.kb_id)
-    quiz_result = request.app.state.learning.quiz(
-        quiz_request.chapter_id,
-        section_id=quiz_request.section_id,
-        count=quiz_request.count,
-        question_types=quiz_request.question_types,
-        difficulty=quiz_request.difficulty,
-        repo=repository,
-    )
-    metadata = _build_metadata(
-        request, started_at, quiz_request.chapter_id, quiz_request.section_id, repository=repository
-    )
-    return {**quiz_result, **metadata, 'kb_id': active_kb_id}
-
-
-@router.post('/quiz/from-qa', tags=['学习辅助'], response_model=QuizResponse, summary='基于问答命中的原文切片生成随堂巩固练习')
-def qa_follow_up_quiz(quiz_request: QuizFromQARequest, request: Request):
-    """直接使用问答命中的原文切片出题，形成提问后的即时巩固。"""
-    started_at = perf_counter()
-    repository, _, active_kb_id = _resolve_knowledge_base(request, quiz_request.kb_id)
-    quiz_result = request.app.state.learning.quiz_from_chunks(
-        quiz_request.chunk_ids,
-        count=quiz_request.count,
-        question_types=quiz_request.question_types,
-        difficulty=quiz_request.difficulty,
-        repo=repository,
-    )
-    metadata = _build_metadata(request, started_at, repository=repository)
-    return {**quiz_result, **metadata, 'kb_id': active_kb_id}
 
 
 @router.get('/history', tags=['会话历史'], response_model=HistoryResponse, summary='当前会话问答历史（倒序分页）')

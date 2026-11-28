@@ -38,7 +38,7 @@ class QuestionRequest(InputModel):
 
 
 class ChapterRequest(InputModel):
-    """章节总结和章节自测共用的范围参数。"""
+    """章节总结的范围参数。"""
 
     kb_id: KnowledgeBaseId | None = None
     chapter_id: ChapterId
@@ -49,25 +49,6 @@ class ChapterRequest(InputModel):
         """检查所选小节是否属于所选章节。"""
         if self.section_id and not self.section_id.startswith(self.chapter_id + '-'):
             raise ValueError('所选小节必须属于所选章节。')
-        return self
-
-
-class QuizRequest(ChapterRequest):
-    """按章节生成练习题的请求参数。"""
-
-    count: int = Field(default=5, ge=1, le=10, strict=True)
-    question_types: list[Literal['short_answer', 'multiple_choice']] = Field(
-        default_factory=lambda: ['short_answer'], min_length=1, max_length=2
-    )
-    difficulty: Literal['easy', 'medium', 'hard'] = 'medium'
-
-    @model_validator(mode='after')
-    def unique_types(self):
-        """检查题型不重复且题量足够分配。"""
-        if len(set(self.question_types)) != len(self.question_types):
-            raise ValueError('题型列表中不得包含重复项。')
-        if self.count < len(self.question_types):
-            raise ValueError('题量必须不少于所选题型的数量。')
         return self
 
 
@@ -140,53 +121,6 @@ class SummaryResponse(Metadata):
     citations: list[Citation]
     coverage: dict[str, Any]
     generation_mode: GenerationMode
-
-
-class QuizOption(BaseModel):
-    """单选题的单个选项。"""
-
-    key: str
-    text: str
-
-
-class QuizQuestion(BaseModel):
-    """单道练习题的数据结构。"""
-
-    question_id: str
-    type: Literal['short_answer', 'multiple_choice']
-    question: str
-    options: list[QuizOption] = Field(default_factory=list)
-    answer: str
-    explanation: str
-    citation_ids: list[int] = Field(min_length=1)
-
-
-class QuizResponse(Metadata):
-    """练习生成接口的响应结构。"""
-
-    kb_id: str = 'hello_agents'
-    questions: list[QuizQuestion]
-    citations: list[Citation]
-    generation_mode: GenerationMode
-
-
-class QuizFromQARequest(InputModel):
-    """根据问答中检索到的原文切片直接出题巩固。"""
-
-    kb_id: KnowledgeBaseId | None = None
-    chunk_ids: list[str] = Field(min_length=1, max_length=10)
-    count: int = Field(default=3, ge=1, le=10, strict=True)
-    question_types: list[Literal['short_answer', 'multiple_choice']] = Field(
-        default_factory=lambda: ['multiple_choice', 'short_answer'], min_length=1, max_length=2
-    )
-    difficulty: Literal['easy', 'medium', 'hard'] = 'medium'
-
-    @model_validator(mode='after')
-    def validate_types(self):
-        """确保题型列表没有重复项。"""
-        if len(set(self.question_types)) != len(self.question_types):
-            raise ValueError('题型列表中不得包含重复项。')
-        return self
 
 
 class SectionInfo(BaseModel):

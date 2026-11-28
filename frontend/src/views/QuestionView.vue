@@ -2,7 +2,6 @@
 // AI 伴读问答页：左侧文档伴读（PDF 原页预览或文档切片阅读）+ 右侧混合检索问答与引用定位联动。
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import AppIcon from "../components/AppIcon.vue";
-import InlineQuizCard from "../components/InlineQuizCard.vue";
 import SourceList from "../components/SourceList.vue";
 import { useWorkspace } from "../composables/useWorkspace.js";
 import { request } from "../lib/api.js";
@@ -38,7 +37,6 @@ const {
 const question = ref("");
 const topK = ref(5);
 const latestTurn = ref(null);
-const inlineQuizByTurn = ref({});
 const showHistoryDrawer = ref(false);
 
 // 左侧文档伴读面板状态。
@@ -287,7 +285,6 @@ watch(pdfPageImgUrl, (url) => {
 
 watch(historyClearCount, () => {
   latestTurn.value = null;
-  inlineQuizByTurn.value = {};
 });
 
 async function locateCitation(source) {
@@ -358,41 +355,6 @@ function handleEnterSubmit(keyboardEvent) {
   ask();
 }
 
-function generateInlineQuiz(turnItem) {
-  const chunkIds = [];
-  const citations = turnItem.citations || [];
-  for (const citationItem of citations) {
-    if (citationItem.chunk_id) {
-      chunkIds.push(citationItem.chunk_id);
-    }
-    if (chunkIds.length >= 5) {
-      break;
-    }
-  }
-  if (!chunkIds.length) return;
-
-  const requestBody = {
-    chunk_ids: chunkIds,
-    count: 2,
-    question_types: ["multiple_choice", "short_answer"],
-    difficulty: "medium",
-  };
-  if (selectedKbId?.value && selectedKbId.value !== "hello_agents") {
-    requestBody.kb_id = selectedKbId.value;
-  }
-
-  runTask("inline-quiz", async () => {
-    const quizData = await request("/quiz/from-qa", {
-      method: "POST",
-      body: requestBody,
-      timeout: 120000,
-    });
-    inlineQuizByTurn.value = {
-      ...inlineQuizByTurn.value,
-      [turnItem.id]: quizData,
-    };
-  });
-}
 </script>
 
 <template>
@@ -700,21 +662,6 @@ function generateInlineQuiz(turnItem) {
                   </button>
                 </div>
 
-                <div v-if="!turnItem.insufficient_evidence && turnItem.citations?.length" class="turn-actions">
-                  <button
-                    type="button"
-                    class="button secondary"
-                    :disabled="!!activeTask"
-                    @click="generateInlineQuiz(turnItem)"
-                  >
-                    <AppIcon name="quiz" :size="15" /> 出题巩固
-                  </button>
-                </div>
-
-                <InlineQuizCard
-                  v-if="inlineQuizByTurn[turnItem.id]"
-                  :quiz="inlineQuizByTurn[turnItem.id]"
-                />
               </div>
             </div>
           </div>

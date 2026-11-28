@@ -61,7 +61,7 @@
 .drawer-overlay {
   display: none;
 }
-/* 问答、总结与自测采用清晰的单栏居中阅读布局，不再放置冗余右侧边栏。 */
+/* 问答与总结采用清晰的单栏居中阅读布局，不再放置冗余右侧边栏。 */
 .learning-layout {
   max-width: 900px;
   margin: 0 auto;
@@ -118,72 +118,6 @@
 .scope-panel .panel-title {
   margin-bottom: 0;
   font-size: 14px;
-}
-.quiz-config-panel {
-  padding: 16px 18px;
-}
-.quiz-config-row {
-  display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-.quiz-field {
-  color: #475569;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 110px;
-}
-.quiz-field input,
-.quiz-field select {
-  font-size: 14px;
-}
-.question-types-pills {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.question-types-pills legend {
-  font-size: 12px;
-  color: #475569;
-  margin-bottom: 6px;
-}
-.type-pill-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.type-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid #dbe4f0;
-  background: #f8fafc;
-  color: #475569;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-.type-pill input {
-  width: auto;
-  margin: 0;
-  accent-color: #2563eb;
-}
-.type-pill.active {
-  background: #eff6ff;
-  border-color: #93c5fd;
-  color: #1d4ed8;
-}
-.quiz-submit-btn {
-  margin-left: auto;
 }
 .result-next-actions {
   display: flex;

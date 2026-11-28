@@ -1,6 +1,6 @@
 # 知序 · 基于混合检索增强生成的课程学习助手
 
-基于 FastAPI + Vue 3 + SQLite + NumPy 的混合检索增强课程学习与文档伴读应用。内置 Hello-Agents 第 1—12 章预置课程语料，并支持自建多知识库上传 **PDF / Word (.docx) / Markdown (.md)** 文档，提供双栏无黑边原文伴读、混合检索问答、章节总结、练习自测与会话历史管理。前端组件说明见 [Vue 工作台](F:/桌面/毕设/frontend/README.md)。
+基于 FastAPI + Vue 3 + SQLite + NumPy 的混合检索增强课程学习与文档伴读应用。内置 Hello-Agents 第 1—12 章预置课程语料，并支持自建多知识库上传 **PDF (`.pdf`) / Markdown (`.md`)** 文档，提供双栏无黑边原文伴读、混合检索问答、章节总结与会话历史管理。前端组件说明见 [Vue 工作台](F:/桌面/毕设/frontend/README.md)。
 
 ## 第一次读这个项目
 
@@ -8,21 +8,21 @@
 
 1. [项目运行流程与阅读路线](F:/桌面/毕设/docs/project-runtime-flow.md)：理解前后端数据流与核心模块协作。
 2. [实际目录与职责](F:/桌面/毕设/目录.md)：速查所有源码、测试与文档目录。
-3. [Vue 前端说明](F:/桌面/毕设/frontend/README.md) 与 [前端接口文档](F:/桌面/毕设/docs/frontend-api.md)：查看 6 个页面与伴读工作台实现。
-4. [后端接口文档](F:/桌面/毕设/docs/api-reference.md) 与 [OpenAPI 契约](F:/桌面/毕设/docs/openapi.json)：核对 23 个接口字段与错误码。
+3. [Vue 前端说明](F:/桌面/毕设/frontend/README.md) 与 [前端接口文档](F:/桌面/毕设/docs/frontend-api.md)：查看 5 个页面与伴读工作台实现。
+4. [后端接口文档](F:/桌面/毕设/docs/api-reference.md) 与 [OpenAPI 契约](F:/桌面/毕设/docs/openapi.json)：核对 21 个接口字段与错误码。
 
 ## 当前已实现功能
 
-- **23 个 HTTP 接口（19 条路径）**：完整覆盖多知识库管理、PDF 按页纯白渲染、文档切块浏览、课程目录、混合检索问答、章节总结、章节练习、随堂巩固出题与会话历史；附带 Swagger、ReDoc 与静态 OpenAPI 文档。
+- **21 个 HTTP 接口（17 条路径）**：完整覆盖多知识库管理、PDF 按页纯白渲染、文档切块浏览、课程目录、混合检索问答、章节总结与会话历史；附带 Swagger、ReDoc 与静态 OpenAPI 文档。
 - **混合检索与双保险门控**：默认采用 `BM25Okapi`（`rank-bm25==0.2.2`）+ `numpy` 矩阵加速向量检索 + RRF（`k=60`）融合；内置词法与向量双保险门控（`VECTOR_MIN_SCORE = 0.54`），课程外问题准确拒答，同时支持“总结这份资料/整体框架”等概览类提问的均匀抽样放行。
-- **多知识库与文档入库**：内置 Hello-Agents 第 1—12 章（67 节、759 块），支持新建自定义知识库并上传 **PDF、Word (.docx)、Markdown (.md)** 文档，自动解析、切块并构建 BM25 与向量索引。
-- **双栏无黑边文档伴读工作台**：Vue 3 浅蓝白统一主题，包含 6 个页面（课程目录、AI 问答、知识库、问答历史、章节总结、练习自测）。AI 问答页左侧通过后端 `pypdfium2` 按页渲染纯白高清 PNG（无浏览器黑边，支持输页码直达与缩放），中间提供可拖拽分割条（28%–68%），右侧展示混合检索命中来源（双路共同命中 / BM25 / 向量 / 全文概览抽样）及分数明细，支持一键定位左侧原文与随堂出题巩固。
+- **多知识库与增量入库**：内置 Hello-Agents 第 1—12 章（67 节、759 块），支持新建自定义知识库并上传 **PDF (`.pdf`)、Markdown (`.md`)** 文档；PDF 自动转为 Markdown 精洗（跳过封面目录、剔除习题并保留物理页码锚点），增删文档时增量复用已有切片与向量缓存（删文档 0 次调用 Embedding）。
+- **双栏无黑边文档伴读工作台**：Vue 3 浅蓝白统一主题，包含 5 个页面（课程目录、AI 问答、知识库、问答历史、章节总结）。AI 问答页左侧通过后端 `pypdfium2` 按页渲染纯白高清 PNG（无浏览器黑边，支持输页码直达与缩放），中间提供可拖拽分割条（28%–68%），右侧展示混合检索命中来源（双路共同命中 / BM25 / 向量 / 全文概览抽样）及分数明细，支持一键定位左侧原文。
 - **多轮问答与大模型讲解**：支持 `extractive`（本地原文摘录）与 `llm`（Chat Completions 兼容大模型）双模式；支持多轮指代补全、推荐追问与严格引用编号校验。
-- **章节总结与练习自测**：总结页单行控制栏 + 证据覆盖统计 + 闭环跳转；自测页提交前隐藏答案，提交后单选题客观计分、简答题对照原文自评，并支持错题/待复习题专项重练。
+- **章节总结**：提供单行控制栏、代表性要点、证据覆盖统计与原文引用，并支持跳转到本章问答。
 - **会话隔离历史**：SQLite 按随机 `session_id`（UUID）与 `kb_id` 持久化问答历史，支持分页查看、单条删除与确认清空。
-- **自动化测试与开发评测**：后端 175 项测试 + 前端 30 项单元测试全部通过；120 题前六章开发集混合检索 `Recall@5` 达 `0.9804`，课程外拒答率 `100%`。
+- **自动化测试与开发评测**：后端与前端配有自动化测试，运行命令见下文；120 题前六章开发集混合检索 `Recall@5` 达 `0.9804`，课程外拒答率 `100%`。
 
-> **待完成（对照任务书后续目标）**：将预置 Hello-Agents 语料从第 1—12 章扩展至第 1—15 章；构建 80 题独立验证/盲测集并产出三组对照实验报告；补充问答流式输出（SSE）与持久化错题本。
+> **待完成（对照任务书后续目标）**：将预置 Hello-Agents 语料从第 1—12 章扩展至第 1—15 章；构建 80 题独立验证/盲测集并产出三组对照实验报告；补充问答流式输出（SSE）。
 
 历史参考资料：[20 题历史种子基线](F:/桌面/毕设/docs/evaluation/bm25-seed-baseline.md) · [120 题开发集说明](F:/桌面/毕设/data/evaluation/hello-agents-ch01-06-v1/README.md) · [历史产品需求 V1.2](F:/桌面/毕设/docs/product/prd-v1.2.md)。
 
@@ -92,8 +92,8 @@ GET    /api/kbs                                           列出预置课程与�
 POST   /api/kbs                                           新建自定义知识库
 DELETE /api/kbs/{kb_id}                                   删除自定义知识库
 GET    /api/kbs/{kb_id}/documents                         查看知识库内文档列表
-POST   /api/kbs/{kb_id}/documents                         上传 PDF/Word/MD 并构建索引
-DELETE /api/kbs/{kb_id}/documents/{doc_id}                移除文档并重建索引
+POST   /api/kbs/{kb_id}/documents                         上传 PDF/MD 并增量构建索引
+DELETE /api/kbs/{kb_id}/documents/{doc_id}                移除文档并增量更新索引
 GET    /api/kbs/{kb_id}/documents/{doc_id}/source         在线查看或下载原文档
 GET    /api/kbs/{kb_id}/documents/{doc_id}/page/{page_num} 按页渲染 PDF 为纯白 PNG
 GET    /api/kbs/{kb_id}/chunks                            分页浏览切分后的文本块
@@ -104,8 +104,6 @@ GET    /api/sources/{chunk_id}                            核对单条原文与�
 GET    /api/course/source                                 预置课程原 PDF
 POST   /api/qa                                            混合检索问答与历史写入
 POST   /api/summary                                       生成指定章/节总结
-POST   /api/quiz                                          生成章节自测练习
-POST   /api/quiz/from-qa                                  基于问答原文生成随堂巩固题
 GET    /api/history                                       当前会话历史分页
 GET    /api/history/{record_id}                           当前会话单条历史
 DELETE /api/history/{record_id}                           删除单条历史
@@ -117,11 +115,11 @@ DELETE /api/history                                       清空当前会话历�
 运行全部自动化测试：
 
 ```powershell
-# 后端 175 项测试
+# 后端测试
 Set-Location 'F:/桌面/毕设'
 & 'F:/桌面/毕设/.venv/Scripts/python.exe' -m unittest discover -s tests -p 'test_*.py'
 
-# 前端 30 项测试
+# 前端测试
 Set-Location 'F:/桌面/毕设/frontend'
 npm test
 ```
