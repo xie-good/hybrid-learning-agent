@@ -446,8 +446,7 @@ class KnowledgeBaseManager:
             except ValueError as exc:
                 raise AppError(422, 'document_parse_failed', str(exc)) from None
 
-            saved_raw_path = kb_dir / 'raw' / stored_name
-            saved_raw_path.write_bytes(raw)
+            existing_repo = self._custom_repos[kb_id]
             doc_record = {
                 'doc_id': doc_id,
                 'filename': safe_filename,
@@ -461,24 +460,51 @@ class KnowledgeBaseManager:
                 'chunk_count': len(parsed_chunks),
                 'uploaded_at': datetime.now(timezone.utc).isoformat(),
             }
+            # 优先复用内存中已有文档的解析结果，只追加本次新文档，避免重复解析旧文件。
+            if existing_repo.status()['ready'] and len(existing_repo._chapters) == len(metadata['documents']):
+                chapters = existing_repo.chapters()
+                all_chunks = deepcopy(existing_repo._chunks)
+                chapters.append(chapter_info)
+                all_chunks.extend(parsed_chunks)
+                precomputed = (chapters, all_chunks)
+            else:
+                precomputed = None
+
             metadata['documents'].append(doc_record)
-            try:
-                self._rebuild_custom_kb_locked(kb_dir, metadata)
-            except Exception:
-                # 建索引失败时删掉刚保存的原文件，避免留下半成品。
-                saved_raw_path.unlink(missing_ok=True)
-                raise
+            saved_raw_path = kb_dir / 'raw' / stored_name
+            if precomputed is not None:
+                # 先增量计算新增切片的向量（最易因网络/上游失败），成功后再统一写盘，保证异常时原库完好。
+                vector_bundle = self._prepare_incremental_vectors(kb_dir, precomputed[1])
+                saved_raw_path.write_bytes(raw)
+                try:
+                    self._rebuild_custom_kb_locked(
+                        kb_dir,
+                        metadata,
+                        precomputed=precomputed,
+                        vector_bundle=vector_bundle,
+                    )
+                except Exception:
+                    saved_raw_path.unlink(missing_ok=True)
+                    raise
+            else:
+                saved_raw_path.write_bytes(raw)
+                try:
+                    self._rebuild_custom_kb_locked(kb_dir, metadata)
+                except Exception:
+                    saved_raw_path.unlink(missing_ok=True)
+                    raise
             return {'document': doc_record, 'kb': self.get_kb_info(kb_id)}
 
     def delete_document(self, kb_id: str, doc_id: str) -> dict:
-        """删除自定义知识库中的一份文档，并重新生成索引。"""
+        """删除自定义知识库中的一份文档，并增量更新索引（复用剩余文档切片与向量）。"""
         if kb_id == BUILTIN_KB_ID:
             raise AppError(403, 'builtin_kb_readonly', '预置课程不可删除文档。')
         with self._lock:
             if kb_id not in self._custom_repos:
                 raise AppError(404, 'kb_not_found', '指定的知识库不存在。')
             kb_dir = self.root / kb_id
-            metadata = deepcopy(self._custom_repos[kb_id]._meta)
+            existing_repo = self._custom_repos[kb_id]
+            metadata = deepcopy(existing_repo._meta)
 
             target_doc = None
             remaining_docs: list[dict] = []
@@ -492,8 +518,12 @@ class KnowledgeBaseManager:
                 raise AppError(404, 'document_not_found', '未找到指定文档。')
 
             metadata['documents'] = remaining_docs
+            precomputed = None
+            if remaining_docs and existing_repo.status()['ready']:
+                precomputed = self._filter_and_reindex_existing(existing_repo, metadata, doc_id)
+
             (kb_dir / 'raw' / target_doc['stored_name']).unlink(missing_ok=True)
-            self._rebuild_custom_kb_locked(kb_dir, metadata)
+            self._rebuild_custom_kb_locked(kb_dir, metadata, precomputed=precomputed)
             return {'deleted_doc_id': doc_id, 'kb': self.get_kb_info(kb_id)}
 
     def _clear_empty_kb_files(self, kb_dir: Path, metadata: dict) -> None:
@@ -563,6 +593,122 @@ class KnowledgeBaseManager:
         (kb_dir / 'kb.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2), 'utf-8')
         return dataset_version, chunks_sha256
 
+    def _filter_and_reindex_existing(
+        self,
+        existing_repo: CustomCorpusRepository,
+        metadata: dict,
+        removed_doc_id: str,
+    ) -> tuple[list[dict], list[dict]] | None:
+        """删除文档时直接过滤内存中的已有章节与切片，并按新顺序重排 chapter_id/section_id。"""
+        chapters_by_doc: dict[str, dict] = {}
+        for chapter_item in existing_repo.chapters():
+            doc_id = chapter_item.get('doc_id')
+            if doc_id and doc_id != removed_doc_id:
+                chapters_by_doc[doc_id] = chapter_item
+
+        if len(chapters_by_doc) != len(metadata['documents']):
+            return None
+
+        reindexed_chapters: list[dict] = []
+        doc_to_new_chapter: dict[str, str] = {}
+        section_id_map: dict[str, str] = {}
+        for index, doc_record in enumerate(metadata['documents'], start=1):
+            doc_id = doc_record['doc_id']
+            new_chapter_id = f'ch{index:02d}'
+            doc_record['chapter_id'] = new_chapter_id
+            doc_to_new_chapter[doc_id] = new_chapter_id
+
+            chapter_item = chapters_by_doc[doc_id]
+            chapter_item['chapter_id'] = new_chapter_id
+            for sec_index, section_item in enumerate(chapter_item.get('sections', []), start=1):
+                old_section_id = section_item['section_id']
+                new_section_id = f'{new_chapter_id}-s{sec_index:03d}'
+                section_id_map[old_section_id] = new_section_id
+                section_item['section_id'] = new_section_id
+            reindexed_chapters.append(chapter_item)
+
+        remaining_chunks: list[dict] = []
+        for chunk_item in existing_repo._chunks:
+            doc_id = chunk_item.get('doc_id')
+            if doc_id == removed_doc_id or doc_id not in doc_to_new_chapter:
+                continue
+            updated_chunk = deepcopy(chunk_item)
+            updated_chunk['chapter_id'] = doc_to_new_chapter[doc_id]
+            old_section_id = updated_chunk.get('section_id')
+            if old_section_id in section_id_map:
+                updated_chunk['section_id'] = section_id_map[old_section_id]
+            remaining_chunks.append(updated_chunk)
+
+        return reindexed_chapters, remaining_chunks
+
+    def _load_reusable_vectors(self, kb_dir: Path, fingerprint: str) -> tuple[dict[str, list[float]], int | None]:
+        """读取现有向量索引中与当前模型一致的缓存，返回 (chunk_id -> vector, 维度)。"""
+        vector_path = kb_dir / 'indexes' / 'vector.index.json'
+        if not vector_path.is_file():
+            return {}, None
+        try:
+            payload = json.loads(vector_path.read_text('utf-8'))
+        except Exception:
+            return {}, None
+
+        if (
+            payload.get('format_version') != INDEX_FORMAT_VERSION
+            or payload.get('embedding_model') != self.settings.embedding_model
+            or payload.get('embedding_fingerprint') != fingerprint
+        ):
+            return {}, None
+
+        dimension = payload.get('dimension')
+        chunk_ids = payload.get('chunk_ids')
+        vectors = payload.get('vectors')
+        if (
+            not isinstance(dimension, int)
+            or dimension <= 0
+            or not isinstance(chunk_ids, list)
+            or not isinstance(vectors, list)
+            or len(chunk_ids) != len(vectors)
+        ):
+            return {}, None
+
+        cached: dict[str, list[float]] = {}
+        for chunk_id, vector in zip(chunk_ids, vectors):
+            if isinstance(chunk_id, str) and isinstance(vector, list) and len(vector) == dimension:
+                cached[chunk_id] = vector
+        return cached, dimension
+
+    def _prepare_incremental_vectors(
+        self,
+        kb_dir: Path,
+        all_chunks: list[dict],
+    ) -> tuple[list[list[float]] | None, int | None, str | None]:
+        """增量构建向量列表：已有切片直接复用缓存，仅对新增或缺失的切片调用向量模型。"""
+        has_embedding = bool(self.settings.embedding_base_url.strip() and self.settings.embedding_model.strip())
+        if not has_embedding:
+            return None, None, None
+
+        fingerprint = embedding_fingerprint(self.settings)
+        cached_vectors, vector_dimension = self._load_reusable_vectors(kb_dir, fingerprint)
+
+        missing_chunks = [chunk for chunk in all_chunks if chunk['chunk_id'] not in cached_vectors]
+        if missing_chunks:
+            batch_size = 32
+            for offset in range(0, len(missing_chunks), batch_size):
+                batch_chunks = missing_chunks[offset:offset + batch_size]
+                batch_texts = [chunk['text'] for chunk in batch_chunks]
+                batch_vectors = fetch_embeddings(self.settings, batch_texts)
+                if len(batch_vectors) != len(batch_chunks):
+                    raise AppError(502, 'embedding_count_mismatch', '向量服务返回条数与请求文本数不一致。')
+
+                if vector_dimension is None:
+                    vector_dimension = len(batch_vectors[0])
+                for chunk_item, vector in zip(batch_chunks, batch_vectors):
+                    if len(vector) != vector_dimension:
+                        raise AppError(502, 'embedding_dimension_mismatch', '向量服务批次维数不一致，索引构建中止。')
+                    cached_vectors[chunk_item['chunk_id']] = vector
+
+        ordered_vectors = [cached_vectors[chunk['chunk_id']] for chunk in all_chunks]
+        return ordered_vectors, vector_dimension, fingerprint
+
     def _build_bm25_and_vector_indexes(
         self,
         kb_dir: Path,
@@ -570,35 +716,21 @@ class KnowledgeBaseManager:
         all_chunks: list[dict],
         dataset_version: str,
         chunks_sha256: str,
+        vector_bundle: tuple[list[list[float]] | None, int | None, str | None] | None = None,
     ) -> None:
-        """构建 BM25 稀疏索引；如果配置了向量模型服务，则同时生成向量索引。"""
+        """构建 BM25 稀疏索引，并写入增量复用后的向量索引。"""
         index_dir = kb_dir / 'indexes'
         index_dir.mkdir(parents=True, exist_ok=True)
-        (index_dir / 'vector.index.json').unlink(missing_ok=True)
+
+        if vector_bundle is None:
+            ordered_vectors, vector_dimension, fingerprint = self._prepare_incremental_vectors(kb_dir, all_chunks)
+        else:
+            ordered_vectors, vector_dimension, fingerprint = vector_bundle
 
         bm25_index = BM25Index(all_chunks)
         index_payloads = {'bm25.index.json': bm25_index.payload(repository)}
 
-        has_embedding = bool(self.settings.embedding_base_url.strip() and self.settings.embedding_model.strip())
-        if has_embedding:
-            fingerprint = embedding_fingerprint(self.settings)
-            all_vectors: list[list[float]] = []
-            vector_dimension = None
-            batch_size = 32
-
-            for offset in range(0, len(all_chunks), batch_size):
-                batch_texts: list[str] = []
-                for chunk_item in all_chunks[offset:offset + batch_size]:
-                    batch_texts.append(chunk_item['text'])
-                batch_vectors = fetch_embeddings(self.settings, batch_texts)
-
-                if vector_dimension is None:
-                    vector_dimension = len(batch_vectors[0])
-                for vector in batch_vectors:
-                    if len(vector) != vector_dimension:
-                        raise AppError(502, 'embedding_dimension_mismatch', '向量服务批次维数不一致，索引构建中止。')
-                all_vectors.extend(batch_vectors)
-
+        if ordered_vectors is not None and vector_dimension is not None and fingerprint is not None:
             index_payloads['vector.index.json'] = {
                 'format_version': INDEX_FORMAT_VERSION,
                 'dataset_version': dataset_version,
@@ -607,8 +739,10 @@ class KnowledgeBaseManager:
                 'embedding_fingerprint': fingerprint,
                 'dimension': vector_dimension,
                 'chunk_ids': bm25_index.ids,
-                'vectors': all_vectors,
+                'vectors': ordered_vectors,
             }
+        else:
+            (index_dir / 'vector.index.json').unlink(missing_ok=True)
 
         file_hashes: dict[str, str] = {}
         for filename, payload in index_payloads.items():
@@ -627,14 +761,34 @@ class KnowledgeBaseManager:
         }
         (index_dir / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', 'utf-8')
 
-    def _rebuild_custom_kb_locked(self, kb_dir: Path, metadata: dict) -> None:
-        """文档变化后，按“解析切片 → 写语料 → 建混合索引 → 热加载”四步更新知识库。"""
+    def _rebuild_custom_kb_locked(
+        self,
+        kb_dir: Path,
+        metadata: dict,
+        precomputed: tuple[list[dict], list[dict]] | None = None,
+        vector_bundle: tuple[list[list[float]] | None, int | None, str | None] | None = None,
+    ) -> None:
+        """文档变化后，按“复用/切片 → 写语料 → 增量建混合索引 → 热加载”四步更新知识库。"""
         if not metadata['documents']:
             self._clear_empty_kb_files(kb_dir, metadata)
             return
 
-        chapters, all_chunks = self._collect_documents_chunks(kb_dir, metadata)
+        if precomputed is not None:
+            chapters, all_chunks = precomputed
+        else:
+            chapters, all_chunks = self._collect_documents_chunks(kb_dir, metadata)
+
+        if vector_bundle is None:
+            vector_bundle = self._prepare_incremental_vectors(kb_dir, all_chunks)
+
         dataset_version, chunks_sha256 = self._write_processed_corpus(kb_dir, metadata, chapters, all_chunks)
         repository = CustomCorpusRepository(kb_dir)
-        self._build_bm25_and_vector_indexes(kb_dir, repository, all_chunks, dataset_version, chunks_sha256)
+        self._build_bm25_and_vector_indexes(
+            kb_dir,
+            repository,
+            all_chunks,
+            dataset_version,
+            chunks_sha256,
+            vector_bundle=vector_bundle,
+        )
         self._mount_custom_kb(metadata['kb_id'])

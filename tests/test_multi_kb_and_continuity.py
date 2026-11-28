@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 from uuid import uuid4
 import zipfile
 
@@ -180,6 +181,94 @@ class MultiKBAndContinuityTests(unittest.TestCase):
                 if payload_item['task'] == 'answer':
                     answer_payloads.append(payload_item)
             self.assertIn('conversation_history', answer_payloads[-1])
+
+    def test_incremental_vector_index_and_rollback(self):
+        """验证自定义知识库上传/删除文档时增量复用向量，且上游失败时原库不受损。"""
+        vec_settings = make_corpus(
+            self.root / 'incremental_vec',
+            generation_mode='extractive',
+            default_retrieval_mode='bm25',
+            embedding_base_url='https://fixture.invalid/v1',
+            embedding_model='fixture-embed',
+        )
+        vec_app = create_app(vec_settings)
+        embed_calls: list[list[str]] = []
+        fail_next = {'flag': False}
+
+        def fake_fetch_embeddings(_settings, texts):
+            embed_calls.append(list(texts))
+            if fail_next['flag']:
+                from backend.errors import AppError
+                raise AppError(502, 'embedding_upstream_error', '模拟向量服务异常')
+            vectors = []
+            for text in texts:
+                if '分页' in text or '虚拟内存' in text:
+                    vectors.append([0.0, 1.0, 0.0, 0.0])
+                else:
+                    vectors.append([1.0, 0.0, 0.0, 0.0])
+            return vectors
+
+        with patch('backend.services.knowledge_base.fetch_embeddings', side_effect=fake_fetch_embeddings), \
+             TestClient(vec_app) as client:
+            created = client.post('/api/kbs', json={'name': '增量索引测试库'})
+            self.assertEqual(created.status_code, 201, created.text)
+            kb_id = created.json()['kb_id']
+
+            # 1. 上传第一份文档：仅对文档 1 的切片计算向量。
+            doc1_bytes = '# 进程管理\n进程控制块保存进程状态、寄存器和打开文件描述符。\n'.encode('utf-8')
+            up1 = client.post(
+                f'/api/kbs/{kb_id}/documents',
+                files={'file': ('doc1.md', doc1_bytes, 'text/markdown')},
+            )
+            self.assertEqual(up1.status_code, 201, up1.text)
+            doc1_id = up1.json()['document']['doc_id']
+            self.assertEqual(len(embed_calls), 1)
+            self.assertEqual(len(embed_calls[0]), 1)
+            self.assertIn('进程控制块', embed_calls[0][0])
+
+            # 2. 上传第二份文档：复用文档 1 向量，只对文档 2 的新切片调 Embedding。
+            doc2_bytes = '# 虚拟内存\n分页机制通过页表完成逻辑地址到物理地址的映射。\n'.encode('utf-8')
+            up2 = client.post(
+                f'/api/kbs/{kb_id}/documents',
+                files={'file': ('doc2.md', doc2_bytes, 'text/markdown')},
+            )
+            self.assertEqual(up2.status_code, 201, up2.text)
+            self.assertEqual(len(embed_calls), 2)
+            self.assertEqual(len(embed_calls[1]), 1)
+            self.assertIn('分页机制', embed_calls[1][0])
+
+            # 3. 上传第三份文档时模拟 Embedding 失败：应返回 502 且原库保持 2 份文档不受破坏。
+            fail_next['flag'] = True
+            doc3_bytes = '# 死锁\n互斥、占有并等待、不可剥夺和循环等待是死锁的四个必要条件。\n'.encode('utf-8')
+            up3 = client.post(
+                f'/api/kbs/{kb_id}/documents',
+                files={'file': ('doc3.md', doc3_bytes, 'text/markdown')},
+            )
+            self.assertEqual(up3.status_code, 502)
+            fail_next['flag'] = False
+            docs_after_fail = client.get(f'/api/kbs/{kb_id}/documents').json()['items']
+            self.assertEqual(len(docs_after_fail), 2)
+
+            # 4. 删除第一份文档：剩余文档向量 100% 复用，0 次调用 Embedding。
+            calls_before_delete = len(embed_calls)
+            del_resp = client.delete(f'/api/kbs/{kb_id}/documents/{doc1_id}')
+            self.assertEqual(del_resp.status_code, 200, del_resp.text)
+            self.assertEqual(len(embed_calls), calls_before_delete)
+
+            # 5. 验证删除后章节重排为 ch01，且剩余文档仍可正常检索。
+            chapters = client.get('/api/chapters', params={'kb_id': kb_id}).json()['chapters']
+            self.assertEqual(len(chapters), 1)
+            self.assertEqual(chapters[0]['chapter_id'], 'ch01')
+            self.assertEqual(chapters[0]['sections'][0]['section_id'], 'ch01-s001')
+
+            qa_resp = client.post('/api/qa', json={
+                'kb_id': kb_id,
+                'question': '分页机制如何映射地址',
+                'session_id': str(uuid4()),
+            })
+            self.assertEqual(qa_resp.status_code, 200, qa_resp.text)
+            self.assertFalse(qa_resp.json()['insufficient_evidence'])
+            self.assertIn('页表', qa_resp.json()['citations'][0]['text'])
 
 
 if __name__ == '__main__':
